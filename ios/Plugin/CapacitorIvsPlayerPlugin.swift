@@ -65,10 +65,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             let window = UIApplication.shared.windows.first
             let topPadding = window?.safeAreaInsets.top ?? 0
             
-            self.playerView.frame = viewController.view.bounds
-            self.playerView.playerLayer.position.x = 0 + screenSize.width / 2
-            self.playerView.playerLayer.position.y = topPadding + (screenSize.width * (9/16)) / 2
+            self.playerView.playerLayer.position.x = 0
+            self.playerView.playerLayer.position.y = 0
             self.playerView.playerLayer.zPosition = -1
+            self.playerView.frame = CGRect(
+                x: 0,
+                y: topPadding,
+                width: screenSize.width,
+                height: screenSize.width * (9/16)
+            )
+            
             viewController.view.addSubview(self.playerView)
             DispatchQueue.main.async {
                 self.webView?.backgroundColor = UIColor.clear
@@ -91,5 +97,13 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve([
             "value": implementation.echo(value)
         ])
+    }
+    
+    @objc func lowerStream(_ call: CAPPluginCall) {
+        print("lowerStream")
+        DispatchQueue.main.async {
+            self.playerView.playerLayer.position.y += 20;
+        }
+        call.resolve()
     }
 }

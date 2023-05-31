@@ -10,4 +10,8 @@ export class CapacitorIvsPlayerWeb
     console.log('ECHO', options);
     return options;
   }
+  async lowerStream(): Promise<void> {
+    console.log('lowerStream');
+    return;
+  }
 }
