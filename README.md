@@ -15,6 +15,7 @@ npx cap sync
 
 * [`echo(...)`](#echo)
 * [`togglePip()`](#togglepip)
+* [`lowerStream()`](#lowerstream)
 
 </docgen-index>
 
@@ -40,6 +41,10 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 
 ```typescript
 togglePip() => Promise<void>
+### lowerStream()
+
+```typescript
+lowerStream() => Promise<void>
 ```
 
 --------------------

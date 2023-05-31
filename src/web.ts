@@ -12,6 +12,9 @@ export class CapacitorIvsPlayerWeb
   }
   async togglePip(): Promise<void> {
     console.log('togglePip');
+  }
+  async lowerStream(): Promise<void> {
+    console.log('lowerStream');
     return;
   }
 }

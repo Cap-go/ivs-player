@@ -6,4 +6,5 @@
 CAP_PLUGIN(CapacitorIvsPlayerPlugin, "CapacitorIvsPlayer",
            CAP_PLUGIN_METHOD(echo, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(togglePip, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(lowerStream, CAPPluginReturnPromise);
 )
