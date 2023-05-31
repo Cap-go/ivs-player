@@ -74,13 +74,19 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             let screenSize: CGRect = UIScreen.main.bounds
             let window = UIApplication.shared.windows.first
             let topPadding = window?.safeAreaInsets.top ?? 0
-            let playerWidth = self.playerView.playerLayer.videoRect.width
-            let playerHeight = self.playerView.playerLayer.videoRect.height
             
             self.playerView.frame = viewController.view.bounds
             self.playerView.playerLayer.position.x = 0 + screenSize.width / 2
             self.playerView.playerLayer.position.y = topPadding + (screenSize.width * (9/16)) / 2
+            self.playerView.playerLayer.zPosition = -1
             viewController.view.addSubview(self.playerView)
+            DispatchQueue.main.async {
+                self.webView?.backgroundColor = UIColor.clear
+                self.webView?.isOpaque = false
+                self.webView?.scrollView.backgroundColor = UIColor.clear
+                self.webView?.scrollView.isOpaque = false
+//                self.webView?.superview?.bringSubviewToFront(self.webView!)
+            }
         }
         call.resolve([
             "value": implementation.echo(value)

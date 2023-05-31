@@ -19,6 +19,7 @@ window.customElements.define(
         display: block;
         width: 100%;
         height: 100%;
+        background-color: transparent;
       }
       h1, h2, h3, h4, h5 {
         text-transform: uppercase;
@@ -36,6 +37,7 @@ window.customElements.define(
       }
       main {
         padding: 15px;
+        background-color: white;
       }
       main hr { height: 1px; background-color: #eee; border: 0; }
       main h1 {
@@ -55,11 +57,28 @@ window.customElements.define(
       main pre {
         white-space: pre-line;
       }
+      .controls {
+        color: white;
+        font-family: cursive;
+        font-size: 50px;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 1px solid purple;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-items: center;
+        z-index: 99999999999;
+        text-shadow: 2px 2px black;
+      }
     </style>
     <div>
       <capacitor-welcome-titlebar>
         <h1>Capacitor</h1>
       </capacitor-welcome-titlebar>
+      <div class="controls">
+        Video Controls
+      </div>
       <main>
         <p>
           Capacitor makes it easy to build powerful apps for the app stores, mobile web (Progressive Web Apps), and desktop, all
