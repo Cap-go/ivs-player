@@ -71,7 +71,15 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
                 return
             }
             
+            let screenSize: CGRect = UIScreen.main.bounds
+            let window = UIApplication.shared.windows.first
+            let topPadding = window?.safeAreaInsets.top ?? 0
+            let playerWidth = self.playerView.playerLayer.videoRect.width
+            let playerHeight = self.playerView.playerLayer.videoRect.height
+            
             self.playerView.frame = viewController.view.bounds
+            self.playerView.playerLayer.position.x = 0 + screenSize.width / 2
+            self.playerView.playerLayer.position.y = topPadding + (screenSize.width * (9/16)) / 2
             viewController.view.addSubview(self.playerView)
         }
         call.resolve([
