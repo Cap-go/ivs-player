@@ -22,14 +22,14 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
     func player(_ player: IVSPlayer, didOutputCue cue: IVSCue) {
         print("didOutputCue change")
-        switch cue {
-        case let textMetadataCue as IVSTextMetadataCue:
-            print("Received Timed Metadata (\(textMetadataCue.textDescription)): \(textMetadataCue.text)")
-        case let textCue as IVSTextCue:
-            print("Received Text Cue: “\(textCue.text)”")
-        default:
-            print("Received unknown cue (type \(cue.type))")
-        }
+//        switch cue {
+//        case let textMetadataCue as IVSTextMetadataCue:
+//            print("Received Timed Metadata (\(textMetadataCue.textDescription)): \(textMetadataCue.text)")
+//        case let textCue as IVSTextCue:
+//            print("Received Text Cue: “\(textCue.text)”")
+//        default:
+//            print("Received unknown cue (type \(cue.type))")
+//        }
     }
 
     func playerWillRebuffer(_ player: IVSPlayer) {
