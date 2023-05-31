@@ -1,5 +1,6 @@
+// import { Camera } from '@capacitor/camera';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { Camera } from '@capacitor/camera';
+import { CapacitorIvsPlayer } from '@capgo/ivs-player';
 
 window.customElements.define(
   'capacitor-welcome',
@@ -94,16 +95,17 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#take-photo').addEventListener('click', async function (e) {
         try {
-          const photo = await Camera.getPhoto({
-            resultType: 'uri',
-          });
+          CapacitorIvsPlayer.echo({ value: 'Hello World' });
+          // const photo = await Camera.getPhoto({
+          //   resultType: 'uri',
+          // });
 
-          const image = self.shadowRoot.querySelector('#image');
-          if (!image) {
-            return;
-          }
+          // const image = self.shadowRoot.querySelector('#image');
+          // if (!image) {
+          //   return;
+          // }
 
-          image.src = photo.webPath;
+          // image.src = photo.webPath;
         } catch (e) {
           console.warn('User cancelled', e);
         }
