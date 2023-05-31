@@ -65,8 +65,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             let window = UIApplication.shared.windows.first
             let topPadding = window?.safeAreaInsets.top ?? 0
             
-            self.playerView.playerLayer.position.x = 0
-            self.playerView.playerLayer.position.y = 0
             self.playerView.playerLayer.zPosition = -1
             self.playerView.frame = CGRect(
                 x: 0,
@@ -102,7 +100,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     @objc func lowerStream(_ call: CAPPluginCall) {
         print("lowerStream")
         DispatchQueue.main.async {
-            self.playerView.playerLayer.position.y += 20;
+            self.playerView.frame = CGRect(
+                x: self.playerView.frame.minX,
+                y: self.playerView.frame.minY + 20,
+                width: self.playerView.frame.width,
+                height: self.playerView.frame.height
+            )
         }
         call.resolve()
     }
