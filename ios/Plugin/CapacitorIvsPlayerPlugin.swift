@@ -7,6 +7,9 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
         print("state change")
+        if state == .ready {
+            player.play()
+        }
     }
 
     func player(_ player: IVSPlayer, didFailWithError error: Error) {
@@ -46,6 +49,17 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     
     private var _pipController: Any? = nil
 
+    public override func load() {
+        NotificationCenter.default.addObserver(self,
+                selector: #selector(applicationDidEnterBackground(_:)),
+                name: UIApplication.didEnterBackgroundNotification,
+                object: nil)
+    }
+    
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        playerView.player?.pause()
+    }
+    
     @available(iOS 15, *)
     private var pipController: AVPictureInPictureController? {
        get {
@@ -55,10 +69,22 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
            _pipController = newValue
        }
    }
+
+    @objc func togglePip(_ call: CAPPluginCall) {
+        print("togglePip")
+        guard #available(iOS 15, *), let pipController = pipController else {
+            return
+        }
+        print("isPictureInPictureActive \(pipController.isPictureInPictureActive)")
+        if pipController.isPictureInPictureActive {
+            pipController.stopPictureInPicture()
+        } else {
+            pipController.startPictureInPicture()
+        }
+        call.resolve()
+    }
     
     @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        print("hello")
         player.delegate = playerDelegate
         player.load(URL(string:"https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"))
 
@@ -88,9 +114,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
 //                self.webView?.superview?.bringSubviewToFront(self.webView!)
             }
         }
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+        call.resolve()
     }
     
     private func preparePictureInPicture() {

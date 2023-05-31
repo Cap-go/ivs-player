@@ -102,6 +102,9 @@ window.customElements.define(
           <button class="button" id="take-photo">Take Photo</button>
         </p>
         <p>
+          <button class="button" id="toggle-pip">Toggle Pip</button>
+        </p>
+        <p>
           <img id="image" style="max-width: 100%">
         </p>
       </main>
@@ -112,7 +115,10 @@ window.customElements.define(
     connectedCallback() {
       const self = this;
 
-      self.shadowRoot.querySelector('#take-photo').addEventListener('click', async function (e) {
+      self.shadowRoot.querySelector('#toggle-pip').addEventListener('click', async function (e) {
+        CapacitorIvsPlayer.togglePip();
+      });
+        self.shadowRoot.querySelector('#take-photo').addEventListener('click', async function (e) {
         try {
           CapacitorIvsPlayer.echo({ value: 'Hello World' });
           // const photo = await Camera.getPhoto({

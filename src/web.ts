@@ -10,4 +10,8 @@ export class CapacitorIvsPlayerWeb
     console.log('ECHO', options);
     return options;
   }
+  async togglePip(): Promise<void> {
+    console.log('togglePip');
+    return;
+  }
 }
