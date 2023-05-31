@@ -37,6 +37,10 @@ window.customElements.define(
       main {
         padding: 15px;
         background-color: white;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        height: 546px;
       }
       main hr { height: 1px; background-color: #eee; border: 0; }
       main h1 {
@@ -62,7 +66,7 @@ window.customElements.define(
         font-size: 50px;
         width: 100%;
         aspect-ratio: 16 / 9;
-        border: 1px solid purple;
+        border: -1px solid black;
         text-align: center;
         display: flex;
         align-items: center;
@@ -71,7 +75,7 @@ window.customElements.define(
         text-shadow: 2px 2px black;
       }
     </style>
-    <div>
+    <div style="height: 100vh">
       <capacitor-welcome-titlebar>
         <h1>Capacitor</h1>
       </capacitor-welcome-titlebar>

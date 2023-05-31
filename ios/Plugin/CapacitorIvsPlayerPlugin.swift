@@ -109,17 +109,18 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             
             let screenSize: CGRect = UIScreen.main.bounds
             let window = UIApplication.shared.windows.first
-            let topPadding = window?.safeAreaInsets.top ?? 0
-            
+            let topPadding = viewController.view.safeAreaInsets.top
+                        
             self.playerView.playerLayer.zPosition = -1
             self.playerView.frame = CGRect(
                 x: 0,
                 y: topPadding,
                 width: screenSize.width,
-                height: screenSize.width * (9/16)
+                height: screenSize.width * (9.0 / 16.0)
             )
             
             viewController.view.addSubview(self.playerView)
+            
             DispatchQueue.main.async {
                 self.webView?.backgroundColor = UIColor.clear
                 self.webView?.isOpaque = false
