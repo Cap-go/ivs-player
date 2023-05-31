@@ -21,7 +21,7 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
     }
 
     func player(_ player: IVSPlayer, didOutputCue cue: IVSCue) {
-        print("didOutputCue change")
+//        print("didOutputCue change")
 //        switch cue {
 //        case let textMetadataCue as IVSTextMetadataCue:
 //            print("Received Timed Metadata (\(textMetadataCue.textDescription)): \(textMetadataCue.text)")
@@ -50,14 +50,24 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private var _pipController: Any? = nil
 
     public override func load() {
-        NotificationCenter.default.addObserver(self,
-                selector: #selector(applicationDidEnterBackground(_:)),
-                name: UIApplication.didEnterBackgroundNotification,
-                object: nil)
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("‼️ Could not setup AVAudioSession: \(error)")
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+
     }
     
-    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-        playerView.player?.pause()
+    @objc func applicationDidBecomeActive(notification: Notification) {
+        guard #available(iOS 15, *), let pipController = pipController else {
+            return
+        }
+        print("applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
+        if pipController.isPictureInPictureActive {
+            pipController.stopPictureInPicture()
+        }
     }
     
     @available(iOS 15, *)
@@ -141,7 +151,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
 
         self.pipController = pipController
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
-
+        print("preparePictureInPicture done")
     }
     
     @objc func lowerStream(_ call: CAPPluginCall) {
