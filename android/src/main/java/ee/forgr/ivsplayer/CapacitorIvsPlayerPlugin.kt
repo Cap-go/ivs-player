@@ -1,9 +1,7 @@
 package ee.forgr.ivsplayer
 
-import android.app.KeyguardManager
-import android.content.Context
 import android.content.Intent
-import android.os.Build
+import androidx.core.content.ContextCompat.startActivity
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
@@ -22,27 +20,27 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         call.resolve(ret)
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
 
-        startActivityForResult(call, intent, "verifyResult")
+        startActivity(this.context, intent, null)
     }
 
-    @PluginMethod
-    fun togglePip(call: PluginCall){
-        implementation.togglePip()
-        call.resolve()
-    }
-
-    @PluginMethod
-    fun start(call: PluginCall) {
-        implementation.play()
-    }
-
-    @PluginMethod
-    fun stop(call: PluginCall) {
-        implementation.pause()
-    }
-
-    @PluginMethod
-    fun destroy(call: PluginCall) {
-        implementation.release()
-    }
+   @PluginMethod
+   fun togglePip(call: PluginCall){
+       implementation.togglePip()
+       call.resolve()
+   }
+//
+//    @PluginMethod
+//    fun start(call: PluginCall) {
+//        implementation.play()
+//    }
+//
+//    @PluginMethod
+//    fun stop(call: PluginCall) {
+//        implementation.pause()
+//    }
+//
+//    @PluginMethod
+//    fun destroy(call: PluginCall) {
+//        implementation.release()
+//    }
 }
