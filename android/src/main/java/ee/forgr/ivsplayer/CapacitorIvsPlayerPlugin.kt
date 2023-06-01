@@ -23,24 +23,26 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         startActivity(this.context, intent, null)
     }
 
+    private fun sendPlayerControlBroadcast(action: String) {
+        val intent = Intent("playerControl")
+        intent.putExtra("action", action)
+        context.sendBroadcast(intent)
+    }
+
    @PluginMethod
    fun togglePip(call: PluginCall){
-       implementation.togglePip()
+       sendPlayerControlBroadcast("togglePip")
        call.resolve()
    }
-//
-//    @PluginMethod
-//    fun start(call: PluginCall) {
-//        implementation.play()
-//    }
-//
-//    @PluginMethod
-//    fun stop(call: PluginCall) {
-//        implementation.pause()
-//    }
-//
-//    @PluginMethod
-//    fun destroy(call: PluginCall) {
-//        implementation.release()
-//    }
+   @PluginMethod
+   fun start(call: PluginCall) {
+       sendPlayerControlBroadcast("start")
+       implementation.play()
+   }
+
+   @PluginMethod
+   fun stop(call: PluginCall) {
+       sendPlayerControlBroadcast("pause")
+       implementation.pause()
+   }
 }
