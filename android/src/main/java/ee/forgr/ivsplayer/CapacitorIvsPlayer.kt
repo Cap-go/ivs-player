@@ -33,6 +33,7 @@ class CapacitorIvsPlayer: AppCompatActivity() {
    @RequiresApi(Build.VERSION_CODES.O)
    override fun onUserLeaveHint() {
        super.onUserLeaveHint()
+       Log.i("CapacitorIvsPlayerX", "onUserLeaveHint")
        togglePip()
    }
 
@@ -58,6 +59,7 @@ class CapacitorIvsPlayer: AppCompatActivity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
+        Log.d("CapacitorIvsPlayerX", "togglePip: " + isInPictureInPictureMode)
         if (isInPictureInPictureMode) {
             // Exit PiP mode and return to floating mode
             val intent = Intent(this, CapacitorIvsPlayer::class.java)

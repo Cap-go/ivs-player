@@ -16,6 +16,8 @@ import com.getcapacitor.annotation.CapacitorPlugin
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 class CapacitorIvsPlayerPlugin : Plugin() {
+
+    var ignoreNextPause = false
     @PluginMethod
     fun echo(call: PluginCall) {
         val ret = JSObject()
@@ -29,8 +31,17 @@ class CapacitorIvsPlayerPlugin : Plugin() {
 
         @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
         fun onResume() {
-            Log.d("CapacitorIvsPlayerPlugin", "App returned from background")
+            Log.d("CapacitorIvsPlayerX", "App returned from background")
+            if (ignoreNextPause) {
+                ignoreNextPause = false
+                return
+            }
             sendPlayerControlBroadcast("togglePip")
+        }
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun onPause() {
+            Log.d("CapacitorIvsPlayerX", "App went to background")
+            ignoreNextPause = false
         }
     }
 
@@ -49,6 +60,7 @@ class CapacitorIvsPlayerPlugin : Plugin() {
 
    @PluginMethod
    fun togglePip(call: PluginCall){
+       ignoreNextPause = true
        sendPlayerControlBroadcast("togglePip")
        call.resolve()
    }
