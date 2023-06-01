@@ -6,11 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.util.Rational
 import android.view.Gravity
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.ivs.player.PlayerView
 
@@ -27,6 +30,12 @@ class CapacitorIvsPlayer: AppCompatActivity() {
             }
         }
     }
+   @RequiresApi(Build.VERSION_CODES.O)
+   override fun onUserLeaveHint() {
+       super.onUserLeaveHint()
+       togglePip()
+   }
+
     // on create method
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,14 +47,6 @@ class CapacitorIvsPlayer: AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
 
         this.playerView = PlayerView(this)
-//        playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-//            val layoutParams = WindowManager.LayoutParams()
-//            layoutParams.copyFrom(window.attributes)
-//            layoutParams.width = playerView.width
-//            layoutParams.height = playerView.height
-//            layoutParams.gravity = Gravity.CENTER
-//            window.attributes = layoutParams
-//        }
         this.playerView.player.play()
 
         playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
@@ -53,21 +54,27 @@ class CapacitorIvsPlayer: AppCompatActivity() {
 
     }
 
-    fun togglePip(){
-        Log.i("PIP", "PIP")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && this.packageManager
-                        .hasSystemFeature(
-                                PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val params = PictureInPictureParams.Builder()
-                this.enterPictureInPictureMode(params.build());
-            } else {
-                this.enterPictureInPictureMode();
-            }
+    fun togglePip() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
+        }
+        if (isInPictureInPictureMode) {
+            // Exit PiP mode and return to floating mode
+            val intent = Intent(this, CapacitorIvsPlayer::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+        } else {
+            // Enter PiP mode
+            val aspectRatio = Rational(playerView.width, playerView.height)
+            val pipParams = PictureInPictureParams.Builder()
+                    .setAspectRatio(aspectRatio)
+                    .build()
 
+            enterPictureInPictureMode(pipParams)
         }
     }
+
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(playerControlReceiver)
