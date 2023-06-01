@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.Gravity
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.ivs.player.PlayerView
@@ -37,9 +38,19 @@ class CapacitorIvsPlayer: AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
 
         this.playerView = PlayerView(this)
+//        playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+//            val layoutParams = WindowManager.LayoutParams()
+//            layoutParams.copyFrom(window.attributes)
+//            layoutParams.width = playerView.width
+//            layoutParams.height = playerView.height
+//            layoutParams.gravity = Gravity.CENTER
+//            window.attributes = layoutParams
+//        }
         this.playerView.player.play()
+
         playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
         setContentView(playerView)
+
     }
 
     fun togglePip(){

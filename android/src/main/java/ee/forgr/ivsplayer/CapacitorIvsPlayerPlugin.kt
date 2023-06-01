@@ -11,11 +11,8 @@ import com.getcapacitor.annotation.CapacitorPlugin
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 class CapacitorIvsPlayerPlugin : Plugin() {
-    private val implementation = CapacitorIvsPlayer()
     @PluginMethod
     fun echo(call: PluginCall) {
-//        implementation
-//        implementation.init(this.context)
         val ret = JSObject()
         call.resolve(ret)
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
@@ -37,12 +34,12 @@ class CapacitorIvsPlayerPlugin : Plugin() {
    @PluginMethod
    fun start(call: PluginCall) {
        sendPlayerControlBroadcast("start")
-       implementation.play()
+       call.resolve()
    }
 
    @PluginMethod
    fun stop(call: PluginCall) {
        sendPlayerControlBroadcast("pause")
-       implementation.pause()
+       call.resolve()
    }
 }
