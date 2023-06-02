@@ -5,7 +5,6 @@
         <activity
             android:supportsPictureInPicture="true"
             android:name="ee.forgr.ivsplayer.CapacitorIvsPlayer"
-            android:label="@string/title_activity_video_activity"
             android:theme="@style/AppTheme.Transparent"></activity>
     </application>
 </manifest>

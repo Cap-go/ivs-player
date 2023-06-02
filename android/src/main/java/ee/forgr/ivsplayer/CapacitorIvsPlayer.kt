@@ -12,10 +12,13 @@ import android.os.Build
 import android.util.Log
 import android.util.Rational
 import android.view.Gravity
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.ivs.player.PlayerView
+import com.amazonaws.ivs.player.ResizeMode
 
 // extends with AppCompatActivity
 class CapacitorIvsPlayer: AppCompatActivity() {
@@ -37,23 +40,23 @@ class CapacitorIvsPlayer: AppCompatActivity() {
        togglePip()
    }
 
-    // on create method
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
         registerReceiver(playerControlReceiver, IntentFilter("playerControl"))
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
 
         window.setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
+            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
 
-        this.playerView = PlayerView(this)
+        setContentView(R.layout.activity_capacitor_ivs_player)
+
+        this.playerView = findViewById(R.id.player_view)
         this.playerView.player.play()
-
         playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
-        setContentView(playerView)
-
     }
+
+
 
     fun togglePip() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
