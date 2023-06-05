@@ -112,7 +112,8 @@ window.customElements.define(
       });
       self.shadowRoot.querySelector('#start-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.create();
+        const url = "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"
+        CapacitorIvsPlayer.create({url, autoPlay: true});
       });
       self.shadowRoot.querySelector('#move-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef

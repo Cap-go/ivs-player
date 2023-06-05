@@ -96,12 +96,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     
     @objc func create(_ call: CAPPluginCall) {
         player.delegate = playerDelegate
+        let url = call.getString("url") ?? ""
+        let autoPlay = call.getBool("autoPlay") ?? false
         player.load(URL(string:"https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"))
 
         DispatchQueue.main.async {
             self.playerView.player = self.player
             self.preparePictureInPicture()
-            self.player.play()
+            if (autoPlay) {
+                self.player.play()
+            }
             guard let viewController = self.bridge?.viewController else {
                 call.reject("Unable to access the view controller")
                 return
@@ -153,6 +157,31 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         self.pipController = pipController
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
         print("preparePictureInPicture done")
+    }
+
+    @objc func pause(_ call: CAPPluginCall) {
+        print("pause")
+        DispatchQueue.main.async {
+            self.player.pause()
+        }
+        call.resolve()
+    }
+
+    @objc func play(_ call: CAPPluginCall) {
+        print("play")
+        DispatchQueue.main.async {
+            self.player.play()
+        }
+        call.resolve()
+    }
+
+    @objc func delete(_ call: CAPPluginCall) {
+        print("delete")
+        DispatchQueue.main.async {
+            self.player.pause()
+            self.playerView.removeFromSuperview()
+        }
+        call.resolve()
     }
     
     @objc func lowerStream(_ call: CAPPluginCall) {

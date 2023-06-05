@@ -5,20 +5,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.util.Rational
-import android.view.Gravity
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.ivs.player.PlayerView
-import com.amazonaws.ivs.player.ResizeMode
 
 // extends with AppCompatActivity
 class CapacitorIvsPlayer: AppCompatActivity() {
@@ -27,13 +21,35 @@ class CapacitorIvsPlayer: AppCompatActivity() {
     private val playerControlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getStringExtra("action")) {
-                "play" -> playerView.player.play()
-                "pause" -> playerView.player.pause()
+                "create" -> create()
+                "play" -> play()
+                "pause" -> pause()
+                "delete" -> delete()
+                "loadUrl" -> loadUrl(intent.getStringExtra("url")!!)
                 "togglePip" -> togglePip()
             }
         }
     }
-   @RequiresApi(Build.VERSION_CODES.O)
+
+    fun create() {
+        playerView.player.play()
+    }
+
+    fun play() {
+        playerView.player.play()
+    }
+
+    fun pause() {
+        playerView.player.pause()
+    }
+    fun delete() {
+        playerView.player.release()
+    }
+    fun loadUrl(url: String) {
+        Log.i("CapacitorIvsPlayerX", "loadUrl: " + url)
+        playerView.player.load(Uri.parse(url))
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
    override fun onUserLeaveHint() {
        super.onUserLeaveHint()
        Log.i("CapacitorIvsPlayerX", "onUserLeaveHint")
@@ -52,8 +68,8 @@ class CapacitorIvsPlayer: AppCompatActivity() {
         setContentView(R.layout.activity_capacitor_ivs_player)
 
         this.playerView = findViewById(R.id.player_view)
-        this.playerView.player.play()
-        playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
+//        this.playerView.player.play()
+//        playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
     }
 
 

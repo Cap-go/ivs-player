@@ -23,6 +23,14 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
 
         startActivity(this.context, intent, null)
+        val url = call.getString("url")
+        if (url != null) {
+            setUrl(url)
+        }
+        val autoPlay = call.getBoolean("autoPlay")
+        if (autoPlay != null && autoPlay) {
+            sendPlayerControlBroadcast("start")
+        }
         call.resolve()
     }
 
@@ -56,6 +64,13 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         context.sendBroadcast(intent)
     }
 
+    private fun setUrl(url: String) {
+        val intent = Intent("playerControl")
+        intent.putExtra("action", "loadUrl")
+        intent.putExtra("url", url)
+        context.sendBroadcast(intent)
+    }
+
 
    @PluginMethod
    fun togglePip(call: PluginCall){
@@ -71,8 +86,14 @@ class CapacitorIvsPlayerPlugin : Plugin() {
    }
 
    @PluginMethod
-   fun stop(call: PluginCall) {
+   fun pause(call: PluginCall) {
        sendPlayerControlBroadcast("pause")
+       call.resolve()
+   }
+
+   @PluginMethod
+   fun delete(call: PluginCall) {
+       sendPlayerControlBroadcast("delete")
        call.resolve()
    }
 }
