@@ -112,7 +112,7 @@ window.customElements.define(
       });
       self.shadowRoot.querySelector('#start-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.echo({ value: 'Hello World' });
+        CapacitorIvsPlayer.create();
       });
       self.shadowRoot.querySelector('#move-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
