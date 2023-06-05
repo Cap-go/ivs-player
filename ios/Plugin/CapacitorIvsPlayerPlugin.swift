@@ -94,7 +94,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
     
-    @objc func echo(_ call: CAPPluginCall) {
+    @objc func create(_ call: CAPPluginCall) {
         player.delegate = playerDelegate
         player.load(URL(string:"https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"))
 

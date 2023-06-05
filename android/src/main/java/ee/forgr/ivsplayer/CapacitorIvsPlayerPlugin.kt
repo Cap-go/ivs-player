@@ -19,12 +19,11 @@ class CapacitorIvsPlayerPlugin : Plugin() {
 
     var ignoreNextPause = false
     @PluginMethod
-    fun echo(call: PluginCall) {
-        val ret = JSObject()
-        call.resolve(ret)
+    fun create(call: PluginCall) {
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
 
         startActivity(this.context, intent, null)
+        call.resolve()
     }
 
     private val lifecycleObserver = object : LifecycleObserver {
@@ -64,6 +63,7 @@ class CapacitorIvsPlayerPlugin : Plugin() {
        sendPlayerControlBroadcast("togglePip")
        call.resolve()
    }
+
    @PluginMethod
    fun start(call: PluginCall) {
        sendPlayerControlBroadcast("start")

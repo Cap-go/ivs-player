@@ -6,9 +6,25 @@ export class CapacitorIvsPlayerWeb
   extends WebPlugin
   implements CapacitorIvsPlayerPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
+  async create(options: { autoPlay: boolean }): Promise<void> {
     console.log('ECHO', options);
-    return options;
+    return;
+  }
+  async start(): Promise<void> {
+    console.log('start');
+    return;
+  }
+  async stop(): Promise<void> {
+    console.log('stop');
+    return;
+  }
+  async pause(): Promise<void> {
+    console.log('pause');
+    return;
+  }
+  async delete(): Promise<void> {
+    console.log('delete');
+    return;
   }
   async togglePip(): Promise<void> {
     console.log('togglePip');
