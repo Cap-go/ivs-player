@@ -23,6 +23,8 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
 
         startActivity(this.context, intent, null)
+        // wait for the activity to be created
+        Thread.sleep(100)
         val url = call.getString("url")
         if (url != null) {
             setUrl(url)

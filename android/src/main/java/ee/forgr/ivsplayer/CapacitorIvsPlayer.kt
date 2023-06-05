@@ -9,9 +9,12 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.util.Rational
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.amazonaws.ivs.player.PlayerView
 
 // extends with AppCompatActivity
@@ -65,9 +68,24 @@ class CapacitorIvsPlayer: AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
 
-        setContentView(R.layout.activity_capacitor_ivs_player)
-
-        this.playerView = findViewById(R.id.player_view)
+        val constraintLayout = ConstraintLayout(this)
+        constraintLayout.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        
+        playerView = PlayerView(this)
+        playerView.id = View.generateViewId()
+        playerView.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        }
+        
+        constraintLayout.addView(playerView)
+        setContentView(constraintLayout)
+        
 //        this.playerView.player.play()
 //        playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
     }
