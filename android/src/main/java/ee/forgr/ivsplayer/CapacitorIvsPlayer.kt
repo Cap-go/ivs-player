@@ -20,12 +20,14 @@ import com.amazonaws.ivs.player.PlayerView
 // extends with AppCompatActivity
 class CapacitorIvsPlayer: AppCompatActivity() {
     private lateinit var playerView : PlayerView
+    var autoUnpip = false
 
     private val playerControlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getStringExtra("action")) {
                 "create" -> create()
                 "play" -> play()
+                "autoUnpip" -> autoUnpip = true
                 "pause" -> pause()
                 "delete" -> delete()
                 "loadUrl" -> loadUrl(intent.getStringExtra("url")!!)
@@ -35,33 +37,6 @@ class CapacitorIvsPlayer: AppCompatActivity() {
     }
 
     fun create() {
-        playerView.player.play()
-    }
-
-    fun play() {
-        playerView.player.play()
-    }
-
-    fun pause() {
-        playerView.player.pause()
-    }
-    fun delete() {
-        playerView.player.release()
-    }
-    fun loadUrl(url: String) {
-        Log.i("CapacitorIvsPlayerX", "loadUrl: " + url)
-        playerView.player.load(Uri.parse(url))
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-   override fun onUserLeaveHint() {
-       super.onUserLeaveHint()
-       Log.i("CapacitorIvsPlayerX", "onUserLeaveHint")
-       togglePip()
-   }
-
-    override fun onCreate(savedInstanceState: android.os.Bundle?) {
-        super.onCreate(savedInstanceState)
-        registerReceiver(playerControlReceiver, IntentFilter("playerControl"))
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
 
@@ -73,7 +48,7 @@ class CapacitorIvsPlayer: AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        
+
         playerView = PlayerView(this)
         playerView.id = View.generateViewId()
         playerView.layoutParams = ConstraintLayout.LayoutParams(
@@ -82,10 +57,41 @@ class CapacitorIvsPlayer: AppCompatActivity() {
         ).apply {
             topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         }
-        
+
         constraintLayout.addView(playerView)
         setContentView(constraintLayout)
-        
+    }
+
+    fun play() {
+        Log.i("CapacitorIvsPlayerX", "play")
+        playerView.player.play()
+    }
+
+    fun pause() {
+        Log.i("CapacitorIvsPlayerX", "pause")
+        playerView.player.pause()
+    }
+    fun delete() {
+        Log.i("CapacitorIvsPlayerX", "delete")
+        playerView.player.release()
+    }
+    fun loadUrl(url: String) {
+        Log.i("CapacitorIvsPlayerX", "loadUrl: " + url)
+        playerView.player.load(Uri.parse(url))
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+   override fun onUserLeaveHint() {
+       super.onUserLeaveHint()
+       Log.i("CapacitorIvsPlayerX", "onUserLeaveHint")
+        if (autoUnpip) {
+            togglePip()
+//            playerView.player.play()
+        }
+   }
+
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        registerReceiver(playerControlReceiver, IntentFilter("playerControl"))
 //        this.playerView.player.play()
 //        playerView.player.load(Uri.parse("https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8"))
     }

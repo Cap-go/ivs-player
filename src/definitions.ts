@@ -1,5 +1,5 @@
 export interface CapacitorIvsPlayerPlugin {
-  create(options: { autoPlay: boolean, url: string }): Promise<void>;
+  create(options: { autoPlay: boolean, url: string, autoPip: boolean, toBack: boolean }): Promise<void>;
   start(): Promise<void>;
   pause(): Promise<void>;
   delete(): Promise<void>;

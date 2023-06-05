@@ -18,6 +18,7 @@ import com.getcapacitor.annotation.CapacitorPlugin
 class CapacitorIvsPlayerPlugin : Plugin() {
 
     var ignoreNextPause = false
+    var autoPip = false
     @PluginMethod
     fun create(call: PluginCall) {
         val intent = Intent(context, CapacitorIvsPlayer::class.java)
@@ -25,6 +26,7 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         startActivity(this.context, intent, null)
         // wait for the activity to be created
         Thread.sleep(100)
+        sendPlayerControlBroadcast("create")
         val url = call.getString("url")
         if (url != null) {
             setUrl(url)
@@ -32,6 +34,17 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         val autoPlay = call.getBoolean("autoPlay")
         if (autoPlay != null && autoPlay) {
             sendPlayerControlBroadcast("start")
+        }
+        val toBack = call.getBoolean("toBack")
+        if (toBack != null && toBack) {
+            bridge.webView.setBackgroundColor(0x00000000)
+            activity.runOnUiThread {
+                bridge.webView.parent.bringChildToFront(bridge.webView)
+            }
+        }
+        autoPip = call.getBoolean("autoPip", false)!!
+        if (autoPip) {
+            sendPlayerControlBroadcast("autoUnpip")
         }
         call.resolve()
     }
@@ -45,12 +58,18 @@ class CapacitorIvsPlayerPlugin : Plugin() {
                 ignoreNextPause = false
                 return
             }
-            sendPlayerControlBroadcast("togglePip")
+            if (autoPip)
+                sendPlayerControlBroadcast("togglePip")
         }
         @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         fun onPause() {
             Log.d("CapacitorIvsPlayerX", "App went to background")
             ignoreNextPause = false
+            if (autoPip) {
+                sendPlayerControlBroadcast("togglePip")
+                sendPlayerControlBroadcast("play")
+            }
+
         }
     }
 
