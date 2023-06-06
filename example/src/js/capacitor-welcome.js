@@ -89,7 +89,19 @@ window.customElements.define(
         </p>
         <h2>Getting Started</h2>
         <p>
+          <button class="button" id="create-stream">Create Stream</button>
+        </p>
+        <p>
           <button class="button" id="start-stream">Start Stream</button>
+        </p>
+        <p>
+          <button class="button" id="autostart-stream">AutoStart Stream</button>
+        </p>
+        <p>
+          <button class="button" id="pause-stream">Pause Stream</button>
+        </p>
+        <p>
+          <button class="button" id="delete-stream">Delete Stream</button>
         </p>
         <p>
           <button class="button" id="move-stream">Lower Stream a little</button>
@@ -110,10 +122,27 @@ window.customElements.define(
       self.shadowRoot.querySelector('#toggle-pip').addEventListener('click', async function (e) {
         CapacitorIvsPlayer.togglePip();
       });
-      self.shadowRoot.querySelector('#start-stream').addEventListener('click', async function (e) {
+      self.shadowRoot.querySelector('#autostart-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
         const url = "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"
         CapacitorIvsPlayer.create({url, autoPlay: true, autoPip: true, toBack: true});
+      });
+      self.shadowRoot.querySelector('#start-stream').addEventListener('click', async function (e) {
+        // eslint-disable-next-line no-undef
+        CapacitorIvsPlayer.start();
+      });
+      self.shadowRoot.querySelector('#pause-stream').addEventListener('click', async function (e) {
+        // eslint-disable-next-line no-undef
+        CapacitorIvsPlayer.pause();
+      });
+      self.shadowRoot.querySelector('#create-stream').addEventListener('click', async function (e) {
+        // eslint-disable-next-line no-undef
+        const url = "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"
+        CapacitorIvsPlayer.create({url, autoPlay: false, autoPip: false, toBack: false});
+      });
+      self.shadowRoot.querySelector('#delete-stream').addEventListener('click', async function (e) {
+        // eslint-disable-next-line no-undef
+        CapacitorIvsPlayer.delete();
       });
       self.shadowRoot.querySelector('#move-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef

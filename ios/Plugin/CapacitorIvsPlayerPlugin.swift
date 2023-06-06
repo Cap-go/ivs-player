@@ -7,9 +7,9 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
         print("state change")
-        if state == .ready {
-            player.play()
-        }
+//        if state == .ready {
+//            player.play()
+//        }
     }
 
     func player(_ player: IVSPlayer, didFailWithError error: Error) {
@@ -96,15 +96,23 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     
     @objc func create(_ call: CAPPluginCall) {
         player.delegate = playerDelegate
-        let url = call.getString("url") ?? ""
-        let autoPlay = call.getBool("autoPlay") ?? false
-        player.load(URL(string:"https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"))
+
+        let url = call.getString("url", "")
+        let autoPlay = call.getBool("autoPlay", false)
+        let toBack = call.getBool("toBack", false)
+        let autoPip = call.getBool("autoPip", false)
+        player.load(URL(string:url))
 
         DispatchQueue.main.async {
             self.playerView.player = self.player
             self.preparePictureInPicture()
             if (autoPlay) {
                 self.player.play()
+            }
+            if #available(iOS 15, *) {
+                if (autoPip && (self.pipController != nil)) {
+                    self.pipController?.startPictureInPicture()
+                }
             }
             guard let viewController = self.bridge?.viewController else {
                 call.reject("Unable to access the view controller")
@@ -123,14 +131,17 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
                 height: screenSize.width * (9.0 / 16.0)
             )
             
-            viewController.view.addSubview(self.playerView)
-            
-            DispatchQueue.main.async {
-                self.webView?.backgroundColor = UIColor.clear
-                self.webView?.isOpaque = false
-                self.webView?.scrollView.backgroundColor = UIColor.clear
-                self.webView?.scrollView.isOpaque = false
-//                self.webView?.superview?.bringSubviewToFront(self.webView!)
+            if (toBack) {
+                viewController.view.addSubview(self.playerView)
+                DispatchQueue.main.async {
+                    self.webView?.backgroundColor = UIColor.clear
+                    self.webView?.isOpaque = false
+                    self.webView?.scrollView.backgroundColor = UIColor.clear
+                    self.webView?.scrollView.isOpaque = false
+                }
+            } else {
+                viewController.view.addSubview(self.playerView)
+                viewController.view.bringSubviewToFront(self.playerView)
             }
         }
         call.resolve()
@@ -167,8 +178,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
 
-    @objc func play(_ call: CAPPluginCall) {
-        print("play")
+    @objc func start(_ call: CAPPluginCall) {
+        print("start")
         DispatchQueue.main.async {
             self.player.play()
         }
