@@ -5,6 +5,8 @@
         <activity
             android:supportsPictureInPicture="true"
             android:name="ee.forgr.ivsplayer.CapacitorIvsPlayer"
-            android:theme="@style/AppTheme.Transparent"></activity>
+            android:theme="@style/AppTheme.Transparent"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation">
+        </activity>
     </application>
 </manifest>

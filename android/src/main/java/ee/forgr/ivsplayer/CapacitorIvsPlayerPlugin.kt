@@ -36,12 +36,12 @@ class CapacitorIvsPlayerPlugin : Plugin() {
             sendPlayerControlBroadcast("start")
         }
         val toBack = call.getBoolean("toBack")
-        if (toBack != null && toBack) {
+       if (toBack != null && toBack) {
             bridge.webView.setBackgroundColor(0x00000000)
             activity.runOnUiThread {
                 bridge.webView.parent.bringChildToFront(bridge.webView)
             }
-        }
+       }
         autoPip = call.getBoolean("autoPip", false)!!
         if (autoPip) {
             sendPlayerControlBroadcast("autoUnpip")
@@ -49,34 +49,34 @@ class CapacitorIvsPlayerPlugin : Plugin() {
         call.resolve()
     }
 
-    private val lifecycleObserver = object : LifecycleObserver {
-
-        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        fun onResume() {
-            Log.d("CapacitorIvsPlayerX", "App returned from background")
-            if (ignoreNextPause) {
-                ignoreNextPause = false
-                return
-            }
-            if (autoPip)
-                sendPlayerControlBroadcast("togglePip")
-        }
-        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        fun onPause() {
-            Log.d("CapacitorIvsPlayerX", "App went to background")
-            ignoreNextPause = false
-            if (autoPip) {
-                sendPlayerControlBroadcast("togglePip")
-                sendPlayerControlBroadcast("play")
-            }
-
-        }
-    }
+//    private val lifecycleObserver = object : LifecycleObserver {
+//
+//        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+//        fun onResume() {
+//            Log.d("CapacitorIvsPlayerX", "App returned from background")
+//            if (ignoreNextPause) {
+//                ignoreNextPause = false
+//                return
+//            }
+//            if (autoPip)
+//                sendPlayerControlBroadcast("togglePip")
+//        }
+//        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+//        fun onPause() {
+//            Log.d("CapacitorIvsPlayerX", "App went to background")
+//            ignoreNextPause = false
+//            if (autoPip) {
+//                sendPlayerControlBroadcast("togglePip")
+////                sendPlayerControlBroadcast("play")
+//            }
+//
+//        }
+//    }
 
 
     override fun load() {
         super.load()
-        bridge.activity.lifecycle.addObserver(lifecycleObserver)
+//        bridge.activity.lifecycle.addObserver(lifecycleObserver)
     }
 
     private fun sendPlayerControlBroadcast(action: String) {
