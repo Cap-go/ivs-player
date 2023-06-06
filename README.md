@@ -13,7 +13,10 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`create(...)`](#create)
+* [`start()`](#start)
+* [`pause()`](#pause)
+* [`delete()`](#delete)
 * [`togglePip()`](#togglepip)
 * [`lowerStream()`](#lowerstream)
 
@@ -22,17 +25,42 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### create(...)
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+create(options: { autoPlay: boolean; url: string; autoPip: boolean; toBack: boolean; }) => Promise<void>
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
+| Param         | Type                                                                                |
+| ------------- | ----------------------------------------------------------------------------------- |
+| **`options`** | <code>{ autoPlay: boolean; url: string; autoPip: boolean; toBack: boolean; }</code> |
 
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+--------------------
+
+
+### start()
+
+```typescript
+start() => Promise<void>
+```
+
+--------------------
+
+
+### pause()
+
+```typescript
+pause() => Promise<void>
+```
+
+--------------------
+
+
+### delete()
+
+```typescript
+delete() => Promise<void>
+```
 
 --------------------
 
@@ -41,6 +69,11 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 
 ```typescript
 togglePip() => Promise<void>
+```
+
+--------------------
+
+
 ### lowerStream()
 
 ```typescript
