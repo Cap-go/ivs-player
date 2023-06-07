@@ -9,6 +9,28 @@ npm install @capgo/ivs-player
 npx cap sync
 ```
 
+
+### Android
+
+Add kotlin to your project
+
+```bash
+
+```gradle
+buildscript {
+    ...
+    ext {
+        kotlin_version = '1.8.21'
+    }
+    ...
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+    }
+}
+```
+
+
 ## API
 
 <docgen-index>
