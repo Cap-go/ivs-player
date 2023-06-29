@@ -55,7 +55,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = TouchThroughView()
     private var _pipController: Any? = nil
-    private var isFullScreen = false
+    private var isFScreen = false
     private var originalFrame: CGRect?
 
     public override func load() {
@@ -90,13 +90,13 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
    }
     
     @objc func getQualities(_ call: CAPPluginCall) {
-        print("getQualities")
-        var qualities = String()
+        var qualities = [String]()
         for quality in self.player.qualities {
             qualities.append(quality.name)
         }
-        call.resolve([qualities: qualities])
+        call.resolve(["qualities": qualities])
     }
+
 
     @objc func setQuality(_ call: CAPPluginCall) {
         guard let targetQualityName = call.getString("quality") else {
@@ -130,30 +130,31 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
 
-    @objc func toggleFullscreen() {
-        if isFullscreen {
-            // Switch to portrait and original size
-            let value = UIInterfaceOrientation.portrait.rawValue
-            UIDevice.current.setValue(value, forKey: "orientation")
-            UINavigationController.attemptRotationToDeviceOrientation()
-
-            if let originalFrame = originalFrame {
-                self.playerView.frame = originalFrame
+    @objc func toggleFullscreen(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            if self.isFScreen {
+                // Switch to portrait and original size
+                let value = UIInterfaceOrientation.portrait.rawValue
+                UIDevice.current.setValue(value, forKey: "orientation")
+                UINavigationController.attemptRotationToDeviceOrientation()
+                
+                if let originalFrame = self.originalFrame {
+                    self.playerView.frame = originalFrame
+                }
+            } else {
+                // Switch to landscape and fullscreen
+                let value = UIInterfaceOrientation.landscapeRight.rawValue
+                UIDevice.current.setValue(value, forKey: "orientation")
+                UINavigationController.attemptRotationToDeviceOrientation()
+                
+                self.originalFrame = self.playerView.frame
+                
+                if let window = UIApplication.shared.windows.first {
+                    self.playerView.frame = window.frame
+                }
             }
-        } else {
-            // Switch to landscape and fullscreen
-            let value = UIInterfaceOrientation.landscapeRight.rawValue
-            UIDevice.current.setValue(value, forKey: "orientation")
-            UINavigationController.attemptRotationToDeviceOrientation()
-
-            originalFrame = self.playerView.frame
-
-            if let window = UIApplication.shared.windows.first {
-                self.playerView.frame = window.frame
-            }
+            self.isFScreen = !self.isFScreen
         }
-
-        isFullscreen = !isFullscreen
     }
 
 
