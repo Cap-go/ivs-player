@@ -56,6 +56,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     let playerView = TouchThroughView()
     private var _pipController: Any? = nil
     private var isFullScreen = false
+    private var originalFrame: CGRect?
 
     public override func load() {
         do {
@@ -129,22 +130,31 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
 
-    @objc func toggleFullscreen(_ call: CAPPluginCall) {
-        if isFullScreen {
-            // Convert to portrait
+    @objc func toggleFullscreen() {
+        if isFullscreen {
+            // Switch to portrait and original size
             let value = UIInterfaceOrientation.portrait.rawValue
             UIDevice.current.setValue(value, forKey: "orientation")
             UINavigationController.attemptRotationToDeviceOrientation()
-            isFullScreen = false
+
+            if let originalFrame = originalFrame {
+                self.playerView.frame = originalFrame
+            }
         } else {
-            // Convert to landscape
+            // Switch to landscape and fullscreen
             let value = UIInterfaceOrientation.landscapeRight.rawValue
             UIDevice.current.setValue(value, forKey: "orientation")
             UINavigationController.attemptRotationToDeviceOrientation()
-            isFullScreen = true
-        }
-    }
 
+            originalFrame = self.playerView.frame
+
+            if let window = UIApplication.shared.windows.first {
+                self.playerView.frame = window.frame
+            }
+        }
+
+        isFullscreen = !isFullscreen
+    }
 
 
     
