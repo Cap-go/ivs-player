@@ -36,6 +36,14 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
         print("Player will rebuffer and resume playback")
     }
 }
+
+class TouchThroughView: IVSPlayerView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        return view == self ? nil : view
+    }
+}
+
 /**
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
@@ -45,7 +53,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private let implementation = CapacitorIvsPlayer()
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
-    let playerView = IVSPlayerView()
+    let playerView = TouchThroughView()
     
     private var _pipController: Any? = nil
 
