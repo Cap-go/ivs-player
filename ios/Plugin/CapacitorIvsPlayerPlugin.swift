@@ -152,12 +152,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             
             let screenSize: CGRect = UIScreen.main.bounds
             let topPadding = viewController.view.safeAreaInsets.top
-            let BottomPadding = viewController.view.safeAreaInsets.bottom
 
             let x = call.getInt("x", 0)
             let y = call.getInt("y", Int(topPadding))
             let width = call.getInt("width", Int(screenSize.width))
-            let height = call.getInt("height", Int(screenSize.width) * (9 / 16))
+            let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
             self.playerView.frame = CGRect(
                 x: x,
                 y: y,
@@ -196,12 +195,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             
             let screenSize: CGRect = UIScreen.main.bounds
             let topPadding = viewController.view.safeAreaInsets.top
-            let BottomPadding = viewController.view.safeAreaInsets.bottom
 
             let x = call.getInt("x", 0)
             let y = call.getInt("y", Int(topPadding))
             let width = call.getInt("width", Int(screenSize.width))
-            let height = call.getInt("height", Int(screenSize.width) * (9 / 16))
+            let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
+            print("pos \(x) \(y) \(width) \(height)")
                         
             self.playerView.playerLayer.zPosition = -1
             self.playerView.frame = CGRect(
