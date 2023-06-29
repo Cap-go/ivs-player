@@ -46,7 +46,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = IVSPlayerView()
-    var isAutoPip = false
     
     private var _pipController: Any? = nil
 
@@ -57,31 +56,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         } catch {
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
-        let nc = NotificationCenter.default
-        nc.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        nc.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+
     }
     
-    @objc func appMovedToBackground(notification: Notification) {
-        print("appMovedToBackground")
+    @objc func applicationDidBecomeActive(notification: Notification) {
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
-        print("appMovedToBackground \(pipController.isPictureInPicturePossible)")
-        if pipController.isPictureInPicturePossible && isAutoPip {
-            print("Set pip")
-            pipController.startPictureInPicture()
-        }
-    }
-    
-    @objc func appMovedToForeground(notification: Notification) {
-        print("appMovedToForeground")
-        guard #available(iOS 15, *), let pipController = pipController else {
-            return
-        }
-        print("appMovedToForeground \(pipController.isPictureInPictureActive)")
-        if pipController.isPictureInPictureActive && isAutoPip {
-            print("Stop pip")
+        print("applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
+        if pipController.isPictureInPictureActive {
             pipController.stopPictureInPicture()
         }
     }
@@ -190,7 +174,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
-        isAutoPip = call.getBool("autoPip", false)
+        let autoPip = call.getBool("autoPip", false)
         player.load(URL(string:url))
 
         DispatchQueue.main.async {
@@ -199,11 +183,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             if (autoPlay) {
                 self.player.play()
             }
-            // if #available(iOS 15, *) {
-            //     if (autoPip && (self.pipController != nil)) {
-            //         self.pipController?.startPictureInPicture()
-            //     }
-            // }
+            if #available(iOS 15, *) {
+                if (autoPip && (self.pipController != nil)) {
+                    self.pipController?.startPictureInPicture()
+                }
+            }
             guard let viewController = self.bridge?.viewController else {
                 call.reject("Unable to access the view controller")
                 return
@@ -227,7 +211,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             )
             
             if (toBack) {
-                print("toBack")
                 viewController.view.addSubview(self.playerView)
                 DispatchQueue.main.async {
                     self.webView?.backgroundColor = UIColor.clear
