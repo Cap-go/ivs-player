@@ -63,10 +63,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     }
     
     @objc func appMovedToBackground(notification: Notification) {
-        print("appMovedToBackground \(pipController.isPictureInPictureActive)")
+        print("appMovedToBackground")
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
+        print("appMovedToBackground \(pipController.isPictureInPicturePossible)")
         if pipController.isPictureInPicturePossible && isAutoPip {
             print("Set pip")
             pipController.startPictureInPicture()
@@ -74,10 +75,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     }
     
     @objc func appMovedToForeground(notification: Notification) {
-        print("appMovedToForeground \(pipController.isPictureInPictureActive)")
+        print("appMovedToForeground")
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
+        print("appMovedToForeground \(pipController.isPictureInPictureActive)")
         if pipController.isPictureInPictureActive && isAutoPip {
             print("Stop pip")
             pipController.stopPictureInPicture()
