@@ -133,20 +133,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     @objc func toggleFullscreen(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             if self.isFScreen {
-                // Switch to portrait and original size
-                let value = UIInterfaceOrientation.portrait.rawValue
-                UIDevice.current.setValue(value, forKey: "orientation")
-                UINavigationController.attemptRotationToDeviceOrientation()
-                
                 if let originalFrame = self.originalFrame {
                     self.playerView.frame = originalFrame
                 }
             } else {
-                // Switch to landscape and fullscreen
-                let value = UIInterfaceOrientation.landscapeRight.rawValue
-                UIDevice.current.setValue(value, forKey: "orientation")
-                UINavigationController.attemptRotationToDeviceOrientation()
-                
                 self.originalFrame = self.playerView.frame
                 
                 if let window = UIApplication.shared.windows.first {
