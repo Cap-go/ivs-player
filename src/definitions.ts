@@ -12,5 +12,4 @@ export interface CapacitorIvsPlayerPlugin {
   toggleMute(): Promise<void>;
   setQuality(options: { quality: string }): Promise<void>;
   getQualities(): Promise<{ qualities: string[] }>;
-  lowerStream(): Promise<void>;
 }

@@ -46,6 +46,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = IVSPlayerView()
+    var isAutoPip = false
     
     private var _pipController: Any? = nil
 
@@ -56,16 +57,29 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         } catch {
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-
+        let nc = NotificationCenter.default
+        nc.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        nc.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
-    @objc func applicationDidBecomeActive(notification: Notification) {
+    @objc func appMovedToBackground(notification: Notification) {
+        print("appMovedToBackground \(pipController.isPictureInPictureActive)")
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
-        print("applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
-        if pipController.isPictureInPictureActive {
+        if pipController.isPictureInPicturePossible && isAutoPip {
+            print("Set pip")
+            pipController.startPictureInPicture()
+        }
+    }
+    
+    @objc func appMovedToForeground(notification: Notification) {
+        print("appMovedToForeground \(pipController.isPictureInPictureActive)")
+        guard #available(iOS 15, *), let pipController = pipController else {
+            return
+        }
+        if pipController.isPictureInPictureActive && isAutoPip {
+            print("Stop pip")
             pipController.stopPictureInPicture()
         }
     }
@@ -174,7 +188,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
-        let autoPip = call.getBool("autoPip", false)
+        isAutoPip = call.getBool("autoPip", false)
         player.load(URL(string:url))
 
         DispatchQueue.main.async {
@@ -183,11 +197,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             if (autoPlay) {
                 self.player.play()
             }
-            if #available(iOS 15, *) {
-                if (autoPip && (self.pipController != nil)) {
-                    self.pipController?.startPictureInPicture()
-                }
-            }
+            // if #available(iOS 15, *) {
+            //     if (autoPip && (self.pipController != nil)) {
+            //         self.pipController?.startPictureInPicture()
+            //     }
+            // }
             guard let viewController = self.bridge?.viewController else {
                 call.reject("Unable to access the view controller")
                 return
@@ -211,6 +225,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             )
             
             if (toBack) {
+                print("toBack")
                 viewController.view.addSubview(self.playerView)
                 DispatchQueue.main.async {
                     self.webView?.backgroundColor = UIColor.clear
@@ -270,19 +285,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         DispatchQueue.main.async {
             self.player.pause()
             self.playerView.removeFromSuperview()
-        }
-        call.resolve()
-    }
-    
-    @objc func lowerStream(_ call: CAPPluginCall) {
-        print("lowerStream")
-        DispatchQueue.main.async {
-            self.playerView.frame = CGRect(
-                x: self.playerView.frame.minX,
-                y: self.playerView.frame.minY + 20,
-                width: self.playerView.frame.width,
-                height: self.playerView.frame.height
-            )
         }
         call.resolve()
     }

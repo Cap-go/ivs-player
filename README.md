@@ -23,7 +23,6 @@ npx cap sync
 * [`toggleMute()`](#togglemute)
 * [`setQuality(...)`](#setquality)
 * [`getQualities()`](#getqualities)
-* [`lowerStream()`](#lowerstream)
 
 </docgen-index>
 
@@ -121,15 +120,6 @@ getQualities() => Promise<{ qualities: string[]; }>
 ```
 
 **Returns:** <code>Promise&lt;{ qualities: string[]; }&gt;</code>
-
---------------------
-
-
-### lowerStream()
-
-```typescript
-lowerStream() => Promise<void>
-```
 
 --------------------
 

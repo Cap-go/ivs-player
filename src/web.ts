@@ -41,8 +41,4 @@ export class CapacitorIvsPlayerWeb
     console.log('getQualities');
     return { qualities: [] };
   }
-  async lowerStream(): Promise<void> {
-    console.log('lowerStream');
-    return;
-  }
 }
