@@ -25,6 +25,18 @@ export class CapacitorIvsPlayerWeb
   async togglePip(): Promise<void> {
     console.log('togglePip');
   }
+  async toggleMute(): Promise<void> {
+    console.log('toggleMute');
+    return;
+  }
+  async setQuality(options: { quality: string }): Promise<void> {
+    console.log('setQuality', options);
+    return;
+  }
+  async getQualities(): Promise<{ qualities: string[] }> {
+    console.log('getQualities');
+    return { qualities: [] };
+  }
   async lowerStream(): Promise<void> {
     console.log('lowerStream');
     return;

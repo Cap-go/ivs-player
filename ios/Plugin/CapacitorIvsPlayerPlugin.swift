@@ -79,6 +79,55 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
            _pipController = newValue
        }
    }
+    
+    @objc func getQualities(_ call: CAPPluginCall) {
+        print("getQualities")
+        var qualities = String()
+        for quality in self.player.qualities {
+            qualities.append(quality.name)
+        }
+        call.resolve([qualities: qualities])
+    }
+
+    @objc func setQuality(_ call: CAPPluginCall) {
+        guard let targetQualityName = call.getString("quality") else {
+            print("Error: Quality name is not set")
+            call.reject("Quality name is not set")
+            return
+        }
+
+        var selectedQuality: IVSQuality?
+        
+        // find quality in list
+        for quality in self.player.qualities {
+            if quality.name == targetQualityName {
+                selectedQuality = quality
+                break
+            }
+        }
+        
+        // Check if we found quality
+        guard let targetQuality = selectedQuality else {
+            print("Error: Quality not found")
+            call.reject("Quality not found")
+            return
+        }
+        
+        // Set quality
+        DispatchQueue.main.async {
+            self.player.quality = targetQuality
+        }
+
+        call.resolve()
+    }
+
+    @objc func toggleMute(_ call: CAPPluginCall) {
+        print("toggleMute")
+        DispatchQueue.main.async {
+            self.player.muted = !self.player.muted
+        }
+        call.resolve()
+    }
 
     @objc func togglePip(_ call: CAPPluginCall) {
         print("togglePip")

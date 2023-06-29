@@ -9,5 +9,8 @@ CAP_PLUGIN(CapacitorIvsPlayerPlugin, "CapacitorIvsPlayer",
            CAP_PLUGIN_METHOD(pause, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(delete, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(togglePip, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(toggleMute, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setQuality, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getQualities, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(lowerStream, CAPPluginReturnPromise);
 )
