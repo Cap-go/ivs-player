@@ -19,6 +19,10 @@ npx cap sync
 * [`pause()`](#pause)
 * [`delete()`](#delete)
 * [`togglePip()`](#togglepip)
+* [`setFrame(...)`](#setframe)
+* [`toggleMute()`](#togglemute)
+* [`setQuality(...)`](#setquality)
+* [`getQualities()`](#getqualities)
 * [`lowerStream()`](#lowerstream)
 
 </docgen-index>
@@ -29,12 +33,12 @@ npx cap sync
 ### create(...)
 
 ```typescript
-create(options: { autoPlay: boolean; url: string; autoPip: boolean; toBack: boolean; }) => Promise<void>
+create(options: { url: string; autoPlay?: boolean; autoPip?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                                |
-| ------------- | ----------------------------------------------------------------------------------- |
-| **`options`** | <code>{ autoPlay: boolean; url: string; autoPip: boolean; toBack: boolean; }</code> |
+| Param         | Type                                                                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; autoPlay?: boolean; autoPip?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
 
 --------------------
 
@@ -71,6 +75,52 @@ delete() => Promise<void>
 ```typescript
 togglePip() => Promise<void>
 ```
+
+--------------------
+
+
+### setFrame(...)
+
+```typescript
+setFrame(options: { x: number; y: number; width?: number; height?: number; }) => Promise<void>
+```
+
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`options`** | <code>{ x: number; y: number; width?: number; height?: number; }</code> |
+
+--------------------
+
+
+### toggleMute()
+
+```typescript
+toggleMute() => Promise<void>
+```
+
+--------------------
+
+
+### setQuality(...)
+
+```typescript
+setQuality(options: { quality: string; }) => Promise<void>
+```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ quality: string; }</code> |
+
+--------------------
+
+
+### getQualities()
+
+```typescript
+getQualities() => Promise<{ qualities: string[]; }>
+```
+
+**Returns:** <code>Promise&lt;{ qualities: string[]; }&gt;</code>
 
 --------------------
 
