@@ -1,6 +1,10 @@
 export interface CapacitorIvsPlayerPlugin {
-  create(options: { url: string, autoPlay?: boolean,  autoPip?:
-     boolean, toBack?: boolean,
+  create(options: { 
+    url: string,
+    autoPlay?: boolean,
+    autoPip?: boolean, 
+    autoFulscreen?: boolean,
+    toBack?: boolean,
     x?: number, y?: number,
     width ?: number, height ?: number,
     }): Promise<void>;
@@ -8,6 +12,7 @@ export interface CapacitorIvsPlayerPlugin {
   pause(): Promise<void>;
   delete(): Promise<void>;
   togglePip(): Promise<void>;
+  toggleFullscreen(): Promise<void>;
   setFrame(options: { x: number, y: number, width ?: number, height ?: number }): Promise<void>;
   toggleMute(): Promise<void>;
   setQuality(options: { quality: string }): Promise<void>;

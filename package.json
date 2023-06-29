@@ -1,6 +1,6 @@
 {
   "name": "@capgo/ivs-player",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Ivs player for capacitor app",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

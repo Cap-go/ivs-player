@@ -6,7 +6,7 @@ export class CapacitorIvsPlayerWeb
   extends WebPlugin
   implements CapacitorIvsPlayerPlugin
 {
-  async create(options: { autoPlay: boolean, url: string, autoPip: boolean, toBack: boolean }): Promise<void> {
+  async create(options: { autoPlay: boolean, url: string, autoFulscreen: boolean, autoPip: boolean, toBack: boolean }): Promise<void> {
     console.log('create', options);
     return;
   }
@@ -28,6 +28,10 @@ export class CapacitorIvsPlayerWeb
   }
   async togglePip(): Promise<void> {
     console.log('togglePip');
+  }
+  async toggleFullscreen(): Promise<void> {
+    console.log('toggleFullscreen');
+    return;
   }
   async toggleMute(): Promise<void> {
     console.log('toggleMute');

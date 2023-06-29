@@ -19,6 +19,7 @@ npx cap sync
 * [`pause()`](#pause)
 * [`delete()`](#delete)
 * [`togglePip()`](#togglepip)
+* [`toggleFullscreen()`](#togglefullscreen)
 * [`setFrame(...)`](#setframe)
 * [`toggleMute()`](#togglemute)
 * [`setQuality(...)`](#setquality)
@@ -32,12 +33,12 @@ npx cap sync
 ### create(...)
 
 ```typescript
-create(options: { url: string; autoPlay?: boolean; autoPip?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
+create(options: { url: string; autoPlay?: boolean; autoPip?: boolean; autoFulscreen?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                                                                                            |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ url: string; autoPlay?: boolean; autoPip?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
+| Param         | Type                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ url: string; autoPlay?: boolean; autoPip?: boolean; autoFulscreen?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
 
 --------------------
 
@@ -73,6 +74,15 @@ delete() => Promise<void>
 
 ```typescript
 togglePip() => Promise<void>
+```
+
+--------------------
+
+
+### toggleFullscreen()
+
+```typescript
+toggleFullscreen() => Promise<void>
 ```
 
 --------------------

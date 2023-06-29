@@ -1,7 +1,7 @@
 import Foundation
 import Capacitor
 import AmazonIVSPlayer
-
+import UIKit
 
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
@@ -54,8 +54,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = TouchThroughView()
-    
     private var _pipController: Any? = nil
+    private var isFullScreen = false
 
     public override func load() {
         do {
@@ -129,6 +129,25 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
 
+    @objc func toggleFullscreen(_ call: CAPPluginCall) {
+        if isFullScreen {
+            // Convert to portrait
+            let value = UIInterfaceOrientation.portrait.rawValue
+            UIDevice.current.setValue(value, forKey: "orientation")
+            UINavigationController.attemptRotationToDeviceOrientation()
+            isFullScreen = false
+        } else {
+            // Convert to landscape
+            let value = UIInterfaceOrientation.landscapeRight.rawValue
+            UIDevice.current.setValue(value, forKey: "orientation")
+            UINavigationController.attemptRotationToDeviceOrientation()
+            isFullScreen = true
+        }
+    }
+
+
+
+    
     @objc func toggleMute(_ call: CAPPluginCall) {
         print("toggleMute")
         DispatchQueue.main.async {
