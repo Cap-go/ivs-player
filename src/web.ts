@@ -18,6 +18,10 @@ export class CapacitorIvsPlayerWeb
     console.log('pause');
     return;
   }
+  async getUrl(): Promise<{ url: string }> {
+    console.log('getUrl');
+    return { url: '' };
+  }
   async getState(): Promise<{ isPlaying: boolean }> {
     console.log('getState');
     return { isPlaying: false };

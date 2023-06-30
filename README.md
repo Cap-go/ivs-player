@@ -1,6 +1,6 @@
 # @capgo/ivs-player
 
-Ivs player for capacitor app
+Ivs player for capacitor app only working in IOS for now, Android is WIP
 
 ## Install
 
@@ -18,6 +18,7 @@ npx cap sync
 * [`start()`](#start)
 * [`pause()`](#pause)
 * [`delete()`](#delete)
+* [`getUrl()`](#geturl)
 * [`getState()`](#getstate)
 * [`setAutoQuality(...)`](#setautoquality)
 * [`getAutoQuality()`](#getautoquality)
@@ -74,6 +75,17 @@ pause() => Promise<void>
 ```typescript
 delete() => Promise<void>
 ```
+
+--------------------
+
+
+### getUrl()
+
+```typescript
+getUrl() => Promise<{ url: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ url: string; }&gt;</code>
 
 --------------------
 

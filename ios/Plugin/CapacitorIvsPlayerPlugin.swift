@@ -284,6 +284,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             }
         }
     }
+
+    @objc func getUrl(_ call: CAPPluginCall) {
+        guard let url = player.url else {
+            call.reject("No url found")
+            return
+        }
+        call.resolve(["url": url.absoluteString])
+    }
     
     @objc func getState(_ call: CAPPluginCall) {
         let isPlaying = player.state == .playing
