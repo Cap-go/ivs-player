@@ -58,6 +58,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+        player.delegate = playerDelegate
+        self.playerView.player = self.player
+        self.preparePictureInPicture()
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -101,7 +104,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     }
 
     @objc func getQuality(_ call: CAPPluginCall) {
-        call.resolve(["quality": self.player.quality?.name])
+        call.resolve(["quality": self.player.quality?.name ?? ""])
     }
         
     @objc func setQuality(_ call: CAPPluginCall) {
@@ -155,13 +158,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
     
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive),
-            let isPipActive = change?[.newKey] as? Bool {
-            self.notifyListeners("tooglePip", data: ["pip": isPipActive])
-        }
-    }
-    
     @objc func setPip(_ call: CAPPluginCall) {
         print("setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
@@ -203,17 +199,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
 
     
     @objc func create(_ call: CAPPluginCall) {
-        player.delegate = playerDelegate
-
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
         let autoPip = call.getBool("autoPip", false)
         player.load(URL(string:url))
-
         DispatchQueue.main.async {
-            self.playerView.player = self.player
-            self.preparePictureInPicture()
             if (autoPlay) {
                 self.player.play()
             }
@@ -280,7 +271,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
 
         self.pipController = pipController
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
+        pipController.addObserver(self, forKeyPath: #keyPath(AVPictureInPictureController.isPictureInPictureActive), options: [.new, .initial], context: nil)
         print("preparePictureInPicture done")
+    }
+    
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive),
+            let isPipActive = change?[.newKey] as? Bool {
+            print("tooglePip \(isPipActive)")
+            self.notifyListeners("tooglePip", data: ["pip": isPipActive])
+        }
     }
 
     @objc func pause(_ call: CAPPluginCall) {
