@@ -279,10 +279,17 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive),
             let isPipActive = change?[.newKey] as? Bool {
             print("tooglePip \(isPipActive)")
-            self.notifyListeners("tooglePip", data: ["pip": isPipActive])
+            if #available(iOS 15, *) {
+                    self.notifyListeners("tooglePip", data: ["pip": isPipActive])
+            }
         }
     }
-
+    
+    @objc func getState(_ call: CAPPluginCall) {
+        let isPlaying = player.state == .playing
+        call.resolve(["isPlaying": isPlaying])
+    }
+    
     @objc func pause(_ call: CAPPluginCall) {
         print("pause")
         DispatchQueue.main.async {

@@ -18,6 +18,7 @@ npx cap sync
 * [`start()`](#start)
 * [`pause()`](#pause)
 * [`delete()`](#delete)
+* [`getState()`](#getstate)
 * [`setAutoQuality(...)`](#setautoquality)
 * [`getAutoQuality()`](#getautoquality)
 * [`setPip(...)`](#setpip)
@@ -73,6 +74,17 @@ pause() => Promise<void>
 ```typescript
 delete() => Promise<void>
 ```
+
+--------------------
+
+
+### getState()
+
+```typescript
+getState() => Promise<{ isPlaying: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ isPlaying: boolean; }&gt;</code>
 
 --------------------
 

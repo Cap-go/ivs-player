@@ -20,6 +20,7 @@ export interface CapacitorIvsPlayerPlugin {
   start(): Promise<void>;
   pause(): Promise<void>;
   delete(): Promise<void>;
+  getState(): Promise<{ isPlaying: boolean }>;
   setAutoQuality(options?: { autoQuality?: boolean }): Promise<void>;
   getAutoQuality(): Promise<{ autoQuality: boolean }>;
   setPip(options?: { pip?: boolean }): Promise<void>;
