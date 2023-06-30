@@ -21,9 +21,11 @@ npx cap sync
 * [`togglePip()`](#togglepip)
 * [`toggleFullscreen()`](#togglefullscreen)
 * [`setFrame(...)`](#setframe)
+* [`getFrame()`](#getframe)
 * [`toggleMute()`](#togglemute)
 * [`setQuality(...)`](#setquality)
 * [`getQualities()`](#getqualities)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -91,12 +93,23 @@ toggleFullscreen() => Promise<void>
 ### setFrame(...)
 
 ```typescript
-setFrame(options: { x: number; y: number; width?: number; height?: number; }) => Promise<void>
+setFrame(options: { x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                    |
-| ------------- | ----------------------------------------------------------------------- |
-| **`options`** | <code>{ x: number; y: number; width?: number; height?: number; }</code> |
+| Param         | Type                                                                      |
+| ------------- | ------------------------------------------------------------------------- |
+| **`options`** | <code>{ x?: number; y?: number; width?: number; height?: number; }</code> |
+
+--------------------
+
+
+### getFrame()
+
+```typescript
+getFrame() => Promise<CapacitorFrame>
+```
+
+**Returns:** <code>Promise&lt;<a href="#capacitorframe">CapacitorFrame</a>&gt;</code>
 
 --------------------
 
@@ -132,5 +145,18 @@ getQualities() => Promise<{ qualities: string[]; }>
 **Returns:** <code>Promise&lt;{ qualities: string[]; }&gt;</code>
 
 --------------------
+
+
+### Interfaces
+
+
+#### CapacitorFrame
+
+| Prop         | Type                |
+| ------------ | ------------------- |
+| **`x`**      | <code>number</code> |
+| **`y`**      | <code>number</code> |
+| **`width`**  | <code>number</code> |
+| **`height`** | <code>number</code> |
 
 </docgen-api>

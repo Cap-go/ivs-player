@@ -1,3 +1,10 @@
+interface CapacitorFrame {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface CapacitorIvsPlayerPlugin {
   create(options: { 
     url: string,
@@ -13,7 +20,8 @@ export interface CapacitorIvsPlayerPlugin {
   delete(): Promise<void>;
   togglePip(): Promise<void>;
   toggleFullscreen(): Promise<void>;
-  setFrame(options: { x: number, y: number, width ?: number, height ?: number }): Promise<void>;
+  setFrame(options: { x?: number, y?: number, width ?: number, height ?: number }): Promise<void>;
+  getFrame(): Promise<CapacitorFrame>;
   toggleMute(): Promise<void>;
   setQuality(options: { quality: string }): Promise<void>;
   getQualities(): Promise<{ qualities: string[] }>;

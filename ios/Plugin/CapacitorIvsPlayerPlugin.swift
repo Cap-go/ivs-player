@@ -57,6 +57,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private var _pipController: Any? = nil
     private var isFScreen = false
     private var originalFrame: CGRect?
+    private var originalParent: UIView?
 
     public override func load() {
         do {
@@ -130,24 +131,39 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
 
+    @objc func getFrame(_ call: CAPPluginCall) {
+        let frame = playerView.frame
+        let frameDict: [String: CGFloat] = [
+        "x": frame.origin.x,
+        "y": frame.origin.y,
+        "width": frame.size.width,
+        "height": frame.size.height
+        ]
+        call.resolve(frameDict)
+    }
+
     @objc func toggleFullscreen(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             if self.isFScreen {
-                if let originalFrame = self.originalFrame {
+                // Exit fullscreen and return to original size and position
+                if let originalFrame = self.originalFrame, let originalParent = self.originalParent {
+                    self.playerView.removeFromSuperview()
                     self.playerView.frame = originalFrame
+                    originalParent.addSubview(self.playerView)
                 }
             } else {
+                // Go fullscreen
                 self.originalFrame = self.playerView.frame
-                
+                self.originalParent = self.playerView.superview
                 if let window = UIApplication.shared.windows.first {
+                    self.playerView.removeFromSuperview()
                     self.playerView.frame = window.frame
+                    window.addSubview(self.playerView)
                 }
             }
             self.isFScreen = !self.isFScreen
         }
     }
-
-
     
     @objc func toggleMute(_ call: CAPPluginCall) {
         print("toggleMute")

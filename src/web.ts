@@ -26,6 +26,10 @@ export class CapacitorIvsPlayerWeb
     console.log('setPosition', options);
     return;
   }
+  async getFrame(): Promise<{ x: number, y: number, width: number, height: number }> {
+    console.log('getPosition');
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
   async togglePip(): Promise<void> {
     console.log('togglePip');
   }
