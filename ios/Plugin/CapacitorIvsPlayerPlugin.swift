@@ -2,14 +2,12 @@ import Foundation
 import Capacitor
 import AmazonIVSPlayer
 import UIKit
+import AVKit
 
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
         print("state change")
-//        if state == .ready {
-//            player.play()
-//        }
     }
 
     func player(_ player: IVSPlayer, didFailWithError error: Error) {
@@ -21,15 +19,7 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
     }
 
     func player(_ player: IVSPlayer, didOutputCue cue: IVSCue) {
-//        print("didOutputCue change")
-//        switch cue {
-//        case let textMetadataCue as IVSTextMetadataCue:
-//            print("Received Timed Metadata (\(textMetadataCue.textDescription)): \(textMetadataCue.text)")
-//        case let textCue as IVSTextCue:
-//            print("Received Text Cue: “\(textCue.text)”")
-//        default:
-//            print("Received unknown cue (type \(cue.type))")
-//        }
+        print("didOutputCue change")
     }
 
     func playerWillRebuffer(_ player: IVSPlayer) {
@@ -58,7 +48,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private var isFScreen = false
     private var originalFrame: CGRect?
     private var originalParent: UIView?
-
+    private var airplayButton = AVRoutePickerView()
+    
     public override func load() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
@@ -67,7 +58,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -89,6 +79,13 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
            _pipController = newValue
        }
    }
+
+    @objc func setAutoQuality(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            self.player.autoQualityMode = call.getBool("autoQuality", !self.player.autoQualityMode)
+        }
+        call.resolve()
+    }
     
     @objc func getQualities(_ call: CAPPluginCall) {
         var qualities = [String]()
@@ -98,7 +95,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve(["qualities": qualities])
     }
 
-
+    @objc func getQuality(_ call: CAPPluginCall) {
+        call.resolve(["quality": self.player.quality?.name])
+    }
+        
     @objc func setQuality(_ call: CAPPluginCall) {
         guard let targetQualityName = call.getString("quality") else {
             print("Error: Quality name is not set")
@@ -141,51 +141,36 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         ]
         call.resolve(frameDict)
     }
-
-    @objc func toggleFullscreen(_ call: CAPPluginCall) {
-        DispatchQueue.main.async {
-            if self.isFScreen {
-                // Exit fullscreen and return to original size and position
-                if let originalFrame = self.originalFrame, let originalParent = self.originalParent {
-                    self.playerView.removeFromSuperview()
-                    self.playerView.frame = originalFrame
-                    originalParent.addSubview(self.playerView)
-                }
-            } else {
-                // Go fullscreen
-                self.originalFrame = self.playerView.frame
-                self.originalParent = self.playerView.superview
-                if let window = UIApplication.shared.windows.first {
-                    self.playerView.removeFromSuperview()
-                    self.playerView.frame = window.frame
-                    window.addSubview(self.playerView)
-                }
-            }
-            self.isFScreen = !self.isFScreen
-        }
-    }
     
-    @objc func toggleMute(_ call: CAPPluginCall) {
-        print("toggleMute")
+    @objc func setMute(_ call: CAPPluginCall) {
+        print("setMute")
         DispatchQueue.main.async {
-            self.player.muted = !self.player.muted
+            self.player.muted = call.getBool("muted", !self.player.muted)
         }
         call.resolve()
     }
-
-    @objc func togglePip(_ call: CAPPluginCall) {
-        print("togglePip")
+    
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive),
+            let isPipActive = change?[.newKey] as? Bool {
+            self.notifyListeners("tooglePip", data: ["pip": isPipActive])
+        }
+    }
+    
+    @objc func setPip(_ call: CAPPluginCall) {
+        print("setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
         print("isPictureInPictureActive \(pipController.isPictureInPictureActive)")
-        if pipController.isPictureInPictureActive {
-            pipController.stopPictureInPicture()
-        } else {
+        if call.getBool("pip", !pipController.isPictureInPictureActive) {
             pipController.startPictureInPicture()
+        } else {
+            pipController.stopPictureInPicture()
         }
         call.resolve()
     }
+
     @objc func setFrame(_ call: CAPPluginCall) {
         print("setFrame x y")
         DispatchQueue.main.async {

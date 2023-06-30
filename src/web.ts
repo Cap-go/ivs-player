@@ -30,16 +30,28 @@ export class CapacitorIvsPlayerWeb
     console.log('getPosition');
     return { x: 0, y: 0, width: 0, height: 0 };
   }
-  async togglePip(): Promise<void> {
-    console.log('togglePip');
+  async setPip(): Promise<void> {
+    console.log('setPip');
   }
-  async toggleFullscreen(): Promise<void> {
+  async getPip(): Promise<{ pip: boolean }> {
+    console.log('getPip');
+    return { pip: false };
+  }
+  async setFullscreen(): Promise<void> {
     console.log('toggleFullscreen');
     return;
   }
-  async toggleMute(): Promise<void> {
+  async getFullscreen(): Promise<{ fullscreen: boolean }> {
+    console.log('getFullscreen');
+    return { fullscreen: false };
+  }
+  async setMute(): Promise<void> {
     console.log('toggleMute');
     return;
+  }
+  async getMute(): Promise<{ mute: boolean }> {
+    console.log('getMute');
+    return { mute: false };
   }
   async setQuality(options: { quality: string }): Promise<void> {
     console.log('setQuality', options);
@@ -48,5 +60,17 @@ export class CapacitorIvsPlayerWeb
   async getQualities(): Promise<{ qualities: string[] }> {
     console.log('getQualities');
     return { qualities: [] };
+  }
+  async getQuality(): Promise<{ quality: string }> {
+    console.log('getQuality');
+    return { quality: '' };
+  }
+  async setAutoQuality(options: { autoQuality: boolean }): Promise<void> {
+    console.log('setAutoQuality', options);
+    return;
+  }
+  async getAutoQuality(): Promise<{ autoQuality: boolean }> {
+    console.log('getAutoQuality');
+    return { autoQuality: false };
   }
 }

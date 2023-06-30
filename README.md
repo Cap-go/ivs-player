@@ -18,13 +18,18 @@ npx cap sync
 * [`start()`](#start)
 * [`pause()`](#pause)
 * [`delete()`](#delete)
-* [`togglePip()`](#togglepip)
-* [`toggleFullscreen()`](#togglefullscreen)
+* [`setAutoQuality(...)`](#setautoquality)
+* [`getAutoQuality()`](#getautoquality)
+* [`setPip(...)`](#setpip)
+* [`getPip()`](#getpip)
 * [`setFrame(...)`](#setframe)
 * [`getFrame()`](#getframe)
-* [`toggleMute()`](#togglemute)
+* [`setMute()`](#setmute)
+* [`getMute()`](#getmute)
 * [`setQuality(...)`](#setquality)
+* [`getQuality()`](#getquality)
 * [`getQualities()`](#getqualities)
+* [`addListener('tooglePip', ...)`](#addlistenertooglepip)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -72,20 +77,50 @@ delete() => Promise<void>
 --------------------
 
 
-### togglePip()
+### setAutoQuality(...)
 
 ```typescript
-togglePip() => Promise<void>
+setAutoQuality(options: { autoQuality?: boolean; }) => Promise<void>
 ```
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ autoQuality?: boolean; }</code> |
 
 --------------------
 
 
-### toggleFullscreen()
+### getAutoQuality()
 
 ```typescript
-toggleFullscreen() => Promise<void>
+getAutoQuality() => Promise<{ autoQuality: boolean; }>
 ```
+
+**Returns:** <code>Promise&lt;{ autoQuality: boolean; }&gt;</code>
+
+--------------------
+
+
+### setPip(...)
+
+```typescript
+setPip(options: { pip?: boolean; }) => Promise<void>
+```
+
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ pip?: boolean; }</code> |
+
+--------------------
+
+
+### getPip()
+
+```typescript
+getPip() => Promise<{ pip: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ pip: boolean; }&gt;</code>
 
 --------------------
 
@@ -114,11 +149,22 @@ getFrame() => Promise<CapacitorFrame>
 --------------------
 
 
-### toggleMute()
+### setMute()
 
 ```typescript
-toggleMute() => Promise<void>
+setMute() => Promise<void>
 ```
+
+--------------------
+
+
+### getMute()
+
+```typescript
+getMute() => Promise<{ mute: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ mute: boolean; }&gt;</code>
 
 --------------------
 
@@ -136,6 +182,17 @@ setQuality(options: { quality: string; }) => Promise<void>
 --------------------
 
 
+### getQuality()
+
+```typescript
+getQuality() => Promise<{ quality: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ quality: string; }&gt;</code>
+
+--------------------
+
+
 ### getQualities()
 
 ```typescript
@@ -143,6 +200,22 @@ getQualities() => Promise<{ qualities: string[]; }>
 ```
 
 **Returns:** <code>Promise&lt;{ qualities: string[]; }&gt;</code>
+
+--------------------
+
+
+### addListener('tooglePip', ...)
+
+```typescript
+addListener(eventName: "tooglePip", listenerFunc: (data: { pip: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                              |
+| ------------------ | ------------------------------------------------- |
+| **`eventName`**    | <code>'tooglePip'</code>                          |
+| **`listenerFunc`** | <code>(data: { pip: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
@@ -158,5 +231,12 @@ getQualities() => Promise<{ qualities: string[]; }>
 | **`y`**      | <code>number</code> |
 | **`width`**  | <code>number</code> |
 | **`height`** | <code>number</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>
