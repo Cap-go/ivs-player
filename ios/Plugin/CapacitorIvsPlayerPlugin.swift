@@ -171,28 +171,33 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         }
         call.resolve()
     }
+    
+    @objc func _setFrame(_ call: CAPPluginCall) {
+        guard let viewController = self.bridge?.viewController else {
+            call.reject("Unable to access the view controller")
+            return
+        }
+        
+        let screenSize: CGRect = UIScreen.main.bounds
+        let topPadding = viewController.view.safeAreaInsets.top
+
+        let x = call.getInt("x", 0)
+        let y = call.getInt("y", Int(topPadding))
+        let width = call.getInt("width", Int(screenSize.width))
+        let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
+        self.playerView.playerLayer.zPosition = -1
+        self.playerView.frame = CGRect(
+            x: x,
+            y: y,
+            width: width,
+            height: height
+        )
+    }
 
     @objc func setFrame(_ call: CAPPluginCall) {
         print("setFrame x y")
         DispatchQueue.main.async {
-            guard let viewController = self.bridge?.viewController else {
-                call.reject("Unable to access the view controller")
-                return
-            }
-            
-            let screenSize: CGRect = UIScreen.main.bounds
-            let topPadding = viewController.view.safeAreaInsets.top
-
-            let x = call.getInt("x", 0)
-            let y = call.getInt("y", Int(topPadding))
-            let width = call.getInt("width", Int(screenSize.width))
-            let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
-            self.playerView.frame = CGRect(
-                x: x,
-                y: y,
-                width: width,
-                height: height
-            )
+            self._setFrame(call)
         }
         call.resolve()
     }
@@ -208,33 +213,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             if (autoPlay) {
                 self.player.play()
             }
-            if #available(iOS 15, *) {
-                if (autoPip && (self.pipController != nil)) {
-                    self.pipController?.startPictureInPicture()
-                }
-            }
+            self._setFrame(call)
             guard let viewController = self.bridge?.viewController else {
                 call.reject("Unable to access the view controller")
                 return
             }
-            
-            let screenSize: CGRect = UIScreen.main.bounds
-            let topPadding = viewController.view.safeAreaInsets.top
-
-            let x = call.getInt("x", 0)
-            let y = call.getInt("y", Int(topPadding))
-            let width = call.getInt("width", Int(screenSize.width))
-            let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
-            print("pos \(x) \(y) \(width) \(height)")
-                        
-            self.playerView.playerLayer.zPosition = -1
-            self.playerView.frame = CGRect(
-                x: x,
-                y: y,
-                width: width,
-                height: height
-            )
-            
             if (toBack) {
                 viewController.view.addSubview(self.playerView)
                 DispatchQueue.main.async {
@@ -284,15 +267,15 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
             }
         }
     }
-
+    
     @objc func getUrl(_ call: CAPPluginCall) {
-        guard let url = player.url else {
+        guard let url = player.path else {
             call.reject("No url found")
             return
         }
         call.resolve(["url": url.absoluteString])
     }
-    
+
     @objc func getState(_ call: CAPPluginCall) {
         let isPlaying = player.state == .playing
         call.resolve(["isPlaying": isPlaying])
