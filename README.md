@@ -80,7 +80,7 @@ delete() => Promise<void>
 ### setAutoQuality(...)
 
 ```typescript
-setAutoQuality(options: { autoQuality?: boolean; }) => Promise<void>
+setAutoQuality(options?: { autoQuality?: boolean | undefined; } | undefined) => Promise<void>
 ```
 
 | Param         | Type                                    |
@@ -104,7 +104,7 @@ getAutoQuality() => Promise<{ autoQuality: boolean; }>
 ### setPip(...)
 
 ```typescript
-setPip(options: { pip?: boolean; }) => Promise<void>
+setPip(options?: { pip?: boolean | undefined; } | undefined) => Promise<void>
 ```
 
 | Param         | Type                            |
@@ -128,7 +128,7 @@ getPip() => Promise<{ pip: boolean; }>
 ### setFrame(...)
 
 ```typescript
-setFrame(options: { x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
+setFrame(options?: { x?: number | undefined; y?: number | undefined; width?: number | undefined; height?: number | undefined; } | undefined) => Promise<void>
 ```
 
 | Param         | Type                                                                      |
@@ -152,7 +152,7 @@ getFrame() => Promise<CapacitorFrame>
 ### setMute(...)
 
 ```typescript
-setMute(options: { muted?: boolean; }) => Promise<void>
+setMute(options?: { muted?: boolean | undefined; } | undefined) => Promise<void>
 ```
 
 | Param         | Type                              |
@@ -176,7 +176,7 @@ getMute() => Promise<{ mute: boolean; }>
 ### setQuality(...)
 
 ```typescript
-setQuality(options: { quality: string; }) => Promise<void>
+setQuality(options?: { quality: string; } | undefined) => Promise<void>
 ```
 
 | Param         | Type                              |
