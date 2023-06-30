@@ -72,13 +72,18 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     
     @available(iOS 15, *)
     private var pipController: AVPictureInPictureController? {
-       get {
-           return _pipController as! AVPictureInPictureController?
-       }
-       set {
-           _pipController = newValue
-       }
-   }
+        get {
+            return _pipController as! AVPictureInPictureController?
+        }
+        set {
+            _pipController = newValue
+        }
+    }
+
+    @objc func getAutoQuality(_ call: CAPPluginCall) {
+
+        call.resolve(["autoQuality": self.player.autoQualityMode])
+    }
 
     @objc func setAutoQuality(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
