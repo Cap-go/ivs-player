@@ -24,7 +24,7 @@ npx cap sync
 * [`getPip()`](#getpip)
 * [`setFrame(...)`](#setframe)
 * [`getFrame()`](#getframe)
-* [`setMute()`](#setmute)
+* [`setMute(...)`](#setmute)
 * [`getMute()`](#getmute)
 * [`setQuality(...)`](#setquality)
 * [`getQuality()`](#getquality)
@@ -149,11 +149,15 @@ getFrame() => Promise<CapacitorFrame>
 --------------------
 
 
-### setMute()
+### setMute(...)
 
 ```typescript
-setMute() => Promise<void>
+setMute(options: { muted?: boolean; }) => Promise<void>
 ```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ muted?: boolean; }</code> |
 
 --------------------
 

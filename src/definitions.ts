@@ -26,7 +26,7 @@ export interface CapacitorIvsPlayerPlugin {
   getPip(): Promise<{ pip: boolean }>;
   setFrame(options: { x?: number, y?: number, width ?: number, height ?: number }): Promise<void>;
   getFrame(): Promise<CapacitorFrame>;
-  setMute(): Promise<void>;
+  setMute(options: { muted?: boolean }): Promise<void>;
   getMute(): Promise<{ mute: boolean }>;
   setQuality(options: { quality: string }): Promise<void>;
   getQuality(): Promise<{ quality: string }>;
