@@ -37,6 +37,7 @@ npx cap sync
 * [`getQuality()`](#getquality)
 * [`getQualities()`](#getqualities)
 * [`addListener('tooglePip', ...)`](#addlistenertooglepip)
+* [`addListener('closePip', ...)`](#addlistenerclosepip)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -47,12 +48,12 @@ npx cap sync
 ### create(...)
 
 ```typescript
-create(options: { url: string; autoPlay?: boolean; autoPip?: boolean; autoFulscreen?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
+create(options: { url: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                                                                                                                     |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ url: string; autoPlay?: boolean; autoPip?: boolean; autoFulscreen?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
+| Param         | Type                                                                                                                         |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
 
 --------------------
 
@@ -247,6 +248,22 @@ addListener(eventName: "tooglePip", listenerFunc: (data: { pip: boolean; }) => v
 | ------------------ | ------------------------------------------------- |
 | **`eventName`**    | <code>'tooglePip'</code>                          |
 | **`listenerFunc`** | <code>(data: { pip: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('closePip', ...)
+
+```typescript
+addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'closePip'</code>    |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

@@ -11,8 +11,6 @@ export interface CapacitorIvsPlayerPlugin {
   create(options: {
     url: string,
     autoPlay?: boolean,
-    autoPip?: boolean, 
-    autoFulscreen?: boolean,
     toBack?: boolean,
     x?: number, y?: number,
     width ?: number, height ?: number,
@@ -38,5 +36,9 @@ export interface CapacitorIvsPlayerPlugin {
     listenerFunc: (data: {
       pip: boolean;
     }) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  addListener(
+    eventName: "closePip",
+    listenerFunc: () => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }

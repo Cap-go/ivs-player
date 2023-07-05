@@ -40,7 +40,6 @@ class TouchThroughView: IVSPlayerView {
  */
 @objc(CapacitorIvsPlayerPlugin)
 public class CapacitorIvsPlayerPlugin: CAPPlugin {
-    private let implementation = CapacitorIvsPlayer()
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = TouchThroughView()
@@ -49,7 +48,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private var originalFrame: CGRect?
     private var originalParent: UIView?
     private var airplayButton = AVRoutePickerView()
-    
+    private var debounceTimer: Timer?
+
     public override func load() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
@@ -62,7 +62,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         self.playerView.player = self.player
         self.preparePictureInPicture()
     }
-    
+ 
     @objc func applicationDidBecomeActive(notification: Notification) {
         guard #available(iOS 15, *), let pipController = pipController else {
             return
@@ -207,7 +207,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
-        let autoPip = call.getBool("autoPip", false)
         player.load(URL(string:url))
         DispatchQueue.main.async {
             if (autoPlay) {
@@ -259,11 +258,19 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive),
-            let isPipActive = change?[.newKey] as? Bool {
-            print("tooglePip \(isPipActive)")
-            if #available(iOS 15, *) {
-                    self.notifyListeners("tooglePip", data: ["pip": isPipActive])
+        if #available(iOS 15, *) {
+            if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive), let isPipActive = change?[.newKey] as? Bool {
+                
+                debounceTimer?.invalidate()
+                debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
+                    // Check if pip is still active or not
+                    if isPipActive == self?.pipController?.isPictureInPictureActive {
+                        self?.notifyListeners("tooglePip", data: ["pip": isPipActive])
+                    } else {
+                        // If pip is not longer active after the delay, notifyListeners of the 'closePip' event
+                        self?.notifyListeners("closePip", data: ["pip": false])
+                    }
+                }
             }
         }
     }
