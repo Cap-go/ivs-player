@@ -7,23 +7,23 @@ import AVKit
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
-        print("state change")
+//        print("MyIVSPlayerDelegate state change \(state)")
     }
 
     func player(_ player: IVSPlayer, didFailWithError error: Error) {
-        print("error change")
+//        print("MyIVSPlayerDelegate error change \(error)")
     }
 
     func player(_ player: IVSPlayer, didChangeDuration duration: CMTime) {
-        print("duration change")
+//        print("MyIVSPlayerDelegate duration change \(duration)")
     }
 
     func player(_ player: IVSPlayer, didOutputCue cue: IVSCue) {
-        print("didOutputCue change")
+//        print("MyIVSPlayerDelegate didOutputCue change \(cue)")
     }
 
     func playerWillRebuffer(_ player: IVSPlayer) {
-        print("Player will rebuffer and resume playback")
+//        print("MyIVSPlayerDelegate Player will rebuffer and resume playback")
     }
 }
 
@@ -39,7 +39,7 @@ class TouchThroughView: IVSPlayerView {
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(CapacitorIvsPlayerPlugin)
-public class CapacitorIvsPlayerPlugin: CAPPlugin {
+public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDelegate {
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = TouchThroughView()
@@ -48,7 +48,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
     private var originalFrame: CGRect?
     private var originalParent: UIView?
     private var airplayButton = AVRoutePickerView()
-    private var debounceTimer: Timer?
+    var didRestorePiP: Bool = false
 
     public override func load() {
         do {
@@ -62,7 +62,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         self.playerView.player = self.player
         self.preparePictureInPicture()
     }
- 
+
     @objc func applicationDidBecomeActive(notification: Notification) {
         guard #available(iOS 15, *), let pipController = pipController else {
             return
@@ -163,7 +163,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
-        print("isPictureInPictureActive \(pipController.isPictureInPictureActive)")
+        // check if isPictureInPicturePossible
+        if (!pipController.isPictureInPicturePossible) {
+            call.reject("Not possible right now")
+            return
+        }
         if call.getBool("pip", !pipController.isPictureInPictureActive) {
             pipController.startPictureInPicture()
         } else {
@@ -233,12 +237,31 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         call.resolve()
     }
     
+    public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+        print("restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
+        // The user tapped the "restore" button in PiP mode, set the flag to true
+        self.didRestorePiP = true
+        completionHandler(true)
+    }
+
+    public func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        print("MyIVSPlayerDelegate didRestorePiP \(self.didRestorePiP)")
+        if self.didRestorePiP {
+            // This was a restore from PiP
+            self.notifyListeners("tooglePip", data: ["pip": false])
+            self.didRestorePiP = false
+        } else {
+           // This was a close PiP
+            self.notifyListeners("closePip", data: [:])
+        }
+    }
+
+    
     private func preparePictureInPicture() {
 
         guard #available(iOS 15, *), AVPictureInPictureController.isPictureInPictureSupported() else {
             return
         }
-
 
         if let existingController = self.pipController {
             if existingController.ivsPlayerLayer == playerView.playerLayer {
@@ -252,29 +275,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin {
         }
 
         self.pipController = pipController
+        pipController.delegate = self
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
-        pipController.addObserver(self, forKeyPath: #keyPath(AVPictureInPictureController.isPictureInPictureActive), options: [.new, .initial], context: nil)
         print("preparePictureInPicture done")
     }
     
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if #available(iOS 15, *) {
-            if keyPath == #keyPath(AVPictureInPictureController.isPictureInPictureActive), let isPipActive = change?[.newKey] as? Bool {
-                
-                debounceTimer?.invalidate()
-                debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
-                    // Check if pip is still active or not
-                    if isPipActive == self?.pipController?.isPictureInPictureActive {
-                        self?.notifyListeners("tooglePip", data: ["pip": isPipActive])
-                    } else {
-                        // If pip is not longer active after the delay, notifyListeners of the 'closePip' event
-                        self?.notifyListeners("closePip", data: ["pip": false])
-                    }
-                }
-            }
-        }
-    }
-    
+
     @objc func getUrl(_ call: CAPPluginCall) {
         guard let url = player.path else {
             call.reject("No url found")
