@@ -17,6 +17,11 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
 
     @PluginMethod
     public void create(PluginCall call) {
+        var x = call.getInt("x", 0);
+        var y = call.getInt("y", 0);
+        var width = call.getInt("width", 0);
+        var height = call.getInt("height", 0);
+
         Log.i("CapacitorIvsPlayerX", "create");
         Intent intent = new Intent(getContext(), CapacitorIvsPlayer.class);
 
@@ -40,10 +45,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         if (toBack != null && toBack) {
             getBridge().getWebView().setBackgroundColor(0x00000000);
             getActivity().runOnUiThread(() -> getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView()));
-        }
-        autoPip = call.getBoolean("autoPip", false);
-        if (autoPip) {
-            sendPlayerControlBroadcast("autoUnpip");
         }
         call.resolve();
     }
@@ -90,4 +91,86 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         sendPlayerControlBroadcast("delete");
         call.resolve();
     }
+
+    @PluginMethod
+    public void getUrl(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getState(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setAutoQuality(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getAutoQuality(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setPip(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setFrame(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getFrame(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setMute(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getMute(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setQuality(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getQuality(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getQualities(PluginCall call) {
+        // TODO
+        call.resolve();
+    }
+    //   addListener(
+    //     eventName: "tooglePip",
+    //     listenerFunc: (data: {
+    //       pip: boolean;
+    //     }) => void
+    //   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+    //   addListener(
+    //     eventName: "closePip",
+    //     listenerFunc: () => void
+    //   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }

@@ -26,6 +26,7 @@ public class FloatingWindowDialog extends Dialog {
         ));
 
         playerView = new PlayerView(context);
+        playerView.setControlsEnabled(false);
         playerView.setId(View.generateViewId());
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,

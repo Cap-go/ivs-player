@@ -17,8 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class CapacitorIvsPlayer extends AppCompatActivity {
     private FloatingWindowDialog floatingWindowDialog;
 
-    boolean autoUnpip = false;
-
     private final BroadcastReceiver playerControlReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -30,9 +28,6 @@ public class CapacitorIvsPlayer extends AppCompatActivity {
                         break;
                     case "play":
                         play();
-                        break;
-                    case "autoUnpip":
-                        autoUnpip = true;
                         break;
                     case "pause":
                         pause();
@@ -81,9 +76,7 @@ public class CapacitorIvsPlayer extends AppCompatActivity {
     protected void onUserLeaveHint() {
         super.onUserLeaveHint();
         Log.i("CapacitorIvsPlayerX", "onUserLeaveHint");
-        if (autoUnpip) {
-            togglePip();
-        }
+        togglePip();
     }
 
     @Override
