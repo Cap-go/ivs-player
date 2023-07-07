@@ -1,19 +1,16 @@
 package ee.forgr.ivsplayer;
 
 import android.app.PictureInPictureParams;
-import android.content.Intent;
-import android.media.MediaSession2;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
+import android.graphics.Point;
+import android.os.Build;
 import android.util.Log;
 import android.util.Rational;
+import android.view.Display;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import androidx.core.app.PictureInPictureModeChangedInfo;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Consumer;
 
 import com.getcapacitor.Plugin;
@@ -23,44 +20,26 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 public class CapacitorIvsPlayerPlugin extends Plugin {
-
-    private boolean ignoreNextPause = false;
-    private boolean autoPip = false;
-
-    private final int frameLayoutViewId = 256;
     private final int mainPiPFrameLayoutId = 257;
 
     @PluginMethod
     public void create(PluginCall call) {
-//        var x = call.getInt("x", 0);
-//        var y = call.getInt("y", 0);
-//        var width = call.getInt("width", 0);
-//        var height = call.getInt("height", 0);
 
-//        Log.i("CapacitorIvsPlayerX", "create");
-//        Intent intent = new Intent(getContext(), CapacitorIvsPlayer.class);
-//
-//        ContextCompat.startActivity(getContext(), intent, null);
-        // wait for the activity to be created
-//        try {
-//            Thread.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        sendPlayerControlBroadcast("create");
-//        String url = call.getString("url");
-//        if (url != null) {
-//            setUrl(url);
-//        }
-//        Boolean autoPlay = call.getBoolean("autoPlay");
-//        if (autoPlay != null && autoPlay) {
-//            sendPlayerControlBroadcast("start");
-//        }
-//        Boolean toBack = call.getBoolean("toBack");
-//        if (toBack != null && toBack) {
-//        getBridge().getWebView().setBackgroundColor(0x00000000);
-//        getActivity().runOnUiThread(() -> getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView()));
-//        }
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        // Calculate the corresponding height for a 16:9 ratio
+        var x = call.getInt("x", 0);
+        var y = call.getInt("y", 0);
+        var width = call.getInt("width", size.x);
+        var height = call.getInt("height", (int) (size.x * 9.0 / 16.0));
+        Log.i("CapacitorIvsPlayerX", "create");
+        String url = call.getString("url");
+        if (url == null) {
+            call.reject("url is required");
+        }
+        Boolean autoPlay = call.getBoolean("autoPlay", false);
+        Boolean toBack = call.getBoolean("toBack", false);
         FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
         if (mainPiPFrameLayout != null) {
             Log.i("CapacitorIvsPlayerX", "FrameLayout for VideoPicker already exists");
@@ -77,10 +56,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
 
             SurfaceView surfaceView = new SurfaceView(getActivity().getApplicationContext());
             FrameLayout.LayoutParams surfaceViewParams = new FrameLayout.LayoutParams(
-                    1000,
-                    500
+                    width,
+                    height
             );
-            surfaceViewParams.setMargins(50, 200, 0, 0);
+            surfaceViewParams.setMargins(x, y, 0, 0);
             surfaceView.setLayoutParams(surfaceViewParams);
             surfaceView.setBackgroundColor(getBridge().getActivity().getResources().getColor(R.color.colorPrimary));
 
@@ -91,14 +70,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
                 @Override
                 public void run() {
                     ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
-                    getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView());
-                    getBridge().getWebView().setBackgroundColor(0x00000000);
+                    if (toBack != null && toBack) {
+                        getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView());
+                        getBridge().getWebView().setBackgroundColor(0x00000000);
+                    }
                     Rational aspectRatio = new Rational(1, 1);
-                    
-                    PictureInPictureParams params = new PictureInPictureParams.Builder()
-                            .setAspectRatio(aspectRatio)
-                            .build();
-                    getBridge().getActivity().enterPictureInPictureMode(params);
+
+                    PictureInPictureParams params = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        params = new PictureInPictureParams.Builder()
+                                .setAspectRatio(aspectRatio)
+                                .build();
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        getBridge().getActivity().enterPictureInPictureMode(params);
+                    }
                     getBridge().getActivity().addOnPictureInPictureModeChangedListener(new Consumer<PictureInPictureModeChangedInfo>() {
 
                         @Override
@@ -112,7 +98,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
                     });
                 }
             });
-//            fragmentUtils.loadFragment(pkFragment, mainPiPFrameLayoutId);
         }
         call.resolve();
     }
@@ -122,41 +107,31 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         super.load();
     }
 
-    private void sendPlayerControlBroadcast(String action) {
-        Intent intent = new Intent("playerControl");
-        intent.putExtra("action", action);
-        getContext().sendBroadcast(intent);
-    }
-
     private void setUrl(String url) {
-        Intent intent = new Intent("playerControl");
-        intent.putExtra("action", "loadUrl");
-        intent.putExtra("url", url);
-        getContext().sendBroadcast(intent);
+        // TODO
     }
 
     @PluginMethod
     public void togglePip(PluginCall call) {
-        ignoreNextPause = true;
-        sendPlayerControlBroadcast("togglePip");
+        // TODO
         call.resolve();
     }
 
     @PluginMethod
     public void start(PluginCall call) {
-        sendPlayerControlBroadcast("start");
+        // TODO
         call.resolve();
     }
 
     @PluginMethod
     public void pause(PluginCall call) {
-        sendPlayerControlBroadcast("pause");
+        // TODO
         call.resolve();
     }
 
     @PluginMethod
     public void delete(PluginCall call) {
-        sendPlayerControlBroadcast("delete");
+        // TODO
         call.resolve();
     }
 

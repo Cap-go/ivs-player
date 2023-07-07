@@ -1,12 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <!--    // merge config for pip supportsPictureInPicture -->
 <!--    <application android:supportsPictureInPicture="true" />-->
-    <application>
-        <activity
-            android:supportsPictureInPicture="true"
-            android:name="ee.forgr.ivsplayer.CapacitorIvsPlayer"
-            android:theme="@style/AppTheme.Transparent"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation">
-        </activity>
-    </application>
+    <application></application>
 </manifest>
