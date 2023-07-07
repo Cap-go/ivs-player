@@ -58,9 +58,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceWillLock), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
         player.delegate = playerDelegate
         self.playerView.player = self.player
         self.preparePictureInPicture()
+    }
+
+    @objc func deviceWillLock() {
+        DispatchQueue.main.async {
+            self.player.pause()
+        }
     }
 
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -262,7 +269,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         guard #available(iOS 15, *), AVPictureInPictureController.isPictureInPictureSupported() else {
             return
         }
-
+        
         if let existingController = self.pipController {
             if existingController.ivsPlayerLayer == playerView.playerLayer {
                 return
