@@ -2,6 +2,7 @@ package ee.forgr.ivsplayer;
 
 import android.app.PictureInPictureParams;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.util.Rational;
@@ -13,6 +14,8 @@ import android.widget.FrameLayout;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 
+import com.amazonaws.ivs.player.Player;
+import com.amazonaws.ivs.player.PlayerView;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -21,6 +24,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 public class CapacitorIvsPlayerPlugin extends Plugin {
     private final int mainPiPFrameLayoutId = 257;
+    private PlayerView playerView;
 
     @PluginMethod
     public void create(PluginCall call) {
@@ -54,36 +58,29 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
             ));
             mainPiPFrameLayout.setBackgroundColor(getBridge().getActivity().getResources().getColor(R.color.colorAccent));
 
-            SurfaceView surfaceView = new SurfaceView(getActivity().getApplicationContext());
-            FrameLayout.LayoutParams surfaceViewParams = new FrameLayout.LayoutParams(
-                    width,
-                    height
-            );
-            surfaceViewParams.setMargins(x, y, 0, 0);
-            surfaceView.setLayoutParams(surfaceViewParams);
-            surfaceView.setBackgroundColor(getBridge().getActivity().getResources().getColor(R.color.colorPrimary));
-
-            mainPiPFrameLayout.addView(surfaceView);
-
-            final FrameLayout  finalMainPiPFrameLayout = mainPiPFrameLayout;
+            final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
+                    // Initialize the Player view
+                    playerView = new PlayerView(getContext());
+                    FrameLayout.LayoutParams playerViewParams = new FrameLayout.LayoutParams(width, height);
+                    playerViewParams.setMargins(x, y, 0, 0);
+                    playerView.setLayoutParams(playerViewParams);
+                    playerView.requestFocus();
+                    playerView.setControlsEnabled(false);
+
+                    // Load the URL into the player
+                    Uri uri = Uri.parse(url);
+                    playerView.getPlayer().load(uri);
+                    if (autoPlay == null || !autoPlay) {
+                        playerView.getPlayer().pause();
+                    }
+                    finalMainPiPFrameLayout.addView(playerView);
                     if (toBack != null && toBack) {
                         getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView());
                         getBridge().getWebView().setBackgroundColor(0x00000000);
-                    }
-                    Rational aspectRatio = new Rational(1, 1);
-
-                    PictureInPictureParams params = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        params = new PictureInPictureParams.Builder()
-                                .setAspectRatio(aspectRatio)
-                                .build();
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        getBridge().getActivity().enterPictureInPictureMode(params);
                     }
                     getBridge().getActivity().addOnPictureInPictureModeChangedListener(new Consumer<PictureInPictureModeChangedInfo>() {
 
@@ -114,6 +111,18 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     @PluginMethod
     public void togglePip(PluginCall call) {
         // TODO
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Rational aspectRatio = new Rational(16, 9);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    PictureInPictureParams params = new PictureInPictureParams.Builder()
+                            .setAspectRatio(aspectRatio)
+                            .build();
+                    getBridge().getActivity().enterPictureInPictureMode(params);
+                }
+            }
+        });
         call.resolve();
     }
 
