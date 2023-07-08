@@ -16,6 +16,7 @@ import androidx.core.util.Consumer;
 
 import com.amazonaws.ivs.player.Player;
 import com.amazonaws.ivs.player.PlayerView;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -56,7 +57,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT
             ));
-            mainPiPFrameLayout.setBackgroundColor(getBridge().getActivity().getResources().getColor(R.color.colorAccent));
+//            mainPiPFrameLayout.setBackgroundColor(getBridge().getActivity().getResources().getColor(R.color.colorAccent));
 
             final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
             getActivity().runOnUiThread(new Runnable() {
@@ -104,10 +105,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         super.load();
     }
 
-    private void setUrl(String url) {
-        // TODO
-    }
-
     @PluginMethod
     public void togglePip(PluginCall call) {
         // TODO
@@ -128,49 +125,68 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
 
     @PluginMethod
     public void start(PluginCall call) {
-        // TODO
+        playerView.getPlayer().play();
         call.resolve();
     }
 
     @PluginMethod
     public void pause(PluginCall call) {
-        // TODO
+        playerView.getPlayer().pause();
         call.resolve();
     }
 
     @PluginMethod
     public void delete(PluginCall call) {
-        // TODO
+        playerView.getPlayer().release();
         call.resolve();
     }
 
     @PluginMethod
     public void getUrl(PluginCall call) {
         // TODO
-        call.resolve();
+//        final JSObject ret = new JSObject();
+//        ret.put("url", playerView.getPlayer());
+//        call.resolve(ret);
     }
 
     @PluginMethod
     public void getState(PluginCall call) {
         // TODO
-        call.resolve();
+        final JSObject ret = new JSObject();
+        ret.put("isPlaying", playerView.getPlayer().getState());
+        call.resolve(ret);
     }
 
     @PluginMethod
     public void setAutoQuality(PluginCall call) {
-        // TODO
+        Boolean autoQuality = call.getBoolean("autoQuality", false);
+        playerView.getPlayer().setAutoQualityMode(autoQuality);
         call.resolve();
     }
 
     @PluginMethod
     public void getAutoQuality(PluginCall call) {
-        // TODO
-        call.resolve();
+        final JSObject ret = new JSObject();
+        ret.put("autoQuality", playerView.getPlayer().isAutoQualityMode());
+        call.resolve(ret);
     }
 
     @PluginMethod
     public void setPip(PluginCall call) {
         // TODO
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Rational aspectRatio = new Rational(16, 9);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    PictureInPictureParams params = new PictureInPictureParams.Builder()
+                            .setAspectRatio(aspectRatio)
+                            .build();
+//                    getBridge().getActivity()
+                    getBridge().getActivity().enterPictureInPictureMode(params);
+                }
+            }
+        });
         call.resolve();
     }
 
@@ -183,36 +199,46 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     @PluginMethod
     public void getFrame(PluginCall call) {
         // TODO
+//        final JSObject ret = new JSObject();
+//        ret.put("frame", playerView.getPlayer().getFrame());
         call.resolve();
     }
 
     @PluginMethod
     public void setMute(PluginCall call) {
-        // TODO
+        Boolean muted = call.getBoolean("muted", false);
+        playerView.getPlayer().setMuted(muted);
         call.resolve();
     }
 
     @PluginMethod
     public void getMute(PluginCall call) {
-        // TODO
+        final JSObject ret = new JSObject();
+        ret.put("muted", playerView.getPlayer().isMuted());
+        call.resolve(ret);
         call.resolve();
     }
 
     @PluginMethod
     public void setQuality(PluginCall call) {
         // TODO
+//        String quality = call.getString("quality", "auto");
+//        playerView.getPlayer().setQuality(quality);
         call.resolve();
     }
 
     @PluginMethod
     public void getQuality(PluginCall call) {
-        // TODO
+        final JSObject ret = new JSObject();
+        ret.put("quality", playerView.getPlayer().getQuality());
         call.resolve();
     }
 
     @PluginMethod
     public void getQualities(PluginCall call) {
         // TODO
+        final JSObject ret = new JSObject();
+        ret.put("qualities", playerView.getPlayer().getQualities());
         call.resolve();
     }
     //   addListener(
