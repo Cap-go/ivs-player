@@ -307,17 +307,22 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
     @PluginMethod
     public void setFrame(PluginCall call) {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        var x = call.getInt("x", 0);
-        var y = call.getInt("y", 0);
-        var width = call.getInt("width", size.x);
-        var height = call.getInt("height", (int) (size.x * 9.0 / 16.0));
-        FrameLayout.LayoutParams playerViewParams = new FrameLayout.LayoutParams(width, height);
-        playerViewParams.setMargins(x, y, 0, 0);
-        playerView.setLayoutParams(playerViewParams);
-        call.resolve();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                var x = call.getInt("x", 0);
+                var y = call.getInt("y", 0);
+                var width = call.getInt("width", size.x);
+                var height = call.getInt("height", (int) (size.x * 9.0 / 16.0));
+                FrameLayout.LayoutParams playerViewParams = new FrameLayout.LayoutParams(width, height);
+                playerViewParams.setMargins(x, y, 0, 0);
+                playerView.setLayoutParams(playerViewParams);
+                call.resolve();
+            }
+        });
     }
 
     @PluginMethod
