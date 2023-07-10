@@ -130,7 +130,11 @@ window.customElements.define(
       });
 
       self.shadowRoot.querySelector('#toggle-pip').addEventListener('click', async function (e) {
-        CapacitorIvsPlayer.setPip({pip: true});
+        CapacitorIvsPlayer.getPip().then((res) => {
+          console.log("getPip", res);
+          CapacitorIvsPlayer.setPip({pip: 
+            !res.pip});
+        })
       });
       self.shadowRoot.querySelector('#autostart-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef

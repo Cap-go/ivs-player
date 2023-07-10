@@ -1,18 +1,27 @@
 package ee.forgr.ivsplayer;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Application;
 import android.app.PictureInPictureParams;
+import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.util.Rational;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
+
 import com.amazonaws.ivs.player.PlayerView;
 import com.amazonaws.ivs.player.Quality;
 import com.getcapacitor.JSObject;
@@ -23,11 +32,83 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 import org.json.JSONArray;
 
+import java.util.List;
+
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
-public class CapacitorIvsPlayerPlugin extends Plugin {
+public class CapacitorIvsPlayerPlugin extends Plugin implements Application.ActivityLifecycleCallbacks {
     private final int mainPiPFrameLayoutId = 257;
     private PlayerView playerView;
     private String lastUrl = "";
+    private Boolean isPreviousMainActivity = true;
+    private Boolean isPip = false;
+
+    @Override
+    public void onActivityStarted(@NonNull final Activity activity) {
+        Log.i("CapacitorIvsPlayer", "onActivityStarted");
+//        if (isPreviousMainActivity) {
+//            _setPip(false, false);
+//        }
+//        isPreviousMainActivity = true;
+    }
+
+    private boolean isMainActivity() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false;
+        }
+        Context mContext = this.getContext();
+        ActivityManager activityManager =
+                (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.AppTask> runningTasks = activityManager.getAppTasks();
+        ActivityManager.RecentTaskInfo runningTask = runningTasks
+                .get(0)
+                .getTaskInfo();
+        String className = runningTask.baseIntent.getComponent().getClassName();
+        String runningActivity = runningTask.topActivity.getClassName();
+        boolean isThisAppActivity = className.equals(runningActivity);
+        return isThisAppActivity;
+    }
+
+    @Override
+    public void onActivityStopped(@NonNull final Activity activity) {
+        Log.i("CapacitorIvsPlayer", "onActivityStopped");
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull final Activity activity) {
+        Log.i("CapacitorIvsPlayer", "onActivityResumed");
+
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull final Activity activity) {
+        Log.i("CapacitorIvsPlayer", "onActivityPaused");
+        //        isPreviousMainActivity = isMainActivity();
+
+//        if (isPreviousMainActivity) {
+            _setPip(true, false);
+//        }
+    }
+
+    @Override
+    public void onActivityCreated(
+            @NonNull final Activity activity,
+            @Nullable final Bundle savedInstanceState
+    ) {
+        Log.i("CapacitorIvsPlayer", "onActivityCreated");
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(
+            @NonNull final Activity activity,
+            @NonNull final Bundle outState
+    ) {
+        Log.i("CapacitorIvsPlayer", "onActivitySaveInstanceState");
+    }
+
+    @Override
+    public void onActivityDestroyed(@NonNull final Activity activity) {
+        Log.i("CapacitorIvsPlayer", "onActivityDestroyed");
+    }
 
     @PluginMethod
     public void create(PluginCall call) {
@@ -40,7 +121,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         var y = call.getInt("y", 0);
         var width = call.getInt("width", size.x);
         var height = call.getInt("height", (int) (size.x * 9.0 / 16.0));
-        Log.i("CapacitorIvsPlayerX", "create");
+        Log.i("CapacitorIvsPlayer", "create");
         String url = call.getString("url");
         if (url == null) {
             call.reject("url is required");
@@ -50,7 +131,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         Boolean toBack = call.getBoolean("toBack", false);
         FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
         if (mainPiPFrameLayout != null) {
-            Log.i("CapacitorIvsPlayerX", "FrameLayout for VideoPicker already exists");
+            Log.i("CapacitorIvsPlayer", "FrameLayout for VideoPicker already exists");
         } else {
             // Initialize a new FrameLayout as container for fragment
             mainPiPFrameLayout = new FrameLayout(getActivity().getApplicationContext());
@@ -93,16 +174,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
                             getBridge().getActivity().getLifecycle().getCurrentState();
                             final JSObject ret = new JSObject();
                             if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
-                                playerView.getPlayer().pause();
                                 self.notifyListeners("closePip", ret);
+                                Log.i("CapacitorIvsPlayer", "closePip");
+                                isPip = false;
                             }
                             else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
                                 if (!pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
                                     getBridge().getWebView().setVisibility(View.VISIBLE);
                                     ret.put("pip", false);
+                                    isPip = false;
+                                    Log.i("CapacitorIvsPlayer", "tooglePip false");
                                 } else {
                                     getBridge().getWebView().setVisibility(View.INVISIBLE);
                                     ret.put("pip", true);
+                                    isPip = true;
+                                    Log.i("CapacitorIvsPlayer", "tooglePip true");
                                 }
                                 self.notifyListeners("tooglePip", ret);
                             }
@@ -117,6 +203,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     @Override
     public void load() {
         super.load();
+        final Application application = (Application) this.getContext()
+                .getApplicationContext();
+        application.registerActivityLifecycleCallbacks(this);
     }
 
     @PluginMethod
@@ -165,20 +254,54 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         call.resolve(ret);
     }
 
+
     @PluginMethod
-    public void setPip(PluginCall call) {
+    public void getPip(PluginCall call) {
+        final JSObject ret = new JSObject();
+        ret.put("pip", isPip);
+        call.resolve(ret);
+    }
+
+    public void _setPip(Boolean pip, Boolean foregroundApp) {
+        Log.i("CapacitorIvsPlayer", "_setPip pip: " + pip);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Rational aspectRatio = new Rational(16, 9);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    PictureInPictureParams params = new PictureInPictureParams.Builder()
+                if (foregroundApp) {
+                    isPip = pip;
+                    Log.i("CapacitorIvsPlayer", "foregroundApp pip: " + pip);
+                    if (pip) {
+                        FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
+    //                    TODO: allow to drag and drop or find a way to have pip on top of the app
+                        playerView.setControlsEnabled(true);
+                        getBridge().getWebView().getParent().bringChildToFront(mainPiPFrameLayout);
+                        getBridge().getWebView().setBackgroundColor(0x000000ff);
+                    }
+                    else {
+                        playerView.setControlsEnabled(false);
+                        getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView());
+                        getBridge().getWebView().setBackgroundColor(0x00000000);
+                    }
+                }
+                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Log.i("CapacitorIvsPlayer", "backgroundApp: " + pip);
+                    isPip = pip;
+                    if (pip) {
+                        PictureInPictureParams params = new PictureInPictureParams.Builder()
                             .setAspectRatio(aspectRatio)
                             .build();
-                    getBridge().getActivity().enterPictureInPictureMode(params);
+                        getBridge().getActivity().enterPictureInPictureMode(params);
+                    }
                 }
             }
         });
+    }
+
+    @PluginMethod
+    public void setPip(PluginCall call) {
+        Boolean pip = call.getBoolean("pip", false);
+        _setPip(pip, true);
         call.resolve();
     }
 
@@ -255,4 +378,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         ret.put("qualities", qualitiesArray);
         call.resolve(ret);
     }
+    //   addListener(
+    //     eventName: "closePip",
+    //     listenerFunc: () => void
+    //   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }
