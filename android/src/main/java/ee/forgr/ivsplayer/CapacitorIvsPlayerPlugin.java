@@ -174,6 +174,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                             getBridge().getActivity().getLifecycle().getCurrentState();
                             final JSObject ret = new JSObject();
                             if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
+                                getBridge().getWebView().setVisibility(View.VISIBLE);
                                 self.notifyListeners("closePip", ret);
                                 Log.i("CapacitorIvsPlayer", "closePip");
                                 isPip = false;
