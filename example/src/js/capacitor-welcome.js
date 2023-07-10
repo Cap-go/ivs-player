@@ -104,7 +104,10 @@ window.customElements.define(
           <button class="button" id="delete-stream">Delete Stream</button>
         </p>
         <p>
-          <button class="button" id="move-stream">Lower Stream a little</button>
+          <button class="button" id="get-frame">Get frame</button>
+        </p>
+        <p>
+          <button class="button" id="get-qualities">Get getQualities</button>
         </p>
         <p>
           <button class="button" id="toggle-pip">Toggle Pip</button>
@@ -119,8 +122,15 @@ window.customElements.define(
 
     connectedCallback() {
       const self = this;
+      CapacitorIvsPlayer.addListener('tooglePip', (res) => {
+        console.log('tooglePip', res);
+      });
+      CapacitorIvsPlayer.addListener('closePip', (res) => {
+        console.log('closePip', res);
+      });
+
       self.shadowRoot.querySelector('#toggle-pip').addEventListener('click', async function (e) {
-        CapacitorIvsPlayer.togglePip();
+        CapacitorIvsPlayer.setPip({pip: true});
       });
       self.shadowRoot.querySelector('#autostart-stream').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
@@ -144,9 +154,17 @@ window.customElements.define(
         // eslint-disable-next-line no-undef
         CapacitorIvsPlayer.delete();
       });
-      self.shadowRoot.querySelector('#move-stream').addEventListener('click', async function (e) {
+      self.shadowRoot.querySelector('#get-frame').addEventListener('click', async function (e) {
         // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.lowerStream();
+        CapacitorIvsPlayer.getFrame().then((frame) => {
+          console.log('frame', frame);
+        });
+      });
+      self.shadowRoot.querySelector('#get-qualities').addEventListener('click', async function (e) {
+        // eslint-disable-next-line no-undef
+        CapacitorIvsPlayer.getQualities().then((qualities) => {
+          console.log('qualities', qualities);
+        });
       });
     }
   }
