@@ -157,6 +157,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve(frameDict)
     }
     
+    @objc func getMute(_ call: CAPPluginCall) {
+        print("getMute")
+        call.resolve(["mute": self.player.muted])
+    }
+    
     @objc func setMute(_ call: CAPPluginCall) {
         print("setMute")
         DispatchQueue.main.async {
