@@ -407,7 +407,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.setDuration(500);
+        animatorSet.setDuration(300);
         animatorSet.playTogether(widthAnimator, heightAnimator);
         animatorSet.start();
     }
