@@ -144,6 +144,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @PluginMethod
     public void create(PluginCall call) {
         // Calculate the corresponding height for a 16:9 ratio
+        getDisplaySize();
         var x = call.getInt("x", 0);
         var y = call.getInt("y", 0);
         var width = call.getInt("width", size.x);
@@ -176,9 +177,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
                     // Initialize the Player view
                     playerView = new PlayerView(getContext());
-                    FrameLayout.LayoutParams playerViewParams = new FrameLayout.LayoutParams(width, height);
-                    playerViewParams.setMargins(x, y, 0, 0);
-                    playerView.setLayoutParams(playerViewParams);
+                    _setFrame(x, y, width, height);
                     playerView.requestFocus();
                     playerView.setControlsEnabled(false);
 
@@ -211,11 +210,15 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         call.resolve();
     }
 
+    private void getDisplaySize() {
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        display.getSize(size);
+    }
+
     @Override
     public void load() {
         super.load();
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        display.getSize(size);
+        getDisplaySize();
         // Create the expand button
         expandButton = new ImageView(getContext());
         expandButton.setImageResource(R.drawable.baseline_zoom_out_map_24);
@@ -358,7 +361,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             }
         });
         // get middile of screen x y
-        int width = (int) (getBridge().getActivity().getWindow().getDecorView().getWidth() / 2);
+        getDisplaySize();
+        int width = size.x / 2;
         int height = calcHeight(width);
         // position the player view at the bottom right corner with a margin of 1/4 of screen
         int x = size.x - width - 30;
@@ -440,8 +444,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                                 .setAspectRatio(aspectRatio)
                                 .build();
                         getBridge().getActivity().enterPictureInPictureMode(params);
+                        getDisplaySize();
                         // get PIP frame layout width and height
-                        int width = (int) (getBridge().getActivity().getWindow().getDecorView().getWidth() / 2);
+                        int width = size.x / 2;
                         int height = calcHeight(width);
                         _setFrame(0, 0, width, height);
                     }
@@ -474,9 +479,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
+                getDisplaySize();
                 var x = call.getInt("x", 0);
                 var y = call.getInt("y", 0);
                 var width = call.getInt("width", size.x);
