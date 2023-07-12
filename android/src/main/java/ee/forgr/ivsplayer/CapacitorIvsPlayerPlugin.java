@@ -5,9 +5,9 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.PictureInPictureParams;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Point;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,6 +53,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     ImageView expandButton;
     ImageView closeButton;
     ImageView playPauseButton;
+    View shadowView;
 
     @Override
     public void onActivityStarted(@NonNull final Activity activity) {
@@ -223,6 +224,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         getDisplaySize();
         // Create the expand button
         expandButton = new ImageView(getContext());
+        shadowView = new View(getContext());
+        shadowView.setBackgroundColor(Color.BLACK);
+        shadowView.setAlpha(0.5f);
         expandButton.setImageResource(R.drawable.baseline_zoom_out_map_24);
         // Create the close button
         closeButton = new ImageView(getContext());
@@ -305,10 +309,12 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
     private void setDisplayPipButton (Boolean displayPipButton) {
         if (displayPipButton) {
+            shadowView.setVisibility(View.VISIBLE);
             expandButton.setVisibility(View.VISIBLE);
             closeButton.setVisibility(View.VISIBLE);
             playPauseButton.setVisibility(View.VISIBLE);
         } else {
+            shadowView.setVisibility(View.GONE);
             expandButton.setVisibility(View.GONE);
             closeButton.setVisibility(View.GONE);
             playPauseButton.setVisibility(View.GONE);
@@ -320,7 +326,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         playerView.setOutlineProvider(new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
-                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 32);
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 64);
             }
         });
         playerView.setClipToOutline(true);
@@ -348,6 +354,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
         // Add the buttons to the player view layout
         // check if already in view
+        if (shadowView.getParent() == null) {
+            playerView.addView(shadowView);
+        }
         if (expandButton.getParent() == null) {
             playerView.addView(expandButton);
         }
