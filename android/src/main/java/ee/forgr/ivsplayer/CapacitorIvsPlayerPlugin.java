@@ -5,21 +5,22 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.PictureInPictureParams;
 import android.content.Context;
+import android.graphics.Outline;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Rational;
 import android.view.Display;
-import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
+import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -116,6 +117,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     private void tooglePip(Boolean pip) {
         final JSObject ret = new JSObject();
         if (pip) {
+            playerView.setClipToOutline(false);
             getBridge().getWebView().setVisibility(View.VISIBLE);
             ret.put("pip", false);
             isPip = false;
@@ -225,9 +227,11 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         // Create the close button
         closeButton = new ImageView(getContext());
         closeButton.setImageResource(R.drawable.baseline_close_24);
+
         // Create the play pause button
         playPauseButton = new ImageView(getContext());
         playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+
 
         final Application application = (Application) this.getContext()
                 .getApplicationContext();
@@ -288,7 +292,38 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         call.resolve(ret);
     }
 
+    private void setAutoHideDisplayButton () {
+        setDisplayPipButton(true);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setDisplayPipButton(false);
+            }
+        }, 3000);
+    }
+
+    private void setDisplayPipButton (Boolean displayPipButton) {
+        if (displayPipButton) {
+            expandButton.setVisibility(View.VISIBLE);
+            closeButton.setVisibility(View.VISIBLE);
+            playPauseButton.setVisibility(View.VISIBLE);
+        } else {
+            expandButton.setVisibility(View.GONE);
+            closeButton.setVisibility(View.GONE);
+            playPauseButton.setVisibility(View.GONE);
+        }
+    }
+
     public void makeFloating() {
+        // Set the corner radius
+        playerView.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 32);
+            }
+        });
+        playerView.setClipToOutline(true);
 
         FrameLayout.LayoutParams expandButtonParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -322,27 +357,22 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         if (playPauseButton.getParent() == null) {
             playerView.addView(playPauseButton);
         }
-        expandButton.setVisibility(View.VISIBLE);
-        closeButton.setVisibility(View.VISIBLE);
-        playPauseButton.setVisibility(View.VISIBLE);
+        // Show the buttons for 3 seconds
+        setAutoHideDisplayButton();
 
         // Set the button click listeners
         expandButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tooglePip(true);
-                expandButton.setVisibility(View.GONE);
-                closeButton.setVisibility(View.GONE);
-                playPauseButton.setVisibility(View.GONE);
+                setDisplayPipButton(false);
             }
         });
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                expandButton.setVisibility(View.GONE);
-                closeButton.setVisibility(View.GONE);
-                playPauseButton.setVisibility(View.GONE);
+                setDisplayPipButton(false);
                 playerView.getPlayer().pause();
                 _setPip(false, true);
             }
@@ -389,6 +419,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                         initialY = playerViewParams.topMargin;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
+                        // Show the buttons for 3 seconds
+                        setAutoHideDisplayButton();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         int deltaX = (int) (event.getRawX() - initialTouchX);
@@ -437,9 +469,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     Log.i("CapacitorIvsPlayer", "backgroundApp: " + pip);
                     isPip = pip;
                     if (pip) {
-                        expandButton.setVisibility(View.GONE);
-                        closeButton.setVisibility(View.GONE);
-                        playPauseButton.setVisibility(View.GONE);
+                        setDisplayPipButton(false);
                         PictureInPictureParams params = new PictureInPictureParams.Builder()
                                 .setAspectRatio(aspectRatio)
                                 .build();
