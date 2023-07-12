@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -307,18 +308,31 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         }, 3000);
     }
 
-    private void setDisplayPipButton (Boolean displayPipButton) {
+    private void setDisplayPipButton (boolean displayPipButton) {
         if (displayPipButton) {
-            shadowView.setVisibility(View.VISIBLE);
-            expandButton.setVisibility(View.VISIBLE);
-            closeButton.setVisibility(View.VISIBLE);
-            playPauseButton.setVisibility(View.VISIBLE);
+            fadeAnimation(shadowView, View.VISIBLE);
+            fadeAnimation(expandButton, View.VISIBLE);
+            fadeAnimation(closeButton, View.VISIBLE);
+            fadeAnimation(playPauseButton, View.VISIBLE);
         } else {
-            shadowView.setVisibility(View.GONE);
-            expandButton.setVisibility(View.GONE);
-            closeButton.setVisibility(View.GONE);
-            playPauseButton.setVisibility(View.GONE);
+            fadeAnimation(shadowView, View.GONE);
+            fadeAnimation(expandButton, View.GONE);
+            fadeAnimation(closeButton, View.GONE);
+            fadeAnimation(playPauseButton, View.GONE);
         }
+    }
+
+    private void fadeAnimation(View view, int visibility) {
+        AlphaAnimation animation;
+        if (visibility == View.VISIBLE) {
+            animation = new AlphaAnimation(0f, 1f);
+        } else {
+            animation = new AlphaAnimation(1f, 0f);
+        }
+
+        animation.setDuration(500);
+        view.setVisibility(visibility);
+        view.startAnimation(animation);
     }
 
     public void makeFloating() {
