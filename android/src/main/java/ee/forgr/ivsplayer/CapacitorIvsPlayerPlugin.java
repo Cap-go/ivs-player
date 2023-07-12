@@ -12,9 +12,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Rational;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +26,7 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
 
+import com.amazonaws.ivs.player.Player;
 import com.amazonaws.ivs.player.PlayerView;
 import com.amazonaws.ivs.player.Quality;
 import com.getcapacitor.JSObject;
@@ -38,6 +43,7 @@ import java.util.List;
 public class CapacitorIvsPlayerPlugin extends Plugin implements Application.ActivityLifecycleCallbacks {
     private final int mainPiPFrameLayoutId = 257;
     private PlayerView playerView;
+    private FrameLayout.LayoutParams playerViewParams;
     private String lastUrl = "";
     private Boolean isPreviousMainActivity = true;
     private Boolean isPip = false;
@@ -82,11 +88,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @Override
     public void onActivityPaused(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityPaused");
-        //        isPreviousMainActivity = isMainActivity();
-
-//        if (isPreviousMainActivity) {
-            _setPip(true, false);
-//        }
+        _setPip(true, false);
     }
 
     @Override
@@ -108,6 +110,29 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @Override
     public void onActivityDestroyed(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityDestroyed");
+    }
+
+    private void tooglePip(Boolean pip) {
+        final JSObject ret = new JSObject();
+        if (pip) {
+            getBridge().getWebView().setVisibility(View.VISIBLE);
+            ret.put("pip", false);
+            isPip = false;
+            Log.i("CapacitorIvsPlayer", "tooglePip false");
+        } else {
+            getBridge().getWebView().setVisibility(View.INVISIBLE);
+            ret.put("pip", true);
+            isPip = true;
+            Log.i("CapacitorIvsPlayer", "tooglePip true");
+        }
+        notifyListeners("tooglePip", ret);
+    }
+    private void closePip() {
+        final JSObject ret = new JSObject();
+        getBridge().getWebView().setVisibility(View.VISIBLE);
+        notifyListeners("closePip", ret);
+        Log.i("CapacitorIvsPlayer", "closePip");
+        isPip = false;
     }
 
     @PluginMethod
@@ -174,24 +199,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                             getBridge().getActivity().getLifecycle().getCurrentState();
                             final JSObject ret = new JSObject();
                             if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
-                                getBridge().getWebView().setVisibility(View.VISIBLE);
-                                self.notifyListeners("closePip", ret);
-                                Log.i("CapacitorIvsPlayer", "closePip");
-                                isPip = false;
+                                closePip();
                             }
                             else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
-                                if (!pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
-                                    getBridge().getWebView().setVisibility(View.VISIBLE);
-                                    ret.put("pip", false);
-                                    isPip = false;
-                                    Log.i("CapacitorIvsPlayer", "tooglePip false");
-                                } else {
-                                    getBridge().getWebView().setVisibility(View.INVISIBLE);
-                                    ret.put("pip", true);
-                                    isPip = true;
-                                    Log.i("CapacitorIvsPlayer", "tooglePip true");
-                                }
-                                self.notifyListeners("tooglePip", ret);
+                                tooglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
                             }
                         }
                     });
@@ -263,6 +274,109 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         call.resolve(ret);
     }
 
+    public void makeFloating() {
+        playerView.setControlsEnabled(false);
+
+        // Create the expand button and set its position
+        ImageButton expandButton = new ImageButton(getContext());
+        expandButton.setImageResource(R.drawable.baseline_zoom_out_map_24);
+
+        FrameLayout.LayoutParams expandButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        expandButtonParams.gravity = Gravity.START | Gravity.TOP;
+        expandButton.setLayoutParams(expandButtonParams);
+
+        // Create the close button and set its position
+        ImageView closeButton = new ImageView(getContext());
+        closeButton.setImageResource(R.drawable.baseline_close_24);
+        FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        closeButtonParams.gravity = Gravity.END | Gravity.TOP;
+        closeButton.setLayoutParams(closeButtonParams);
+
+        // Create the play/pause button and set its position
+        ImageButton playPauseButton = new ImageButton(getContext());
+        playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+        FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        playPauseButtonParams.gravity = Gravity.CENTER;
+        playPauseButton.setLayoutParams(playPauseButtonParams);
+
+        // Add the buttons to the player view layout
+        playerView.addView(expandButton);
+        playerView.addView(closeButton);
+        playerView.addView(playPauseButton);
+
+        // Set the button click listeners
+        expandButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tooglePip(true);
+                expandButton.setVisibility(View.GONE);
+                closeButton.setVisibility(View.GONE);
+                playPauseButton.setVisibility(View.GONE);
+            }
+        });
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                expandButton.setVisibility(View.GONE);
+                closeButton.setVisibility(View.GONE);
+                playPauseButton.setVisibility(View.GONE);
+                playerView.getPlayer().pause();
+                _setPip(false, true);
+            }
+        });
+
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (playerView.getPlayer().getState() == Player.State.PLAYING) {
+                    playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
+                    playerView.getPlayer().pause();
+                } else {
+                    playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+                    playerView.getPlayer().play();
+                }
+            }
+        });
+
+        // playerView.setControlsEnabled(true);
+        playerView.setOnTouchListener(new View.OnTouchListener() {
+            private int initialX;
+            private int initialY;
+            private float initialTouchX;
+            private float initialTouchY;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        initialX = playerViewParams.leftMargin;
+                        initialY = playerViewParams.topMargin;
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        int deltaX = (int) (event.getRawX() - initialTouchX);
+                        int deltaY = (int) (event.getRawY() - initialTouchY);
+                        playerViewParams.leftMargin = initialX + deltaX;
+                        playerViewParams.topMargin = initialY + deltaY;
+                        playerView.setLayoutParams(playerViewParams);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
     public void _setPip(Boolean pip, Boolean foregroundApp) {
         Log.i("CapacitorIvsPlayer", "_setPip pip: " + pip);
         getActivity().runOnUiThread(new Runnable() {
@@ -274,10 +388,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     Log.i("CapacitorIvsPlayer", "foregroundApp pip: " + pip);
                     if (pip) {
                         FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
-    //                    TODO: allow to drag and drop or find a way to have pip on top of the app
-                        playerView.setControlsEnabled(true);
                         getBridge().getWebView().getParent().bringChildToFront(mainPiPFrameLayout);
                         getBridge().getWebView().setBackgroundColor(0x000000ff);
+                        //                    TODO: allow to drag and drop or find a way to have pip on top of the app
+                        makeFloating();
                     }
                     else {
                         playerView.setControlsEnabled(false);
@@ -290,8 +404,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     isPip = pip;
                     if (pip) {
                         PictureInPictureParams params = new PictureInPictureParams.Builder()
-                            .setAspectRatio(aspectRatio)
-                            .build();
+                                .setAspectRatio(aspectRatio)
+                                .build();
                         getBridge().getActivity().enterPictureInPictureMode(params);
                     }
                 }
@@ -318,7 +432,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 var y = call.getInt("y", 0);
                 var width = call.getInt("width", size.x);
                 var height = call.getInt("height", (int) (size.x * 9.0 / 16.0));
-                FrameLayout.LayoutParams playerViewParams = new FrameLayout.LayoutParams(width, height);
+                playerViewParams = new FrameLayout.LayoutParams(width, height);
                 playerViewParams.setMargins(x, y, 0, 0);
                 playerView.setLayoutParams(playerViewParams);
                 call.resolve();
@@ -384,8 +498,4 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         ret.put("qualities", qualitiesArray);
         call.resolve(ret);
     }
-    //   addListener(
-    //     eventName: "closePip",
-    //     listenerFunc: () => void
-    //   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }
