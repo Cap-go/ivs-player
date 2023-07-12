@@ -47,6 +47,9 @@ import java.util.List;
 public class CapacitorIvsPlayerPlugin extends Plugin implements Application.ActivityLifecycleCallbacks {
     private final int mainPiPFrameLayoutId = 257;
     private PlayerView playerView;
+    private int marginButton = 40;
+    private Boolean currentStateDisplayButton = false;
+
     private Point size = new Point();
     private FrameLayout.LayoutParams playerViewParams;
     private String lastUrl = "";
@@ -309,16 +312,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     private void setDisplayPipButton (boolean displayPipButton) {
+        if (currentStateDisplayButton == displayPipButton) {
+            return;
+        }
         if (displayPipButton) {
             fadeAnimation(shadowView, View.VISIBLE);
             fadeAnimation(expandButton, View.VISIBLE);
             fadeAnimation(closeButton, View.VISIBLE);
             fadeAnimation(playPauseButton, View.VISIBLE);
+            currentStateDisplayButton = true;
         } else {
             fadeAnimation(shadowView, View.GONE);
             fadeAnimation(expandButton, View.GONE);
             fadeAnimation(closeButton, View.GONE);
             fadeAnimation(playPauseButton, View.GONE);
+            currentStateDisplayButton = false;
         }
     }
 
@@ -350,6 +358,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 FrameLayout.LayoutParams.WRAP_CONTENT
         );
         expandButtonParams.gravity = Gravity.START | Gravity.TOP;
+        expandButtonParams.topMargin = marginButton;
+        expandButtonParams.leftMargin = marginButton;
         expandButton.setLayoutParams(expandButtonParams);
 
         FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
@@ -357,6 +367,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 FrameLayout.LayoutParams.WRAP_CONTENT
         );
         closeButtonParams.gravity = Gravity.END | Gravity.TOP;
+        closeButtonParams.topMargin = marginButton;
+        closeButtonParams.rightMargin = marginButton;
         closeButton.setLayoutParams(closeButtonParams);
 
         FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
