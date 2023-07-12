@@ -1,5 +1,7 @@
 package ee.forgr.ivsplayer;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -15,12 +17,16 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.Rational;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -58,6 +64,13 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     ImageView closeButton;
     ImageView playPauseButton;
     View shadowView;
+
+    private Animation expandAnimation;
+    private Animation collapseAnimation;
+
+    private GestureDetector gestureDetector;
+    private ScaleGestureDetector scaleGestureDetector;
+    private boolean isFullScreen = false;
 
     @Override
     public void onActivityStarted(@NonNull final Activity activity) {
@@ -226,6 +239,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     public void load() {
         super.load();
         getDisplaySize();
+        expandAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.expand_animation);
+        collapseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_animation);
+
         // Create the expand button
         expandButton = new ImageView(getContext());
         shadowView = new View(getContext());
@@ -343,6 +359,59 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         view.startAnimation(animation);
     }
 
+    private void toggleFullScreen() {
+        int x = playerView.getLeft();
+        int y = playerView.getTop();
+
+        if (isFullScreen) {
+            animateResize(playerView.getWidth(), playerView.getHeight(), size.x / 2, calcHeight(size.x / 2));
+        } else {
+            // Maximize the player view width with animation and calculate the new height
+            int newPlayerSizeX = calcHeight(size.x);
+            animateResize(playerView.getWidth(), playerView.getHeight(), size.x, newPlayerSizeX);
+        }
+
+        // Toggle the full screen flag
+        isFullScreen = !isFullScreen;
+    }
+
+    private void animateResize(int startWidth, int startHeight, int endWidth, int endHeight) {
+        ValueAnimator widthAnimator = ValueAnimator.ofFloat(startWidth, endWidth);
+        widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float animatedValue = (float) animation.getAnimatedValue();
+                playerView.getLayoutParams().width = (int) animatedValue;
+                int maxMarginX = size.x - (int) animatedValue;
+                int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+                layoutParams.leftMargin = newMarginX;
+                playerView.setLayoutParams(layoutParams);
+                playerView.requestLayout();
+            }
+        });
+
+        ValueAnimator heightAnimator = ValueAnimator.ofFloat(startHeight, endHeight);
+        heightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float animatedValue = (float) animation.getAnimatedValue();
+                playerView.getLayoutParams().height = (int) animatedValue;
+                int maxMarginY = size.y - (int) animatedValue;
+                int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+                layoutParams.topMargin = newMarginY;
+                playerView.setLayoutParams(layoutParams);
+                playerView.requestLayout();
+            }
+        });
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(500);
+        animatorSet.playTogether(widthAnimator, heightAnimator);
+        animatorSet.start();
+    }
+
     public void makeFloating() {
         // Set the corner radius
         playerView.setOutlineProvider(new ViewOutlineProvider() {
@@ -435,6 +504,23 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         // get half of width and calculate height
         _setFrame(x, y, width, height);
 
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                toggleFullScreen();
+                return true;
+            }
+        });
+
+        // Initialize the scale gesture detector
+        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                // Handle scale gestures if needed
+                return true;
+            }
+        });
+
         playerView.setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
@@ -446,6 +532,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 // Calculate the maximum margin values for X and Y
+                gestureDetector.onTouchEvent(event);
+                scaleGestureDetector.onTouchEvent(event);
                 maxMarginX = size.x - playerViewParams.width;
                 maxMarginY = size.y - playerViewParams.height;
                 switch (event.getAction()) {
