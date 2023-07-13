@@ -26,6 +26,10 @@ export class CapacitorIvsPlayerWeb
     console.log('getState');
     return { isPlaying: false };
   }
+  async setPlayerPosition(options: { toBack: boolean }): Promise<void> {
+    console.log('setPlayerPosition', options);
+    return;
+  }
   async delete(): Promise<void> {
     console.log('delete');
     return;

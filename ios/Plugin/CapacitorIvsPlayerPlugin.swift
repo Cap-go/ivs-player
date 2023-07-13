@@ -252,6 +252,25 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve()
     }
 
+    @obj func _setPlayerPosition(Bool: toBack) {
+        DispatchQueue.main.async {
+            if (toBack) {
+                self.webView?.backgroundColor = UIColor.clear
+                self.webView?.isOpaque = false
+                self.webView?.scrollView.backgroundColor = UIColor.clear
+                self.webView?.scrollView.isOpaque = false
+            } else {
+                viewController.view.bringSubviewToFront(self.playerView)
+            }
+        }
+    }
+
+    @objc func setPlayerPosition(_ call: CAPPluginCall) {
+        print("setPlayerPosition")
+        let toBack = call.getBool("toBack", false)
+        _setPlayerPosition(toBack: toBack)
+        call.resolve()
+    }
     
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
@@ -267,18 +286,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 call.reject("Unable to access the view controller")
                 return
             }
-            if (toBack) {
-                viewController.view.addSubview(self.playerView)
-                DispatchQueue.main.async {
-                    self.webView?.backgroundColor = UIColor.clear
-                    self.webView?.isOpaque = false
-                    self.webView?.scrollView.backgroundColor = UIColor.clear
-                    self.webView?.scrollView.isOpaque = false
-                }
-            } else {
-                viewController.view.addSubview(self.playerView)
-                viewController.view.bringSubviewToFront(self.playerView)
-            }
+            viewController.view.addSubview(self.playerView)
+            _setPlayerPosition(toBack: toBack)
         }
         call.resolve()
     }

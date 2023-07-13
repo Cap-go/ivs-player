@@ -79,7 +79,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     public void onActivityStarted(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityStarted");
     }
-    
+
     @Override
     public void onActivityStopped(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityStopped");
@@ -88,7 +88,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @Override
     public void onActivityResumed(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityResumed");
-        
+
     }
 
     @Override
@@ -275,7 +275,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 if (autoPlay == null || !autoPlay) {
                     playerView.getPlayer().pause();
                 }
-                setPlayerPosition(toBack);
+                _setPlayerPosition(toBack);
             }
         });
         call.resolve();
@@ -554,18 +554,46 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
         if (isFullScreen) {
             int halfScreenSizeX = size.x / 2;
-            animateResize(playerView.getWidth(), playerView.getHeight(), halfScreenSizeX, calcHeight(halfScreenSizeX));
+            animateResize(playerView.getWidth(), playerView.getHeight(), halfScreenSizeX, calcHeight(halfScreenSizeX), x, y, x, y);
         } else {
             // Maximize the player view width with animation and calculate the new height
             int newPlayerSizeX = calcHeight(size.x);
-            animateResize(playerView.getWidth(), playerView.getHeight(), size.x, newPlayerSizeX);
+            animateResize(playerView.getWidth(), playerView.getHeight(), size.x, newPlayerSizeX, x, y, x, y);
         }
 
         // Toggle the full screen flag
         isFullScreen = !isFullScreen;
     }
 
-    private void animateResize(int startWidth, int startHeight, int endWidth, int endHeight) {
+    private void animateResize(int startWidth, int startHeight, int endWidth, int endHeight, int startX, int startY, int endX, int endY) {
+        // ValueAnimator XAnimator = ValueAnimator.ofFloat(startX, endX);
+        // XAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        //     @Override
+        //     public void onAnimationUpdate(ValueAnimator animation) {
+        //         float animatedValue = (float) animation.getAnimatedValue();
+        //         int maxMarginX = size.x - (int) animatedValue;
+        //         int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
+        //         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+        //         layoutParams.leftMargin = newMarginX;
+        //         playerView.setLayoutParams(layoutParams);
+        //         playerView.requestLayout();
+        //     }
+        // });
+
+        // ValueAnimator YAnimator = ValueAnimator.ofFloat(startY, endY);
+        // YAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        //     @Override
+        //     public void onAnimationUpdate(ValueAnimator animation) {
+        //         float animatedValue = (float) animation.getAnimatedValue();
+        //         int maxMarginY = size.y - (int) animatedValue;
+        //         int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
+        //         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+        //         layoutParams.topMargin = newMarginY;
+        //         playerView.setLayoutParams(layoutParams);
+        //         playerView.requestLayout();
+        //     }
+        // });
+
         ValueAnimator widthAnimator = ValueAnimator.ofFloat(startWidth, endWidth);
         widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -598,7 +626,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setDuration(300);
+
         animatorSet.playTogether(widthAnimator, heightAnimator);
+        // animatorSet.playTogether(widthAnimator, heightAnimator, XAnimator, YAnimator);
         animatorSet.start();
     }
 
@@ -621,7 +651,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     // function to send webview to front
-    private void setPlayerPosition(Boolean toBack) {
+    private void _setPlayerPosition(Boolean toBack) {
         if (toBack) {
             getBridge().getWebView().getParent().bringChildToFront(getBridge().getWebView());
             getBridge().getWebView().setBackgroundColor(0x00000000);
@@ -632,6 +662,13 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         }
     }
 
+    @PluginMethod
+    public void setPlayerPosition(PluginCall call) {
+        Boolean toBack = call.getBoolean("toBack", false);
+        _setPlayerPosition(toBack);
+        call.resolve();
+    }
+
     public void _setPip(Boolean pip, Boolean foregroundApp) {
         Log.i("CapacitorIvsPlayer", "_setPip pip: " + pip);
         getActivity().runOnUiThread(new Runnable() {
@@ -640,7 +677,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 Log.i("CapacitorIvsPlayer", "foregroundApp: " + foregroundApp + " pip: " + pip);
                 isPip = pip;
                 if (foregroundApp) {
-                    setPlayerPosition(!pip);
+                    _setPlayerPosition(!pip);
                     if (pip) {
                         makeFloating();
                     }
@@ -681,7 +718,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
     @PluginMethod
     public void setFrame(PluginCall call) {
-        Log.i("CapacitorIvsPlayer", "setFrame")
+        Log.i("CapacitorIvsPlayer", "setFrame");
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

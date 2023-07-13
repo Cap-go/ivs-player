@@ -20,6 +20,7 @@ export interface CapacitorIvsPlayerPlugin {
   delete(): Promise<void>;
   getUrl(): Promise<{ url: string }>;
   getState(): Promise<{ isPlaying: boolean }>;
+  setPlayerPosition(options?: { toBack: boolean }): Promise<void>;
   setAutoQuality(options?: { autoQuality?: boolean }): Promise<void>;
   getAutoQuality(): Promise<{ autoQuality: boolean }>;
   setPip(options?: { pip?: boolean }): Promise<void>;
