@@ -5,26 +5,59 @@ import UIKit
 import AVKit
 
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
+    
+    var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
 //        print("MyIVSPlayerDelegate state change \(state)")
-    }
-
-    func player(_ player: IVSPlayer, didFailWithError error: Error) {
-//        print("MyIVSPlayerDelegate error change \(error)")
-    }
-
-    func player(_ player: IVSPlayer, didChangeDuration duration: CMTime) {
-//        print("MyIVSPlayerDelegate duration change \(duration)")
+        var stateName = ""
+        switch state {
+            case .idle:
+                stateName = "IDLE"
+            case .buffering:
+                stateName = "BUFFERING"
+            case .ready:
+                stateName = "READY"
+            case .playing:
+                stateName = "PLAYING"
+            case .ended:
+                stateName = "ENDED"
+        @unknown default:
+            stateName = "UNKNOWN"
+        }
+        print("MyIVSPlayerDelegate \(stateName)")
+        capacitorPlugin.notifyListeners("onState", data: ["state": stateName])
     }
 
     func player(_ player: IVSPlayer, didOutputCue cue: IVSCue) {
-//        print("MyIVSPlayerDelegate didOutputCue change \(cue)")
+        capacitorPlugin.notifyListeners("onCue", data: ["cue": cue])
+    }
+
+    func player(_ player: IVSPlayer, didChangeDuration duration: CMTime) {
+        capacitorPlugin.notifyListeners("onDuration", data: ["duration": duration.seconds])
+    }
+
+    func player(_ player: IVSPlayer, didFailWithError error: Error) {
+        capacitorPlugin.notifyListeners("onError", data: ["error": error.localizedDescription])
     }
 
     func playerWillRebuffer(_ player: IVSPlayer) {
-//        print("MyIVSPlayerDelegate Player will rebuffer and resume playback")
+        capacitorPlugin.notifyListeners("onRebuffer", data: [:])
     }
+    func player(_ player: IVSPlayer, didSeekTo time: CMTime) {
+        capacitorPlugin.notifyListeners("onSeek", data: ["position": time.seconds])
+    }
+    func player(_ player: IVSPlayer, didChangeVideoSize videoSize: CGSize) {
+        capacitorPlugin.notifyListeners("onVideoSize", data: ["videoSize": videoSize])
+    }
+
+    
+    func player(_ player: IVSPlayer, didChangeQuality quality: IVSQuality?) {
+        capacitorPlugin.notifyListeners("onQuality", data: ["quality": quality?.name ?? ""])
+    }
+    
+
+    
 }
 
 class TouchThroughView: IVSPlayerView {
@@ -57,6 +90,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         } catch {
             print("‼️ Could not setup AVAudioSession: \(error)")
         }
+        playerDelegate.capacitorPlugin = self
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deviceWillLock), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
         player.delegate = playerDelegate

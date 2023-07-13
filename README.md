@@ -36,8 +36,16 @@ npx cap sync
 * [`setQuality(...)`](#setquality)
 * [`getQuality()`](#getquality)
 * [`getQualities()`](#getqualities)
-* [`addListener('tooglePip', ...)`](#addlistenertooglepip)
+* [`addListener('togglePip', ...)`](#addlistenertogglepip)
 * [`addListener('closePip', ...)`](#addlistenerclosepip)
+* [`addListener('onState', ...)`](#addlisteneronstate)
+* [`addListener('onCues', ...)`](#addlisteneroncues)
+* [`addListener('onDuration', ...)`](#addlisteneronduration)
+* [`addListener('onError', ...)`](#addlisteneronerror)
+* [`addListener('onRebuffering', ...)`](#addlisteneronrebuffering)
+* [`addListener('onSeekCompleted', ...)`](#addlisteneronseekcompleted)
+* [`addListener('onVideoSize', ...)`](#addlisteneronvideosize)
+* [`addListener('onQuality', ...)`](#addlisteneronquality)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -238,15 +246,15 @@ getQualities() => Promise<{ qualities: string[]; }>
 --------------------
 
 
-### addListener('tooglePip', ...)
+### addListener('togglePip', ...)
 
 ```typescript
-addListener(eventName: "tooglePip", listenerFunc: (data: { pip: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: "togglePip", listenerFunc: (data: { pip: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 | Param              | Type                                              |
 | ------------------ | ------------------------------------------------- |
-| **`eventName`**    | <code>'tooglePip'</code>                          |
+| **`eventName`**    | <code>'togglePip'</code>                          |
 | **`listenerFunc`** | <code>(data: { pip: boolean; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
@@ -264,6 +272,134 @@ addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginLi
 | ------------------ | -------------------------- |
 | **`eventName`**    | <code>'closePip'</code>    |
 | **`listenerFunc`** | <code>() =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onState', ...)
+
+```typescript
+addListener(eventName: "onState", listenerFunc: (data: { state: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                               |
+| ------------------ | -------------------------------------------------- |
+| **`eventName`**    | <code>'onState'</code>                             |
+| **`listenerFunc`** | <code>(data: { state: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onCues', ...)
+
+```typescript
+addListener(eventName: "onCues", listenerFunc: (data: { cues: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                              |
+| ------------------ | ------------------------------------------------- |
+| **`eventName`**    | <code>'onCues'</code>                             |
+| **`listenerFunc`** | <code>(data: { cues: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onDuration', ...)
+
+```typescript
+addListener(eventName: "onDuration", listenerFunc: (data: { duration: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                  |
+| ------------------ | ----------------------------------------------------- |
+| **`eventName`**    | <code>'onDuration'</code>                             |
+| **`listenerFunc`** | <code>(data: { duration: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onError', ...)
+
+```typescript
+addListener(eventName: "onError", listenerFunc: (data: { error: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                               |
+| ------------------ | -------------------------------------------------- |
+| **`eventName`**    | <code>'onError'</code>                             |
+| **`listenerFunc`** | <code>(data: { error: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onRebuffering', ...)
+
+```typescript
+addListener(eventName: "onRebuffering", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                         |
+| ------------------ | ---------------------------- |
+| **`eventName`**    | <code>'onRebuffering'</code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>   |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onSeekCompleted', ...)
+
+```typescript
+addListener(eventName: "onSeekCompleted", listenerFunc: (data: { position: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                  |
+| ------------------ | ----------------------------------------------------- |
+| **`eventName`**    | <code>'onSeekCompleted'</code>                        |
+| **`listenerFunc`** | <code>(data: { position: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onVideoSize', ...)
+
+```typescript
+addListener(eventName: "onVideoSize", listenerFunc: (data: { width: number; height: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| **`eventName`**    | <code>'onVideoSize'</code>                                         |
+| **`listenerFunc`** | <code>(data: { width: number; height: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onQuality', ...)
+
+```typescript
+addListener(eventName: "onQuality", listenerFunc: (data: { quality: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                 |
+| ------------------ | ---------------------------------------------------- |
+| **`eventName`**    | <code>'onQuality'</code>                             |
+| **`listenerFunc`** | <code>(data: { quality: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

@@ -36,7 +36,9 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
 
+import com.amazonaws.ivs.player.Cue;
 import com.amazonaws.ivs.player.Player;
+import com.amazonaws.ivs.player.PlayerException;
 import com.amazonaws.ivs.player.PlayerView;
 import com.amazonaws.ivs.player.Quality;
 import com.getcapacitor.JSObject;
@@ -132,21 +134,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         Log.i("CapacitorIvsPlayer", "onActivityDestroyed");
     }
 
-    private void tooglePip(Boolean pip) {
+    private void togglePip(Boolean pip) {
         final JSObject ret = new JSObject();
         if (pip) {
             playerView.setClipToOutline(false);
             getBridge().getWebView().setVisibility(View.VISIBLE);
             ret.put("pip", false);
             isPip = false;
-            Log.i("CapacitorIvsPlayer", "tooglePip false");
+            Log.i("CapacitorIvsPlayer", "togglePip false");
         } else {
             getBridge().getWebView().setVisibility(View.INVISIBLE);
             ret.put("pip", true);
             isPip = true;
-            Log.i("CapacitorIvsPlayer", "tooglePip true");
+            Log.i("CapacitorIvsPlayer", "togglePip true");
         }
-        notifyListeners("tooglePip", ret);
+        notifyListeners("togglePip", ret);
     }
     private void closePip() {
         final JSObject ret = new JSObject();
@@ -195,18 +197,64 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 @Override
                 public void run() {
                     ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
-                    // Initialize the Player view
-                    playerView = new PlayerView(getContext());
                     _setFrame(x, y, width, height);
-                    playerView.requestFocus();
-                    playerView.setControlsEnabled(false);
-
                     // Load the URL into the player
                     Uri uri = Uri.parse(url);
                     playerView.getPlayer().load(uri);
                     if (autoPlay == null || !autoPlay) {
                         playerView.getPlayer().pause();
                     }
+                    // listen on player start
+                    playerView.getPlayer().addListener(new Player.Listener() {
+                        @Override
+                        public void onStateChanged(Player.State state) {
+                            final JSObject ret = new JSObject();
+                            ret.put("state", state);
+                            notifyListeners("onState", ret);
+                        }
+                        @Override
+                        public void onCue(Cue cue) {
+                            final JSObject ret = new JSObject();
+                            ret.put("cue", cue);
+                            notifyListeners("onCue", ret);
+                        }
+                        @Override
+                        public void onDurationChanged(long duration) {
+                            final JSObject ret = new JSObject();
+                            ret.put("duration", duration);
+                            notifyListeners("onDuration", ret);
+                        }
+                        @Override
+                        public void onError(PlayerException error) {
+                            final JSObject ret = new JSObject();
+                            ret.put("error", error);
+                            notifyListeners("onError", ret);
+                        }
+                        @Override
+                        public void onRebuffering() {
+                            final JSObject ret = new JSObject();
+                            notifyListeners("onRebuffering", ret);
+                        }
+                        @Override
+                        public void onSeekCompleted(long var1) {
+                            final JSObject ret = new JSObject();
+                            ret.put("position", var1);
+                            notifyListeners("onSeekCompleted", ret);
+                        }
+                        @Override
+                        public void onVideoSizeChanged(int var1, int var2) {
+                            final JSObject ret = new JSObject();
+                            ret.put("width", var1);
+                            ret.put("height", var2);
+                            notifyListeners("onVideoSize", ret);
+                        }
+                        @Override
+                        public void onQualityChanged(@NonNull Quality var1) {
+                            final JSObject ret = new JSObject();
+                            ret.put("quality", var1);
+                            notifyListeners("onQuality", ret);
+                        }
+                    });
                     finalMainPiPFrameLayout.addView(playerView);
                     setPlayerPosition(toBack);
                     var self = CapacitorIvsPlayerPlugin.this;
@@ -220,7 +268,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                                 closePip();
                             }
                             else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
-                                tooglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
+                                togglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
                             }
                         }
                     });
@@ -242,6 +290,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         expandAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.expand_animation);
         collapseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_animation);
 
+        // Initialize the Player view
+        playerView = new PlayerView(getContext());
+        playerView.requestFocus();
+        playerView.setControlsEnabled(false);
         // Create the expand button
         expandButton = new ImageView(getContext());
         shadowView = new View(getContext());
@@ -256,6 +308,36 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         playPauseButton = new ImageView(getContext());
         playPauseButton.setImageResource(R.drawable.baseline_pause_24);
 
+        // Set the button click listeners
+        expandButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                togglePip(true);
+                setDisplayPipButton(false);
+            }
+        });
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDisplayPipButton(false);
+                playerView.getPlayer().pause();
+                _setPip(false, true);
+            }
+        });
+
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (playerView.getPlayer().getState() == Player.State.PLAYING) {
+                    playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
+                    playerView.getPlayer().pause();
+                } else {
+                    playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+                    playerView.getPlayer().play();
+                }
+            }
+        });
 
         final Application application = (Application) this.getContext()
                 .getApplicationContext();
@@ -464,36 +546,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         // Show the buttons for 3 seconds
         setAutoHideDisplayButton();
 
-        // Set the button click listeners
-        expandButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tooglePip(true);
-                setDisplayPipButton(false);
-            }
-        });
-
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDisplayPipButton(false);
-                playerView.getPlayer().pause();
-                _setPip(false, true);
-            }
-        });
-
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (playerView.getPlayer().getState() == Player.State.PLAYING) {
-                    playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
-                    playerView.getPlayer().pause();
-                } else {
-                    playPauseButton.setImageResource(R.drawable.baseline_pause_24);
-                    playerView.getPlayer().play();
-                }
-            }
-        });
         // get middile of screen x y
         getDisplaySize();
         int width = size.x / 2;
