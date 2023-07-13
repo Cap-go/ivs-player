@@ -262,26 +262,31 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT
             ));
-
+            addPipListener();
+            addPlayerListener();
             final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
+
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
-                    _setFrame(x, y, width, height);
-                    // Load the URL into the player
-                    Uri uri = Uri.parse(url);
-                    playerView.getPlayer().load(uri);
-                    if (autoPlay == null || !autoPlay) {
-                        playerView.getPlayer().pause();
-                    }
-                    addPlayerListener();
                     finalMainPiPFrameLayout.addView(playerView);
-                    setPlayerPosition(toBack);
-                    addPipListener();
                 }
             });
         }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                _setFrame(x, y, width, height);
+                // Load the URL into the player
+                Uri uri = Uri.parse(url);
+                playerView.getPlayer().load(uri);
+                if (autoPlay == null || !autoPlay) {
+                    playerView.getPlayer().pause();
+                }
+                setPlayerPosition(toBack);
+            }
+        });
         call.resolve();
     }
 
@@ -296,6 +301,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         getDisplaySize();
         expandAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.expand_animation);
         collapseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_animation);
+
 
         // Initialize the Player view
         playerView = new PlayerView(getContext());
@@ -329,6 +335,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             public void onClick(View v) {
                 setDisplayPipButton(false);
                 playerView.getPlayer().pause();
+                playerView.setClipToOutline(false);
                 _setPip(false, true);
             }
         });
