@@ -281,6 +281,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                 // Load the URL into the player
                 Uri uri = Uri.parse(url);
                 playerView.getPlayer().load(uri);
+                playerView.setClipToOutline(false);
                 if (autoPlay == null || !autoPlay) {
                     playerView.getPlayer().pause();
                 }
