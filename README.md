@@ -5,7 +5,7 @@
 <h2><a href="https://capgo.app/">Check out: Capgo — live updates for capacitor</a></h2>
 </div>
 
-[Ivs player](https://docs.aws.amazon.com/ivs/latest/userguide/player.html) for Capacitor app only working in IOS for now, Android is WIP.
+[Ivs player](https://docs.aws.amazon.com/ivs/latest/userguide/player.html) for Capacitor app Android and IOS.
 
 ## Install
 

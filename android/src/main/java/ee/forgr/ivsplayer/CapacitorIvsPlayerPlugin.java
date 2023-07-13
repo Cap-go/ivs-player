@@ -163,6 +163,77 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         return (int) (width * 9.0 / 16.0);
     }
 
+    private void addPipListener() {
+        getBridge().getActivity().addOnPictureInPictureModeChangedListener(new Consumer<PictureInPictureModeChangedInfo>() {
+
+            @Override
+            public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
+                getBridge().getActivity().getLifecycle().getCurrentState();
+                final JSObject ret = new JSObject();
+                if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
+                    closePip();
+                }
+                else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
+                    togglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
+                }
+            }
+        });
+    }
+
+    private void addPlayerListener() {
+        // listen on player event
+        playerView.getPlayer().addListener(new Player.Listener() {
+            @Override
+            public void onStateChanged(Player.State state) {
+                final JSObject ret = new JSObject();
+                ret.put("state", state);
+                notifyListeners("onState", ret);
+            }
+            @Override
+            public void onCue(Cue cue) {
+                final JSObject ret = new JSObject();
+                ret.put("cue", cue);
+                notifyListeners("onCue", ret);
+            }
+            @Override
+            public void onDurationChanged(long duration) {
+                final JSObject ret = new JSObject();
+                ret.put("duration", duration);
+                notifyListeners("onDuration", ret);
+            }
+            @Override
+            public void onError(PlayerException error) {
+                final JSObject ret = new JSObject();
+                ret.put("error", error);
+                notifyListeners("onError", ret);
+            }
+            @Override
+            public void onRebuffering() {
+                final JSObject ret = new JSObject();
+                notifyListeners("onRebuffering", ret);
+            }
+            @Override
+            public void onSeekCompleted(long var1) {
+                final JSObject ret = new JSObject();
+                ret.put("position", var1);
+                notifyListeners("onSeekCompleted", ret);
+            }
+            @Override
+            public void onVideoSizeChanged(int var1, int var2) {
+                final JSObject ret = new JSObject();
+                ret.put("width", var1);
+                ret.put("height", var2);
+                notifyListeners("onVideoSize", ret);
+            }
+            @Override
+            public void onQualityChanged(@NonNull Quality var1) {
+                final JSObject ret = new JSObject();
+                ret.put("quality", var1);
+                notifyListeners("onQuality", ret);
+            }
+        });
+    }
+
     @PluginMethod
     public void create(PluginCall call) {
         // Calculate the corresponding height for a 16:9 ratio
@@ -204,74 +275,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     if (autoPlay == null || !autoPlay) {
                         playerView.getPlayer().pause();
                     }
-                    // listen on player start
-                    playerView.getPlayer().addListener(new Player.Listener() {
-                        @Override
-                        public void onStateChanged(Player.State state) {
-                            final JSObject ret = new JSObject();
-                            ret.put("state", state);
-                            notifyListeners("onState", ret);
-                        }
-                        @Override
-                        public void onCue(Cue cue) {
-                            final JSObject ret = new JSObject();
-                            ret.put("cue", cue);
-                            notifyListeners("onCue", ret);
-                        }
-                        @Override
-                        public void onDurationChanged(long duration) {
-                            final JSObject ret = new JSObject();
-                            ret.put("duration", duration);
-                            notifyListeners("onDuration", ret);
-                        }
-                        @Override
-                        public void onError(PlayerException error) {
-                            final JSObject ret = new JSObject();
-                            ret.put("error", error);
-                            notifyListeners("onError", ret);
-                        }
-                        @Override
-                        public void onRebuffering() {
-                            final JSObject ret = new JSObject();
-                            notifyListeners("onRebuffering", ret);
-                        }
-                        @Override
-                        public void onSeekCompleted(long var1) {
-                            final JSObject ret = new JSObject();
-                            ret.put("position", var1);
-                            notifyListeners("onSeekCompleted", ret);
-                        }
-                        @Override
-                        public void onVideoSizeChanged(int var1, int var2) {
-                            final JSObject ret = new JSObject();
-                            ret.put("width", var1);
-                            ret.put("height", var2);
-                            notifyListeners("onVideoSize", ret);
-                        }
-                        @Override
-                        public void onQualityChanged(@NonNull Quality var1) {
-                            final JSObject ret = new JSObject();
-                            ret.put("quality", var1);
-                            notifyListeners("onQuality", ret);
-                        }
-                    });
+                    addPlayerListener();
                     finalMainPiPFrameLayout.addView(playerView);
                     setPlayerPosition(toBack);
-                    var self = CapacitorIvsPlayerPlugin.this;
-                    getBridge().getActivity().addOnPictureInPictureModeChangedListener(new Consumer<PictureInPictureModeChangedInfo>() {
-
-                        @Override
-                        public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
-                            getBridge().getActivity().getLifecycle().getCurrentState();
-                            final JSObject ret = new JSObject();
-                            if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
-                                closePip();
-                            }
-                            else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
-                                togglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
-                            }
-                        }
-                    });
+                    addPipListener();
                 }
             });
         }
