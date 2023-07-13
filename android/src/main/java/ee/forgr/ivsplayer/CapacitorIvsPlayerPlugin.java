@@ -56,7 +56,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     private final int mainPiPFrameLayoutId = 257;
     private PlayerView playerView;
     private int marginButton = 40;
-    private Boolean currentStateDisplayButton = false;
+    private Boolean currentStateDisplayButton = true;
 
     private Point size = new Point();
     private FrameLayout.LayoutParams playerViewParams;
@@ -296,18 +296,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         display.getSize(size);
     }
 
-    @Override
-    public void load() {
-        super.load();
-        getDisplaySize();
+    private void prepareButtonInternalPip() {
         expandAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.expand_animation);
         collapseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_animation);
 
-
-        // Initialize the Player view
-        playerView = new PlayerView(getContext());
-        playerView.requestFocus();
-        playerView.setControlsEnabled(false);
         // Create the expand button
         expandButton = new ImageView(getContext());
         shadowView = new View(getContext());
@@ -321,6 +313,31 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         // Create the play pause button
         playPauseButton = new ImageView(getContext());
         playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+
+        FrameLayout.LayoutParams expandButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        expandButtonParams.gravity = Gravity.START | Gravity.TOP;
+        expandButtonParams.topMargin = marginButton;
+        expandButtonParams.leftMargin = marginButton;
+        expandButton.setLayoutParams(expandButtonParams);
+
+        FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        closeButtonParams.gravity = Gravity.END | Gravity.TOP;
+        closeButtonParams.topMargin = marginButton;
+        closeButtonParams.rightMargin = marginButton;
+        closeButton.setLayoutParams(closeButtonParams);
+
+        FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        playPauseButtonParams.gravity = Gravity.CENTER;
+        playPauseButton.setLayoutParams(playPauseButtonParams);
 
         // Set the button click listeners
         expandButton.setOnClickListener(new View.OnClickListener() {
@@ -351,6 +368,89 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     playPauseButton.setImageResource(R.drawable.baseline_pause_24);
                     playerView.getPlayer().play();
                 }
+            }
+        });
+        // Add the buttons to the player view layout
+        playerView.addView(shadowView);
+        playerView.addView(expandButton);
+        playerView.addView(closeButton);
+        playerView.addView(playPauseButton);
+        setDisplayPipButton(false);
+    }
+
+    @Override
+    public void load() {
+        super.load();
+        getDisplaySize();
+        // Initialize the Player view
+        playerView = new PlayerView(getContext());
+        playerView.requestFocus();
+        playerView.setControlsEnabled(false);
+        prepareButtonInternalPip();
+
+        // Set the corner radius
+        playerView.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 64);
+            }
+        });
+
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                toggleFullScreen();
+                return true;
+            }
+        });
+
+        // Initialize the scale gesture detector
+        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                // TODO: Handle scale gestures if needed
+                return true;
+            }
+        });
+
+        playerView.setOnTouchListener(new View.OnTouchListener() {
+            private int initialX;
+            private int initialY;
+            private float initialTouchX;
+            private float initialTouchY;
+            private int maxMarginX;
+            private int maxMarginY;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                // Calculate the maximum margin values for X and Y
+                gestureDetector.onTouchEvent(event);
+                scaleGestureDetector.onTouchEvent(event);
+                maxMarginX = size.x - playerViewParams.width;
+                maxMarginY = size.y - playerViewParams.height;
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        initialX = playerViewParams.leftMargin;
+                        initialY = playerViewParams.topMargin;
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        // Show the buttons for 3 seconds
+                        setAutoHideDisplayButton();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        int deltaX = (int) (event.getRawX() - initialTouchX);
+                        int deltaY = (int) (event.getRawY() - initialTouchY);
+                        // Clamp the new margin values within the screen limits
+                        int newMarginX = initialX + deltaX;
+                        int newMarginY = initialY + deltaY;
+                        newMarginX = Math.max(0, Math.min(newMarginX, maxMarginX));
+                        newMarginY = Math.max(0, Math.min(newMarginY, maxMarginY));
+                        playerViewParams.leftMargin = newMarginX;
+                        playerViewParams.topMargin = newMarginY;
+                        playerView.setLayoutParams(playerViewParams);
+                        break;
+                }
+                return true;
             }
         });
 
@@ -510,54 +610,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     public void makeFloating() {
-        // Set the corner radius
-        playerView.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 64);
-            }
-        });
         playerView.setClipToOutline(true);
 
-        FrameLayout.LayoutParams expandButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        expandButtonParams.gravity = Gravity.START | Gravity.TOP;
-        expandButtonParams.topMargin = marginButton;
-        expandButtonParams.leftMargin = marginButton;
-        expandButton.setLayoutParams(expandButtonParams);
-
-        FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        closeButtonParams.gravity = Gravity.END | Gravity.TOP;
-        closeButtonParams.topMargin = marginButton;
-        closeButtonParams.rightMargin = marginButton;
-        closeButton.setLayoutParams(closeButtonParams);
-
-        FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        playPauseButtonParams.gravity = Gravity.CENTER;
-        playPauseButton.setLayoutParams(playPauseButtonParams);
-
-        // Add the buttons to the player view layout
-        // check if already in view
-        if (shadowView.getParent() == null) {
-            playerView.addView(shadowView);
-        }
-        if (expandButton.getParent() == null) {
-            playerView.addView(expandButton);
-        }
-        if (closeButton.getParent() == null) {
-            playerView.addView(closeButton);
-        }
-        if (playPauseButton.getParent() == null) {
-            playerView.addView(playPauseButton);
-        }
         // Show the buttons for 3 seconds
         setAutoHideDisplayButton();
 
@@ -570,65 +624,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         int y = size.y - height - 30;
         // get half of width and calculate height
         _setFrame(x, y, width, height);
-
-        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                toggleFullScreen();
-                return true;
-            }
-        });
-
-        // Initialize the scale gesture detector
-        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                // Handle scale gestures if needed
-                return true;
-            }
-        });
-
-        playerView.setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-            private int maxMarginX;
-            private int maxMarginY;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                // Calculate the maximum margin values for X and Y
-                gestureDetector.onTouchEvent(event);
-                scaleGestureDetector.onTouchEvent(event);
-                maxMarginX = size.x - playerViewParams.width;
-                maxMarginY = size.y - playerViewParams.height;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        initialX = playerViewParams.leftMargin;
-                        initialY = playerViewParams.topMargin;
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-                        // Show the buttons for 3 seconds
-                        setAutoHideDisplayButton();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        int deltaX = (int) (event.getRawX() - initialTouchX);
-                        int deltaY = (int) (event.getRawY() - initialTouchY);
-                        // Clamp the new margin values within the screen limits
-                        int newMarginX = initialX + deltaX;
-                        int newMarginY = initialY + deltaY;
-                        newMarginX = Math.max(0, Math.min(newMarginX, maxMarginX));
-                        newMarginY = Math.max(0, Math.min(newMarginY, maxMarginY));
-                        playerViewParams.leftMargin = newMarginX;
-                        playerViewParams.topMargin = newMarginY;
-                        playerView.setLayoutParams(playerViewParams);
-                        break;
-                }
-                return true;
-            }
-        });
     }
+
     // function to send webview to front
     private void setPlayerPosition(Boolean toBack) {
         if (toBack) {
