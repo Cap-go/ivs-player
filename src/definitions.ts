@@ -7,6 +7,7 @@ interface CapacitorFrame {
 export interface PluginListenerHandle {
   remove: () => Promise<void>;
 }
+export type CapacitorIvsPlayerState = "IDLE" | "BUFFERING" | "READY" | "PLAYING" | "ENDED" | "UNKNOWN"; 
 export interface CapacitorIvsPlayerPlugin {
   create(options: {
     url: string,
@@ -45,7 +46,7 @@ export interface CapacitorIvsPlayerPlugin {
   addListener(
     eventName: "onState",
     listenerFunc: (data: {
-      state: string;
+      state: CapacitorIvsPlayerState;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   addListener(

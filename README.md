@@ -48,6 +48,7 @@ npx cap sync
 * [`addListener('onVideoSize', ...)`](#addlisteneronvideosize)
 * [`addListener('onQuality', ...)`](#addlisteneronquality)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -295,13 +296,13 @@ addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginLi
 ### addListener('onState', ...)
 
 ```typescript
-addListener(eventName: "onState", listenerFunc: (data: { state: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: "onState", listenerFunc: (data: { state: CapacitorIvsPlayerState; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
-| Param              | Type                                               |
-| ------------------ | -------------------------------------------------- |
-| **`eventName`**    | <code>'onState'</code>                             |
-| **`listenerFunc`** | <code>(data: { state: string; }) =&gt; void</code> |
+| Param              | Type                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onState'</code>                                                                                     |
+| **`listenerFunc`** | <code>(data: { state: <a href="#capacitorivsplayerstate">CapacitorIvsPlayerState</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -438,6 +439,14 @@ addListener(eventName: "onQuality", listenerFunc: (data: { quality: string; }) =
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### CapacitorIvsPlayerState
+
+<code>"IDLE" | "BUFFERING" | "READY" | "PLAYING" | "ENDED" | "UNKNOWN"</code>
 
 </docgen-api>
 
