@@ -252,7 +252,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve()
     }
 
-    @obj func _setPlayerPosition(Bool: toBack) {
+    @objc func _setPlayerPosition(toBack: Bool) {
         DispatchQueue.main.async {
             if (toBack) {
                 self.webView?.backgroundColor = UIColor.clear
@@ -260,6 +260,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 self.webView?.scrollView.backgroundColor = UIColor.clear
                 self.webView?.scrollView.isOpaque = false
             } else {
+                guard let viewController = self.bridge?.viewController else {
+                    return
+                }
                 viewController.view.bringSubviewToFront(self.playerView)
             }
         }
@@ -287,7 +290,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 return
             }
             viewController.view.addSubview(self.playerView)
-            _setPlayerPosition(toBack: toBack)
+            self._setPlayerPosition(toBack: toBack)
         }
         call.resolve()
     }
