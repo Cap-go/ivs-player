@@ -134,7 +134,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             notifyListeners("expandPip", ret);
         } else {
             getBridge().getWebView().setVisibility(View.INVISIBLE);
-            ret.put("pip", true);
             isPip = true;
             Log.i("CapacitorIvsPlayer", "togglePip true");
         }
@@ -252,8 +251,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT
             ));
-            addPipListener();
-            addPlayerListener();
             final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
 
             getActivity().runOnUiThread(new Runnable() {
@@ -378,6 +375,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         playerView.requestFocus();
         playerView.setControlsEnabled(false);
         prepareButtonInternalPip();
+        addPipListener();
+        addPlayerListener();
 
         // Set the corner radius
         playerView.setOutlineProvider(new ViewOutlineProvider() {
