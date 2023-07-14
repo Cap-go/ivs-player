@@ -478,7 +478,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @PluginMethod
     public void getState(PluginCall call) {
         final JSObject ret = new JSObject();
-        ret.put("isPlaying", playerView.getPlayer().getState());
+        ret.put("state", playerView.getPlayer().getState());
         call.resolve(ret);
     }
 

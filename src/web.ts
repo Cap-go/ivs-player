@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { CapacitorIvsPlayerPlugin } from './definitions';
+import type { CapacitorIvsPlayerState , CapacitorIvsPlayerPlugin } from './definitions';
 
 export class CapacitorIvsPlayerWeb
   extends WebPlugin
@@ -22,9 +22,9 @@ export class CapacitorIvsPlayerWeb
     console.log('getUrl');
     return { url: '' };
   }
-  async getState(): Promise<{ isPlaying: boolean }> {
+  async getState(): Promise<{ state: CapacitorIvsPlayerState }> {
     console.log('getState');
-    return { isPlaying: false };
+    return { state: 'UNKNOWN' };
   }
   async setPlayerPosition(options: { toBack: boolean }): Promise<void> {
     console.log('setPlayerPosition', options);

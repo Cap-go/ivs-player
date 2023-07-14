@@ -4,27 +4,31 @@ import AmazonIVSPlayer
 import UIKit
 import AVKit
 
+
+func stateToStateName (_ state: IVSPlayer.State) -> String {
+    switch state {
+        case .idle:
+            return "IDLE"
+        case .buffering:
+            return "BUFFERING"
+        case .ready:
+            return "READY"
+        case .playing:
+            return "PLAYING"
+        case .ended:
+            return "ENDED"
+    @unknown default:
+        return "UNKNOWN"
+    }
+}
+
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
     
     var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
 //        print("MyIVSPlayerDelegate state change \(state)")
-        var stateName = ""
-        switch state {
-            case .idle:
-                stateName = "IDLE"
-            case .buffering:
-                stateName = "BUFFERING"
-            case .ready:
-                stateName = "READY"
-            case .playing:
-                stateName = "PLAYING"
-            case .ended:
-                stateName = "ENDED"
-        @unknown default:
-            stateName = "UNKNOWN"
-        }
+        let stateName = stateToStateName(state)
         print("MyIVSPlayerDelegate \(stateName)")
         capacitorPlugin.notifyListeners("onState", data: ["state": stateName])
     }
@@ -348,8 +352,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func getState(_ call: CAPPluginCall) {
-        let isPlaying = player.state == .playing
-        call.resolve(["isPlaying": isPlaying])
+        let stateName = stateToStateName(player.state)
+        call.resolve(["state": stateName])
     }
     
     @objc func pause(_ call: CAPPluginCall) {

@@ -110,10 +110,10 @@ getUrl() => Promise<{ url: string; }>
 ### getState()
 
 ```typescript
-getState() => Promise<{ isPlaying: boolean; }>
+getState() => Promise<{ state: CapacitorIvsPlayerState; }>
 ```
 
-**Returns:** <code>Promise&lt;{ isPlaying: boolean; }&gt;</code>
+**Returns:** <code>Promise&lt;{ state: <a href="#capacitorivsplayerstate">CapacitorIvsPlayerState</a>; }&gt;</code>
 
 --------------------
 
