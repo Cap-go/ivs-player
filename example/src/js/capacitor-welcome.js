@@ -122,8 +122,8 @@ window.customElements.define(
 
     connectedCallback() {
       const self = this;
-      CapacitorIvsPlayer.addListener('togglePip', (res) => {
-        console.log('togglePip', res);
+      CapacitorIvsPlayer.addListener('expandPip', (res) => {
+        console.log('expandPip', res);
       });
       CapacitorIvsPlayer.addListener('closePip', (res) => {
         console.log('closePip', res);

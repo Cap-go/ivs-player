@@ -33,50 +33,93 @@ export interface CapacitorIvsPlayerPlugin {
   setQuality(options?: { quality: string }): Promise<void>;
   getQuality(): Promise<{ quality: string }>;
   getQualities(): Promise<{ qualities: string[] }>;
+  /**
+   * Listen for expend pip
+   *
+   * @since 1.0.0
+   */
   addListener(
-    eventName: "togglePip",
-    listenerFunc: (data: {
-      pip: boolean;
-    }) => void
+    eventName: "expandPip",
+    listenerFunc: () => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for close pip
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "closePip",
     listenerFunc: () => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for state changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onState",
     listenerFunc: (data: {
       state: CapacitorIvsPlayerState;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for cue changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onCues",
     listenerFunc: (data: {
       cues: string;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for duration changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onDuration",
     listenerFunc: (data: {
       duration: number;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for errors
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onError",
     listenerFunc: (data: {
       error: string;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for rebuffering
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onRebuffering",
     listenerFunc: () => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for position changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onSeekCompleted",
     listenerFunc: (data: {
       position: number;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for video size changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onVideoSize",
     listenerFunc: (data: {
@@ -84,10 +127,21 @@ export interface CapacitorIvsPlayerPlugin {
       height: number;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for quality changes
+   *
+   * @since 1.0.0
+   */
   addListener(
     eventName: "onQuality",
     listenerFunc: (data: {
       quality: string;
     }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Remove all listeners for this plugin.
+   *
+   * @since 1.0.0
+   */
+  removeAllListeners(): Promise<void>;
 }

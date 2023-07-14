@@ -125,20 +125,20 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     private void togglePip(Boolean pip) {
-        final JSObject ret = new JSObject();
         if (pip) {
             playerView.setClipToOutline(false);
             getBridge().getWebView().setVisibility(View.VISIBLE);
-            ret.put("pip", false);
             isPip = false;
             Log.i("CapacitorIvsPlayer", "togglePip false");
+            final JSObject ret = new JSObject();
+            notifyListeners("expandPip", ret);
         } else {
             getBridge().getWebView().setVisibility(View.INVISIBLE);
             ret.put("pip", true);
             isPip = true;
             Log.i("CapacitorIvsPlayer", "togglePip true");
         }
-        notifyListeners("togglePip", ret);
+
     }
     private void closePip() {
         final JSObject ret = new JSObject();

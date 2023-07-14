@@ -37,7 +37,7 @@ npx cap sync
 * [`setQuality(...)`](#setquality)
 * [`getQuality()`](#getquality)
 * [`getQualities()`](#getqualities)
-* [`addListener('togglePip', ...)`](#addlistenertogglepip)
+* [`addListener('expandPip', ...)`](#addlistenerexpandpip)
 * [`addListener('closePip', ...)`](#addlistenerclosepip)
 * [`addListener('onState', ...)`](#addlisteneronstate)
 * [`addListener('onCues', ...)`](#addlisteneroncues)
@@ -47,6 +47,7 @@ npx cap sync
 * [`addListener('onSeekCompleted', ...)`](#addlisteneronseekcompleted)
 * [`addListener('onVideoSize', ...)`](#addlisteneronvideosize)
 * [`addListener('onQuality', ...)`](#addlisteneronquality)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -261,18 +262,22 @@ getQualities() => Promise<{ qualities: string[]; }>
 --------------------
 
 
-### addListener('togglePip', ...)
+### addListener('expandPip', ...)
 
 ```typescript
-addListener(eventName: "togglePip", listenerFunc: (data: { pip: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: "expandPip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
-| Param              | Type                                              |
-| ------------------ | ------------------------------------------------- |
-| **`eventName`**    | <code>'togglePip'</code>                          |
-| **`listenerFunc`** | <code>(data: { pip: boolean; }) =&gt; void</code> |
+Listen for expend pip
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'expandPip'</code>   |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -283,12 +288,16 @@ addListener(eventName: "togglePip", listenerFunc: (data: { pip: boolean; }) => v
 addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for close pip
+
 | Param              | Type                       |
 | ------------------ | -------------------------- |
 | **`eventName`**    | <code>'closePip'</code>    |
 | **`listenerFunc`** | <code>() =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -299,12 +308,16 @@ addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginLi
 addListener(eventName: "onState", listenerFunc: (data: { state: CapacitorIvsPlayerState; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for state changes
+
 | Param              | Type                                                                                                       |
 | ------------------ | ---------------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code>'onState'</code>                                                                                     |
 | **`listenerFunc`** | <code>(data: { state: <a href="#capacitorivsplayerstate">CapacitorIvsPlayerState</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -315,12 +328,16 @@ addListener(eventName: "onState", listenerFunc: (data: { state: CapacitorIvsPlay
 addListener(eventName: "onCues", listenerFunc: (data: { cues: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for cue changes
+
 | Param              | Type                                              |
 | ------------------ | ------------------------------------------------- |
 | **`eventName`**    | <code>'onCues'</code>                             |
 | **`listenerFunc`** | <code>(data: { cues: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -331,12 +348,16 @@ addListener(eventName: "onCues", listenerFunc: (data: { cues: string; }) => void
 addListener(eventName: "onDuration", listenerFunc: (data: { duration: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for duration changes
+
 | Param              | Type                                                  |
 | ------------------ | ----------------------------------------------------- |
 | **`eventName`**    | <code>'onDuration'</code>                             |
 | **`listenerFunc`** | <code>(data: { duration: number; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -347,12 +368,16 @@ addListener(eventName: "onDuration", listenerFunc: (data: { duration: number; })
 addListener(eventName: "onError", listenerFunc: (data: { error: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for errors
+
 | Param              | Type                                               |
 | ------------------ | -------------------------------------------------- |
 | **`eventName`**    | <code>'onError'</code>                             |
 | **`listenerFunc`** | <code>(data: { error: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -363,12 +388,16 @@ addListener(eventName: "onError", listenerFunc: (data: { error: string; }) => vo
 addListener(eventName: "onRebuffering", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for rebuffering
+
 | Param              | Type                         |
 | ------------------ | ---------------------------- |
 | **`eventName`**    | <code>'onRebuffering'</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>   |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -379,12 +408,16 @@ addListener(eventName: "onRebuffering", listenerFunc: () => void) => Promise<Plu
 addListener(eventName: "onSeekCompleted", listenerFunc: (data: { position: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for position changes
+
 | Param              | Type                                                  |
 | ------------------ | ----------------------------------------------------- |
 | **`eventName`**    | <code>'onSeekCompleted'</code>                        |
 | **`listenerFunc`** | <code>(data: { position: number; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -395,12 +428,16 @@ addListener(eventName: "onSeekCompleted", listenerFunc: (data: { position: numbe
 addListener(eventName: "onVideoSize", listenerFunc: (data: { width: number; height: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for video size changes
+
 | Param              | Type                                                               |
 | ------------------ | ------------------------------------------------------------------ |
 | **`eventName`**    | <code>'onVideoSize'</code>                                         |
 | **`listenerFunc`** | <code>(data: { width: number; height: number; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -411,12 +448,29 @@ addListener(eventName: "onVideoSize", listenerFunc: (data: { width: number; heig
 addListener(eventName: "onQuality", listenerFunc: (data: { quality: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
+Listen for quality changes
+
 | Param              | Type                                                 |
 | ------------------ | ---------------------------------------------------- |
 | **`eventName`**    | <code>'onQuality'</code>                             |
 | **`listenerFunc`** | <code>(data: { quality: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
+
+Remove all listeners for this plugin.
+
+**Since:** 1.0.0
 
 --------------------
 

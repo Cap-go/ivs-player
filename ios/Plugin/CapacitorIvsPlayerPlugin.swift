@@ -306,7 +306,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("MyIVSPlayerDelegate didRestorePiP \(self.didRestorePiP)")
         if self.didRestorePiP {
             // This was a restore from PiP
-            self.notifyListeners("tooglePip", data: ["pip": false])
+            self.notifyListeners("expandPip", data: [:])
             self.didRestorePiP = false
         } else {
            // This was a close PiP
