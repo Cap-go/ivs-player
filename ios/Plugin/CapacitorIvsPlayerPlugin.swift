@@ -211,6 +211,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func setPip(_ call: CAPPluginCall) {
         print("setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
+            call.reject("Not possible right now")
             return
         }
         // check if isPictureInPicturePossible
@@ -225,7 +226,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         call.resolve()
     }
-    
+
+    @objc func getPip(_ call: CAPPluginCall) {
+        print("getPip")
+        guard #available(iOS 15, *), let pipController = pipController else {
+            call.reject("Not possible right now")
+            return
+        }
+        call.resolve(["pip": pipController.isPictureInPictureActive])
+    }
+
     @objc func _setFrame(_ call: CAPPluginCall) {
         guard let viewController = self.bridge?.viewController else {
             call.reject("Unable to access the view controller")
@@ -265,6 +275,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 self.webView?.scrollView.isOpaque = false
             } else {
                 guard let viewController = self.bridge?.viewController else {
+                    call.reject("Not possible right now")
                     return
                 }
                 viewController.view.bringSubviewToFront(self.playerView)
