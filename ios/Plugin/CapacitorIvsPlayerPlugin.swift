@@ -275,7 +275,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 self.webView?.scrollView.isOpaque = false
             } else {
                 guard let viewController = self.bridge?.viewController else {
-                    call.reject("Not possible right now")
                     return
                 }
                 viewController.view.bringSubviewToFront(self.playerView)
