@@ -387,6 +387,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         DispatchQueue.main.async {
             self.player.pause()
             self.playerView.removeFromSuperview()
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("Unable to access the view controller")
+                return
+            }
+            viewController.view.addSubview(self.playerView)
         }
         call.resolve()
     }
