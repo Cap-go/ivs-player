@@ -229,8 +229,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     public void create(PluginCall call) {
         // Calculate the corresponding height for a 16:9 ratio
         getDisplaySize();
-        var x = call.getInt("x", 0);
-        var y = call.getInt("y", 0);
+        var x = convertDpToPixel(call.getInt("x", 0));
+        var y = convertDpToPixel(call.getInt("y", 0));
         var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
         var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
         Log.i("CapacitorIvsPlayer", "create");
@@ -779,8 +779,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     @Override
                     public void run() {
                         getDisplaySize();
-                        var x = call.getInt("x", 0);
-                        var y = call.getInt("y", 0);
+                        var x = convertDpToPixel(call.getInt("x", 0));
+                        var y = convertDpToPixel(call.getInt("y", 0));
                         var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
                         var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
                         _setFrame(x, y, width, height);
