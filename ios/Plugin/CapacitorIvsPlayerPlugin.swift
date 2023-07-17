@@ -4,30 +4,29 @@ import AmazonIVSPlayer
 import UIKit
 import AVKit
 
-
 func stateToStateName (_ state: IVSPlayer.State) -> String {
     switch state {
-        case .idle:
-            return "IDLE"
-        case .buffering:
-            return "BUFFERING"
-        case .ready:
-            return "READY"
-        case .playing:
-            return "PLAYING"
-        case .ended:
-            return "ENDED"
+    case .idle:
+        return "IDLE"
+    case .buffering:
+        return "BUFFERING"
+    case .ready:
+        return "READY"
+    case .playing:
+        return "PLAYING"
+    case .ended:
+        return "ENDED"
     @unknown default:
         return "UNKNOWN"
     }
 }
 
 class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
-    
+
     var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
-//        print("MyIVSPlayerDelegate state change \(state)")
+        //        print("MyIVSPlayerDelegate state change \(state)")
         let stateName = stateToStateName(state)
         print("MyIVSPlayerDelegate \(stateName)")
         capacitorPlugin.notifyListeners("onState", data: ["state": stateName])
@@ -55,13 +54,10 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
         capacitorPlugin.notifyListeners("onVideoSize", data: ["videoSize": videoSize])
     }
 
-    
     func player(_ player: IVSPlayer, didChangeQuality quality: IVSQuality?) {
         capacitorPlugin.notifyListeners("onQuality", data: ["quality": quality?.name ?? ""])
     }
-    
 
-    
 }
 
 class TouchThroughView: IVSPlayerView {
@@ -80,14 +76,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     let player = IVSPlayer()
     let playerDelegate = MyIVSPlayerDelegate()
     let playerView = TouchThroughView()
-    private var _pipController: Any? = nil
+    private var _pipController: Any?
     private var isFScreen = false
     private var originalFrame: CGRect?
     private var originalParent: UIView?
     private var airplayButton = AVRoutePickerView()
     var didRestorePiP: Bool = false
 
-    public override func load() {
+    override public func load() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -117,7 +113,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             pipController.stopPictureInPicture()
         }
     }
-    
+
     @available(iOS 15, *)
     private var pipController: AVPictureInPictureController? {
         get {
@@ -139,7 +135,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         call.resolve()
     }
-    
+
     @objc func getQualities(_ call: CAPPluginCall) {
         var qualities = [String]()
         for quality in self.player.qualities {
@@ -151,7 +147,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func getQuality(_ call: CAPPluginCall) {
         call.resolve(["quality": self.player.quality?.name ?? ""])
     }
-        
+
     @objc func setQuality(_ call: CAPPluginCall) {
         guard let targetQualityName = call.getString("quality") else {
             print("Error: Quality name is not set")
@@ -160,7 +156,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
 
         var selectedQuality: IVSQuality?
-        
+
         // find quality in list
         for quality in self.player.qualities {
             if quality.name == targetQualityName {
@@ -168,14 +164,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 break
             }
         }
-        
+
         // Check if we found quality
         guard let targetQuality = selectedQuality else {
             print("Error: Quality not found")
             call.reject("Quality not found")
             return
         }
-        
+
         // Set quality
         DispatchQueue.main.async {
             self.player.quality = targetQuality
@@ -187,19 +183,19 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func getFrame(_ call: CAPPluginCall) {
         let frame = playerView.frame
         let frameDict: [String: CGFloat] = [
-        "x": frame.origin.x,
-        "y": frame.origin.y,
-        "width": frame.size.width,
-        "height": frame.size.height
+            "x": frame.origin.x,
+            "y": frame.origin.y,
+            "width": frame.size.width,
+            "height": frame.size.height
         ]
         call.resolve(frameDict)
     }
-    
+
     @objc func getMute(_ call: CAPPluginCall) {
         print("getMute")
         call.resolve(["mute": self.player.muted])
     }
-    
+
     @objc func setMute(_ call: CAPPluginCall) {
         print("setMute")
         DispatchQueue.main.async {
@@ -207,7 +203,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         call.resolve()
     }
-    
+
     @objc func setPip(_ call: CAPPluginCall) {
         print("setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
@@ -215,7 +211,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             return
         }
         // check if isPictureInPicturePossible
-        if (!pipController.isPictureInPicturePossible) {
+        if !pipController.isPictureInPicturePossible {
             call.reject("Not possible right now")
             return
         }
@@ -241,7 +237,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             call.reject("Unable to access the view controller")
             return
         }
-        
+
         let screenSize: CGRect = UIScreen.main.bounds
         let topPadding = viewController.view.safeAreaInsets.top
 
@@ -268,7 +264,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func _setPlayerPosition(toBack: Bool) {
         DispatchQueue.main.async {
-            if (toBack) {
+            if toBack {
                 self.webView?.backgroundColor = UIColor.clear
                 self.webView?.isOpaque = false
                 self.webView?.scrollView.backgroundColor = UIColor.clear
@@ -288,14 +284,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         _setPlayerPosition(toBack: toBack)
         call.resolve()
     }
-    
+
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
-        player.load(URL(string:url))
+        player.load(URL(string: url))
         DispatchQueue.main.async {
-            if (autoPlay) {
+            if autoPlay {
                 self.player.play()
             }
             self._setFrame(call)
@@ -308,7 +304,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         call.resolve()
     }
-    
+
     public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
         print("restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
         // The user tapped the "restore" button in PiP mode, set the flag to true
@@ -323,18 +319,17 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             self.notifyListeners("expandPip", data: [:])
             self.didRestorePiP = false
         } else {
-           // This was a close PiP
+            // This was a close PiP
             self.notifyListeners("closePip", data: [:])
         }
     }
 
-    
     private func preparePictureInPicture() {
 
         guard #available(iOS 15, *), AVPictureInPictureController.isPictureInPictureSupported() else {
             return
         }
-        
+
         if let existingController = self.pipController {
             if existingController.ivsPlayerLayer == playerView.playerLayer {
                 return
@@ -351,7 +346,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
         print("preparePictureInPicture done")
     }
-    
 
     @objc func getUrl(_ call: CAPPluginCall) {
         guard let url = player.path else {
@@ -365,7 +359,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let stateName = stateToStateName(player.state)
         call.resolve(["state": stateName])
     }
-    
+
     @objc func pause(_ call: CAPPluginCall) {
         print("pause")
         DispatchQueue.main.async {

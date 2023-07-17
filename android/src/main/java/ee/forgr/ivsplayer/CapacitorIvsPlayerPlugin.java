@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Rational;
 import android.view.Display;
@@ -29,13 +30,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
-
 import com.amazonaws.ivs.player.Cue;
 import com.amazonaws.ivs.player.Player;
 import com.amazonaws.ivs.player.PlayerException;
@@ -46,13 +45,12 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import org.json.JSONArray;
-
 import java.util.List;
+import org.json.JSONArray;
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 public class CapacitorIvsPlayerPlugin extends Plugin implements Application.ActivityLifecycleCallbacks {
+
     private final int mainPiPFrameLayoutId = 257;
     private PlayerView playerView;
     private int marginButton = 40;
@@ -88,34 +86,25 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @Override
     public void onActivityResumed(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityResumed");
-
     }
 
     @Override
     public void onActivityPaused(@NonNull final Activity activity) {
         Log.i("CapacitorIvsPlayer", "onActivityPaused");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PictureInPictureParams params = new PictureInPictureParams.Builder()
-                    .setAspectRatio(aspectRatio)
-                    .build();
+            PictureInPictureParams params = new PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build();
             getBridge().getActivity().enterPictureInPictureMode(params);
         }
         _setPip(true, false);
     }
 
     @Override
-    public void onActivityCreated(
-            @NonNull final Activity activity,
-            @Nullable final Bundle savedInstanceState
-    ) {
+    public void onActivityCreated(@NonNull final Activity activity, @Nullable final Bundle savedInstanceState) {
         Log.i("CapacitorIvsPlayer", "onActivityCreated");
     }
 
     @Override
-    public void onActivitySaveInstanceState(
-            @NonNull final Activity activity,
-            @NonNull final Bundle outState
-    ) {
+    public void onActivitySaveInstanceState(@NonNull final Activity activity, @NonNull final Bundle outState) {
         Log.i("CapacitorIvsPlayer", "onActivitySaveInstanceState");
     }
 
@@ -137,8 +126,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             isPip = true;
             Log.i("CapacitorIvsPlayer", "togglePip true");
         }
-
     }
+
     private void closePip() {
         final JSObject ret = new JSObject();
         getBridge().getWebView().setVisibility(View.VISIBLE);
@@ -153,74 +142,87 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     private void addPipListener() {
-        getBridge().getActivity().addOnPictureInPictureModeChangedListener(new Consumer<PictureInPictureModeChangedInfo>() {
-
-            @Override
-            public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
-                getBridge().getActivity().getLifecycle().getCurrentState();
-                final JSObject ret = new JSObject();
-                if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
-                    closePip();
+        getBridge()
+            .getActivity()
+            .addOnPictureInPictureModeChangedListener(
+                new Consumer<PictureInPictureModeChangedInfo>() {
+                    @Override
+                    public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
+                        getBridge().getActivity().getLifecycle().getCurrentState();
+                        final JSObject ret = new JSObject();
+                        if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
+                            closePip();
+                        } else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED) {
+                            togglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
+                        }
+                    }
                 }
-                else if (getBridge().getActivity().getLifecycle().getCurrentState() == Lifecycle.State.STARTED){
-                    togglePip(!pictureInPictureModeChangedInfo.isInPictureInPictureMode());
-                }
-            }
-        });
+            );
     }
 
     private void addPlayerListener() {
         // listen on player event
-        playerView.getPlayer().addListener(new Player.Listener() {
-            @Override
-            public void onStateChanged(Player.State state) {
-                final JSObject ret = new JSObject();
-                ret.put("state", state);
-                notifyListeners("onState", ret);
-            }
-            @Override
-            public void onCue(Cue cue) {
-                final JSObject ret = new JSObject();
-                ret.put("cue", cue);
-                notifyListeners("onCue", ret);
-            }
-            @Override
-            public void onDurationChanged(long duration) {
-                final JSObject ret = new JSObject();
-                ret.put("duration", duration);
-                notifyListeners("onDuration", ret);
-            }
-            @Override
-            public void onError(PlayerException error) {
-                final JSObject ret = new JSObject();
-                ret.put("error", error);
-                notifyListeners("onError", ret);
-            }
-            @Override
-            public void onRebuffering() {
-                final JSObject ret = new JSObject();
-                notifyListeners("onRebuffering", ret);
-            }
-            @Override
-            public void onSeekCompleted(long var1) {
-                final JSObject ret = new JSObject();
-                ret.put("position", var1);
-                notifyListeners("onSeekCompleted", ret);
-            }
-            @Override
-            public void onVideoSizeChanged(int var1, int var2) {
-                final JSObject ret = new JSObject();
-                ret.put("width", var1);
-                ret.put("height", var2);
-                notifyListeners("onVideoSize", ret);
-            }
-            @Override
-            public void onQualityChanged(@NonNull Quality var1) {
-                final JSObject ret = new JSObject();
-                ret.put("quality", var1);
-                notifyListeners("onQuality", ret);
-            }
-        });
+        playerView
+            .getPlayer()
+            .addListener(
+                new Player.Listener() {
+                    @Override
+                    public void onStateChanged(Player.State state) {
+                        final JSObject ret = new JSObject();
+                        ret.put("state", state);
+                        notifyListeners("onState", ret);
+                    }
+
+                    @Override
+                    public void onCue(Cue cue) {
+                        final JSObject ret = new JSObject();
+                        ret.put("cue", cue);
+                        notifyListeners("onCue", ret);
+                    }
+
+                    @Override
+                    public void onDurationChanged(long duration) {
+                        final JSObject ret = new JSObject();
+                        ret.put("duration", duration);
+                        notifyListeners("onDuration", ret);
+                    }
+
+                    @Override
+                    public void onError(PlayerException error) {
+                        final JSObject ret = new JSObject();
+                        ret.put("error", error);
+                        notifyListeners("onError", ret);
+                    }
+
+                    @Override
+                    public void onRebuffering() {
+                        final JSObject ret = new JSObject();
+                        notifyListeners("onRebuffering", ret);
+                    }
+
+                    @Override
+                    public void onSeekCompleted(long var1) {
+                        final JSObject ret = new JSObject();
+                        ret.put("position", var1);
+                        notifyListeners("onSeekCompleted", ret);
+                    }
+
+                    @Override
+                    public void onVideoSizeChanged(int var1, int var2) {
+                        final JSObject ret = new JSObject();
+                        ret.put("width", var1);
+                        ret.put("height", var2);
+                        notifyListeners("onVideoSize", ret);
+                    }
+
+                    @Override
+                    public void onQualityChanged(@NonNull Quality var1) {
+                        final JSObject ret = new JSObject();
+                        ret.put("quality", var1);
+                        notifyListeners("onQuality", ret);
+                    }
+                }
+            );
     }
 
     @PluginMethod
@@ -229,10 +231,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         getDisplaySize();
         var x = call.getInt("x", 0);
         var y = call.getInt("y", 0);
-        var width = call.getInt("width", size.x);
-        var height = call.getInt("height", calcHeight(size.x));
+        var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
+        var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
         Log.i("CapacitorIvsPlayer", "create");
-        String url = call.getString("url");
+        String url = call.getString("url", "");
         if (url == null) {
             call.reject("url is required");
         }
@@ -247,34 +249,39 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             mainPiPFrameLayout = new FrameLayout(getActivity().getApplicationContext());
             mainPiPFrameLayout.setId(mainPiPFrameLayoutId);
             // Apply the Layout Parameters to frameLayout
-            mainPiPFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT
-            ));
+            mainPiPFrameLayout.setLayoutParams(
+                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+            );
             final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
-                    finalMainPiPFrameLayout.addView(playerView);
-                }
-            });
+            getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
+                            finalMainPiPFrameLayout.addView(playerView);
+                        }
+                    }
+                );
         }
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                _setFrame(x, y, width, height);
-                // Load the URL into the player
-                Uri uri = Uri.parse(url);
-                playerView.getPlayer().load(uri);
-                playerView.setClipToOutline(false);
-                if (autoPlay == null || !autoPlay) {
-                    playerView.getPlayer().pause();
+        getActivity()
+            .runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        _setFrame(x, y, width, height);
+                        // Load the URL into the player
+                        Uri uri = Uri.parse(url);
+                        playerView.getPlayer().load(uri);
+                        playerView.setClipToOutline(false);
+                        if (autoPlay == null || !autoPlay) {
+                            playerView.getPlayer().pause();
+                        }
+                        _setPlayerPosition(toBack);
+                    }
                 }
-                _setPlayerPosition(toBack);
-            }
-        });
+            );
         call.resolve();
     }
 
@@ -303,8 +310,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         playPauseButton.setImageResource(R.drawable.baseline_pause_24);
 
         FrameLayout.LayoutParams expandButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
         expandButtonParams.gravity = Gravity.START | Gravity.TOP;
         expandButtonParams.topMargin = marginButton;
@@ -312,8 +319,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         expandButton.setLayoutParams(expandButtonParams);
 
         FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
         closeButtonParams.gravity = Gravity.END | Gravity.TOP;
         closeButtonParams.topMargin = marginButton;
@@ -321,43 +328,49 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         closeButton.setLayoutParams(closeButtonParams);
 
         FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
         playPauseButtonParams.gravity = Gravity.CENTER;
         playPauseButton.setLayoutParams(playPauseButtonParams);
 
         // Set the button click listeners
-        expandButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                togglePip(true);
-                setDisplayPipButton(false);
-            }
-        });
-
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDisplayPipButton(false);
-                playerView.getPlayer().pause();
-                playerView.setClipToOutline(false);
-                _setPip(false, true);
-            }
-        });
-
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (playerView.getPlayer().getState() == Player.State.PLAYING) {
-                    playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
-                    playerView.getPlayer().pause();
-                } else {
-                    playPauseButton.setImageResource(R.drawable.baseline_pause_24);
-                    playerView.getPlayer().play();
+        expandButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    togglePip(true);
+                    setDisplayPipButton(false);
                 }
             }
-        });
+        );
+
+        closeButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setDisplayPipButton(false);
+                    playerView.getPlayer().pause();
+                    playerView.setClipToOutline(false);
+                    _setPip(false, true);
+                }
+            }
+        );
+
+        playPauseButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (playerView.getPlayer().getState() == Player.State.PLAYING) {
+                        playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
+                        playerView.getPlayer().pause();
+                    } else {
+                        playPauseButton.setImageResource(R.drawable.baseline_pause_24);
+                        playerView.getPlayer().play();
+                    }
+                }
+            }
+        );
         // Add the buttons to the player view layout
         playerView.addView(shadowView);
         playerView.addView(expandButton);
@@ -379,73 +392,84 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         addPlayerListener();
 
         // Set the corner radius
-        playerView.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 64);
+        playerView.setOutlineProvider(
+            new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 64);
+                }
             }
-        });
+        );
 
-        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                toggleFullScreen();
-                return true;
-            }
-        });
+        gestureDetector =
+            new GestureDetector(
+                getContext(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        toggleFullScreen();
+                        return true;
+                    }
+                }
+            );
 
         // Initialize the scale gesture detector
-        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                // TODO: Handle scale gestures if needed
-                return true;
-            }
-        });
-
-        playerView.setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-            private int maxMarginX;
-            private int maxMarginY;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                // Calculate the maximum margin values for X and Y
-                gestureDetector.onTouchEvent(event);
-                scaleGestureDetector.onTouchEvent(event);
-                maxMarginX = size.x - playerViewParams.width;
-                maxMarginY = size.y - playerViewParams.height;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        initialX = playerViewParams.leftMargin;
-                        initialY = playerViewParams.topMargin;
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-                        // Show the buttons for 3 seconds
-                        setAutoHideDisplayButton();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        int deltaX = (int) (event.getRawX() - initialTouchX);
-                        int deltaY = (int) (event.getRawY() - initialTouchY);
-                        // Clamp the new margin values within the screen limits
-                        int newMarginX = initialX + deltaX;
-                        int newMarginY = initialY + deltaY;
-                        newMarginX = Math.max(0, Math.min(newMarginX, maxMarginX));
-                        newMarginY = Math.max(0, Math.min(newMarginY, maxMarginY));
-                        playerViewParams.leftMargin = newMarginX;
-                        playerViewParams.topMargin = newMarginY;
-                        playerView.setLayoutParams(playerViewParams);
-                        break;
+        scaleGestureDetector =
+            new ScaleGestureDetector(
+                getContext(),
+                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    @Override
+                    public boolean onScale(ScaleGestureDetector detector) {
+                        // TODO: Handle scale gestures if needed
+                        return true;
+                    }
                 }
-                return true;
-            }
-        });
+            );
 
-        final Application application = (Application) this.getContext()
-                .getApplicationContext();
+        playerView.setOnTouchListener(
+            new View.OnTouchListener() {
+                private int initialX;
+                private int initialY;
+                private float initialTouchX;
+                private float initialTouchY;
+                private int maxMarginX;
+                private int maxMarginY;
+
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    // Calculate the maximum margin values for X and Y
+                    gestureDetector.onTouchEvent(event);
+                    scaleGestureDetector.onTouchEvent(event);
+                    maxMarginX = size.x - playerViewParams.width;
+                    maxMarginY = size.y - playerViewParams.height;
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            initialX = playerViewParams.leftMargin;
+                            initialY = playerViewParams.topMargin;
+                            initialTouchX = event.getRawX();
+                            initialTouchY = event.getRawY();
+                            // Show the buttons for 3 seconds
+                            setAutoHideDisplayButton();
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            int deltaX = (int) (event.getRawX() - initialTouchX);
+                            int deltaY = (int) (event.getRawY() - initialTouchY);
+                            // Clamp the new margin values within the screen limits
+                            int newMarginX = initialX + deltaX;
+                            int newMarginY = initialY + deltaY;
+                            newMarginX = Math.max(0, Math.min(newMarginX, maxMarginX));
+                            newMarginY = Math.max(0, Math.min(newMarginY, maxMarginY));
+                            playerViewParams.leftMargin = newMarginX;
+                            playerViewParams.topMargin = newMarginY;
+                            playerView.setLayoutParams(playerViewParams);
+                            break;
+                    }
+                    return true;
+                }
+            }
+        );
+
+        final Application application = (Application) this.getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(this);
     }
 
@@ -495,7 +519,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         call.resolve(ret);
     }
 
-
     @PluginMethod
     public void getPip(PluginCall call) {
         final JSObject ret = new JSObject();
@@ -503,18 +526,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         call.resolve(ret);
     }
 
-    private void setAutoHideDisplayButton () {
+    private void setAutoHideDisplayButton() {
         setDisplayPipButton(true);
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setDisplayPipButton(false);
-            }
-        }, 3000);
+        handler.postDelayed(
+            new Runnable() {
+                @Override
+                public void run() {
+                    setDisplayPipButton(false);
+                }
+            },
+            3000
+        );
     }
 
-    private void setDisplayPipButton (boolean displayPipButton) {
+    private void setDisplayPipButton(boolean displayPipButton) {
         if (currentStateDisplayButton == displayPipButton) {
             return;
         }
@@ -594,34 +620,38 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         // });
 
         ValueAnimator widthAnimator = ValueAnimator.ofFloat(startWidth, endWidth);
-        widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float animatedValue = (float) animation.getAnimatedValue();
-                playerView.getLayoutParams().width = (int) animatedValue;
-                int maxMarginX = size.x - (int) animatedValue;
-                int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
-                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-                layoutParams.leftMargin = newMarginX;
-                playerView.setLayoutParams(layoutParams);
-                playerView.requestLayout();
+        widthAnimator.addUpdateListener(
+            new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float animatedValue = (float) animation.getAnimatedValue();
+                    playerView.getLayoutParams().width = (int) animatedValue;
+                    int maxMarginX = size.x - (int) animatedValue;
+                    int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
+                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+                    layoutParams.leftMargin = newMarginX;
+                    playerView.setLayoutParams(layoutParams);
+                    playerView.requestLayout();
+                }
             }
-        });
+        );
 
         ValueAnimator heightAnimator = ValueAnimator.ofFloat(startHeight, endHeight);
-        heightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float animatedValue = (float) animation.getAnimatedValue();
-                playerView.getLayoutParams().height = (int) animatedValue;
-                int maxMarginY = size.y - (int) animatedValue;
-                int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
-                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-                layoutParams.topMargin = newMarginY;
-                playerView.setLayoutParams(layoutParams);
-                playerView.requestLayout();
+        heightAnimator.addUpdateListener(
+            new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float animatedValue = (float) animation.getAnimatedValue();
+                    playerView.getLayoutParams().height = (int) animatedValue;
+                    int maxMarginY = size.y - (int) animatedValue;
+                    int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
+                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+                    layoutParams.topMargin = newMarginY;
+                    playerView.setLayoutParams(layoutParams);
+                    playerView.requestLayout();
+                }
             }
-        });
+        );
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setDuration(300);
@@ -670,29 +700,31 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
     public void _setPip(Boolean pip, Boolean foregroundApp) {
         Log.i("CapacitorIvsPlayer", "_setPip pip: " + pip);
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("CapacitorIvsPlayer", "foregroundApp: " + foregroundApp + " pip: " + pip);
-                isPip = pip;
-                if (foregroundApp) {
-                    _setPlayerPosition(!pip);
-                    if (pip) {
-                        makeFloating();
+        getActivity()
+            .runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("CapacitorIvsPlayer", "foregroundApp: " + foregroundApp + " pip: " + pip);
+                        isPip = pip;
+                        if (foregroundApp) {
+                            _setPlayerPosition(!pip);
+                            if (pip) {
+                                makeFloating();
+                            }
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (pip) {
+                                setDisplayPipButton(false);
+                                getDisplaySize();
+                                // get PIP frame layout width and height
+                                int halfScreenSizeX = size.x / 2;
+                                int height = calcHeight(halfScreenSizeX);
+                                _setFrame(0, 0, halfScreenSizeX, height);
+                            }
+                        }
                     }
                 }
-                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    if (pip) {
-                        setDisplayPipButton(false);
-                        getDisplaySize();
-                        // get PIP frame layout width and height
-                        int halfScreenSizeX = size.x / 2;
-                        int height = calcHeight(halfScreenSizeX);
-                        _setFrame(0, 0, halfScreenSizeX, height);
-                    }
-                }
-            }
-        });
+            );
     }
 
     @PluginMethod
@@ -703,34 +735,59 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     }
 
     private void _setFrame(int x, int y, int width, int height) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("CapacitorIvsPlayer", "_setFrame x: " + x + " y: " + y + " width: " + width + " height: " + height);
-                playerViewParams = new FrameLayout.LayoutParams(width, height);
-                playerViewParams.setMargins(x, y, 0, 0);
-                playerView.setLayoutParams(playerViewParams);
-            }
-        });
+        getActivity()
+            .runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        playerViewParams = new FrameLayout.LayoutParams(width, height);
+                        playerViewParams.setMargins(x, y, 0, 0);
+                        playerView.setLayoutParams(playerViewParams);
+                    }
+                }
+            );
     }
+
     // function to get default height and width of the screen
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public int convertDpToPixel(int dp) {
+        return (int) (dp * ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @return A float value to represent dp equivalent to px value
+     */
+    public int convertPixelsToDp(int px) {
+        return (int) (px / ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
 
     @PluginMethod
     public void setFrame(PluginCall call) {
         Log.i("CapacitorIvsPlayer", "setFrame");
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                getDisplaySize();
-                var x = call.getInt("x", 0);
-                var y = call.getInt("y", 0);
-                var width = call.getInt("width", size.x);
-                var height = call.getInt("height", calcHeight(size.x));
-                Log.i("CapacitorIvsPlayer", "setFrame x: " + x + " y: " + y + " width: " + width + " height: " + height);
-                _setFrame(x, y, width, height);
-                call.resolve();
-            }
-        });
+        getActivity()
+            .runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        getDisplaySize();
+                        var x = call.getInt("x", 0);
+                        var y = call.getInt("y", 0);
+                        var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
+                        var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
+                        _setFrame(x, y, width, height);
+                        call.resolve();
+                    }
+                }
+            );
     }
 
     @PluginMethod
@@ -762,7 +819,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     @PluginMethod
     public void setQuality(PluginCall call) {
         String qualityName = call.getString("quality");
-//        loop through qualities and find the one with the name
+        //        loop through qualities and find the one with the name
         Quality quality = null;
         for (var q : playerView.getPlayer().getQualities()) {
             if (q.getName().equals(qualityName)) {

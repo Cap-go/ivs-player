@@ -1,12 +1,19 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { CapacitorIvsPlayerState , CapacitorIvsPlayerPlugin } from './definitions';
+import type {
+  CapacitorIvsPlayerState,
+  CapacitorIvsPlayerPlugin,
+} from './definitions';
 
 export class CapacitorIvsPlayerWeb
   extends WebPlugin
   implements CapacitorIvsPlayerPlugin
 {
-  async create(options: { autoPlay: boolean, url: string, toBack: boolean }): Promise<void> {
+  async create(options: {
+    autoPlay: boolean;
+    url: string;
+    toBack: boolean;
+  }): Promise<void> {
     console.log('create', options);
     return;
   }
@@ -34,11 +41,21 @@ export class CapacitorIvsPlayerWeb
     console.log('delete');
     return;
   }
-  async setFrame(options: { x: number, y: number, width: number, height: number }): Promise<void> {
+  async setFrame(options: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): Promise<void> {
     console.log('setPosition', options);
     return;
   }
-  async getFrame(): Promise<{ x: number, y: number, width: number, height: number }> {
+  async getFrame(): Promise<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }> {
     console.log('getPosition');
     return { x: 0, y: 0, width: 0, height: 0 };
   }

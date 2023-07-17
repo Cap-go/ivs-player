@@ -122,56 +122,73 @@ window.customElements.define(
 
     connectedCallback() {
       const self = this;
-      CapacitorIvsPlayer.addListener('expandPip', (res) => {
+      CapacitorIvsPlayer.addListener('expandPip', res => {
         console.log('expandPip', res);
       });
-      CapacitorIvsPlayer.addListener('closePip', (res) => {
+      CapacitorIvsPlayer.addListener('closePip', res => {
         console.log('closePip', res);
       });
 
-      self.shadowRoot.querySelector('#toggle-pip').addEventListener('click', async function (e) {
-        CapacitorIvsPlayer.getPip().then((res) => {
-          console.log("getPip", res);
-          CapacitorIvsPlayer.setPip({pip: 
-            !res.pip});
-        })
-      });
-      self.shadowRoot.querySelector('#autostart-stream').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        const url = "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"
-        CapacitorIvsPlayer.create({url, autoPlay: true, toBack: true});
-      });
-      self.shadowRoot.querySelector('#start-stream').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.start();
-      });
-      self.shadowRoot.querySelector('#pause-stream').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.pause();
-      });
-      self.shadowRoot.querySelector('#create-stream').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        const url = "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8"
-        CapacitorIvsPlayer.create({url, autoPlay: false, toBack: true});
-      });
-      self.shadowRoot.querySelector('#delete-stream').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.delete();
-      });
-      self.shadowRoot.querySelector('#get-frame').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.getFrame().then((frame) => {
-          console.log('frame', frame);
+      self.shadowRoot
+        .querySelector('#toggle-pip')
+        .addEventListener('click', async function (e) {
+          CapacitorIvsPlayer.getPip().then(res => {
+            console.log('getPip', res);
+            CapacitorIvsPlayer.setPip({ pip: !res.pip });
+          });
         });
-      });
-      self.shadowRoot.querySelector('#get-qualities').addEventListener('click', async function (e) {
-        // eslint-disable-next-line no-undef
-        CapacitorIvsPlayer.getQualities().then((qualities) => {
-          console.log('qualities', qualities);
+      self.shadowRoot
+        .querySelector('#autostart-stream')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          const url =
+            'https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8';
+          CapacitorIvsPlayer.create({ url, autoPlay: true, toBack: true });
         });
-      });
+      self.shadowRoot
+        .querySelector('#start-stream')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          CapacitorIvsPlayer.start();
+        });
+      self.shadowRoot
+        .querySelector('#pause-stream')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          CapacitorIvsPlayer.pause();
+        });
+      self.shadowRoot
+        .querySelector('#create-stream')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          const url =
+            'https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8';
+          CapacitorIvsPlayer.create({ url, autoPlay: false, toBack: true });
+        });
+      self.shadowRoot
+        .querySelector('#delete-stream')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          CapacitorIvsPlayer.delete();
+        });
+      self.shadowRoot
+        .querySelector('#get-frame')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          CapacitorIvsPlayer.getFrame().then(frame => {
+            console.log('frame', frame);
+          });
+        });
+      self.shadowRoot
+        .querySelector('#get-qualities')
+        .addEventListener('click', async function (e) {
+          // eslint-disable-next-line no-undef
+          CapacitorIvsPlayer.getQualities().then(qualities => {
+            console.log('qualities', qualities);
+          });
+        });
     }
-  }
+  },
 );
 
 window.customElements.define(
@@ -200,5 +217,5 @@ window.customElements.define(
     <slot></slot>
     `;
     }
-  }
+  },
 );
