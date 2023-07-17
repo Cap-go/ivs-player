@@ -185,9 +185,13 @@ getPip() => Promise<{ pip: boolean; }>
 setFrame(options?: { x?: number | undefined; y?: number | undefined; width?: number | undefined; height?: number | undefined; } | undefined) => Promise<void>
 ```
 
-| Param         | Type                                                                      |
-| ------------- | ------------------------------------------------------------------------- |
-| **`options`** | <code>{ x?: number; y?: number; width?: number; height?: number; }</code> |
+Set the frame of the player view, all number have to be positive and integers
+
+| Param         | Type                                                                      | Description                                         |
+| ------------- | ------------------------------------------------------------------------- | --------------------------------------------------- |
+| **`options`** | <code>{ x?: number; y?: number; width?: number; height?: number; }</code> | : number, y: number, width: number, height: number} |
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -265,7 +269,7 @@ getQualities() => Promise<{ qualities: string[]; }>
 ### addListener('expandPip', ...)
 
 ```typescript
-addListener(eventName: "expandPip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'expandPip', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for expend pip
@@ -285,7 +289,7 @@ Listen for expend pip
 ### addListener('closePip', ...)
 
 ```typescript
-addListener(eventName: "closePip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'closePip', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for close pip
@@ -305,7 +309,7 @@ Listen for close pip
 ### addListener('onState', ...)
 
 ```typescript
-addListener(eventName: "onState", listenerFunc: (data: { state: CapacitorIvsPlayerState; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onState', listenerFunc: (data: { state: CapacitorIvsPlayerState; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for state changes
@@ -325,7 +329,7 @@ Listen for state changes
 ### addListener('onCues', ...)
 
 ```typescript
-addListener(eventName: "onCues", listenerFunc: (data: { cues: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onCues', listenerFunc: (data: { cues: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for cue changes
@@ -345,7 +349,7 @@ Listen for cue changes
 ### addListener('onDuration', ...)
 
 ```typescript
-addListener(eventName: "onDuration", listenerFunc: (data: { duration: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onDuration', listenerFunc: (data: { duration: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for duration changes
@@ -365,7 +369,7 @@ Listen for duration changes
 ### addListener('onError', ...)
 
 ```typescript
-addListener(eventName: "onError", listenerFunc: (data: { error: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onError', listenerFunc: (data: { error: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for errors
@@ -385,7 +389,7 @@ Listen for errors
 ### addListener('onRebuffering', ...)
 
 ```typescript
-addListener(eventName: "onRebuffering", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onRebuffering', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for rebuffering
@@ -405,7 +409,7 @@ Listen for rebuffering
 ### addListener('onSeekCompleted', ...)
 
 ```typescript
-addListener(eventName: "onSeekCompleted", listenerFunc: (data: { position: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onSeekCompleted', listenerFunc: (data: { position: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for position changes
@@ -425,7 +429,7 @@ Listen for position changes
 ### addListener('onVideoSize', ...)
 
 ```typescript
-addListener(eventName: "onVideoSize", listenerFunc: (data: { width: number; height: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onVideoSize', listenerFunc: (data: { width: number; height: number; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for video size changes
@@ -445,7 +449,7 @@ Listen for video size changes
 ### addListener('onQuality', ...)
 
 ```typescript
-addListener(eventName: "onQuality", listenerFunc: (data: { quality: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onQuality', listenerFunc: (data: { quality: string; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for quality changes
@@ -500,7 +504,7 @@ Remove all listeners for this plugin.
 
 #### CapacitorIvsPlayerState
 
-<code>"IDLE" | "BUFFERING" | "READY" | "PLAYING" | "ENDED" | "UNKNOWN"</code>
+<code>'IDLE' | 'BUFFERING' | 'READY' | 'PLAYING' | 'ENDED' | 'UNKNOWN'</code>
 
 </docgen-api>
 

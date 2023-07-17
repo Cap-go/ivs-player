@@ -34,6 +34,12 @@ export interface CapacitorIvsPlayerPlugin {
   getAutoQuality(): Promise<{ autoQuality: boolean }>;
   setPip(options?: { pip?: boolean }): Promise<void>;
   getPip(): Promise<{ pip: boolean }>;
+  /**
+   * Set the frame of the player view, all number have to be positive and integers
+   * @param options {x: number, y: number, width: number, height: number}
+   * @returns
+   * @since 1.0.0
+   */
   setFrame(options?: {
     x?: number;
     y?: number;
