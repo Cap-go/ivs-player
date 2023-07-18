@@ -225,25 +225,47 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             );
     }
 
-    @PluginMethod
-    public void create(PluginCall call) {
-        // Calculate the corresponding height for a 16:9 ratio
-        getDisplaySize();
-        var x = (int) convertDpToPixel(call.getFloat("x", 0.0f));
-        var y = (int) convertDpToPixel(call.getFloat("y", 0.0f));
-        var width = (int) convertDpToPixel(call.getFloat("width", convertPixelsToDp(size.x)));
-        var height = (int) convertDpToPixel(call.getFloat("height", convertPixelsToDp(calcHeight(size.x))));
-        Log.i("CapacitorIvsPlayer", "create");
-        String url = call.getString("url", "");
-        if (url == null) {
-            call.reject("url is required");
+    public void loadUrl(String url, Boolean autoPlay) {
+        Log.i("CapacitorIvsPlayer", "loadUrl: " + url);
+        playerView.getPlayer().load(Uri.parse(url));
+        if (autoPlay) {
+            playerView.getPlayer().play();
         }
-        lastUrl = url;
-        Boolean autoPlay = call.getBoolean("autoPlay", false);
-        Boolean toBack = call.getBoolean("toBack", false);
+    }
+
+    public void cyclePlayer(String prevUrl, String nextUrl, Boolean autoPlay) {
         FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
+        //            && prevUrl != nextUrl
         if (mainPiPFrameLayout != null) {
             Log.i("CapacitorIvsPlayer", "FrameLayout for VideoPicker already exists");
+            // check if playerView is already in mainPiPFrameLayout
+            if (playerView.getParent() != null) {
+                Log.i("CapacitorIvsPlayer", "playerView is already in mainPiPFrameLayout");
+                if (prevUrl.equals(nextUrl)) {
+                    loadUrl(nextUrl, autoPlay);
+                    return;
+                }
+                // remove playerView from mainPiPFrameLayout
+                mainPiPFrameLayout.removeView(playerView);
+                // wait 30 ms and add it again
+                final Handler handler = new Handler();
+                final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
+                handler.postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            finalMainPiPFrameLayout.addView(playerView);
+                            loadUrl(nextUrl, autoPlay);
+                        }
+                    },
+                    30
+                );
+            } else {
+                Log.i("CapacitorIvsPlayer", "playerView is not in mainPiPFrameLayout");
+                // add playerView to mainPiPFrameLayout
+                mainPiPFrameLayout.addView(playerView);
+                loadUrl(nextUrl, autoPlay);
+            }
         } else {
             // Initialize a new FrameLayout as container for fragment
             mainPiPFrameLayout = new FrameLayout(getActivity().getApplicationContext());
@@ -261,23 +283,38 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                         public void run() {
                             ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
                             finalMainPiPFrameLayout.addView(playerView);
+                            loadUrl(nextUrl, autoPlay);
                         }
                     }
                 );
         }
+    }
+
+    @PluginMethod
+    public void create(PluginCall call) {
+        // Calculate the corresponding height for a 16:9 ratio
+        getDisplaySize();
+        var x = (int) convertDpToPixel(call.getFloat("x", 0.0f));
+        var y = (int) convertDpToPixel(call.getFloat("y", 0.0f));
+        var width = (int) convertDpToPixel(call.getFloat("width", convertPixelsToDp(size.x)));
+        var height = (int) convertDpToPixel(call.getFloat("height", convertPixelsToDp(calcHeight(size.x))));
+        Log.i("CapacitorIvsPlayer", "create");
+        String url = call.getString("url", "");
+        if (url == null) {
+            call.reject("url is required");
+        }
+        var prevUrl = lastUrl;
+        lastUrl = url;
+        Boolean autoPlay = call.getBoolean("autoPlay", false);
+        Boolean toBack = call.getBoolean("toBack", false);
         getActivity()
             .runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
+                        cyclePlayer(prevUrl, url, autoPlay);
                         _setFrame(x, y, width, height);
-                        // Load the URL into the player
-                        Uri uri = Uri.parse(url);
-                        playerView.getPlayer().load(uri);
                         playerView.setClipToOutline(false);
-                        if (autoPlay == null || !autoPlay) {
-                            playerView.getPlayer().pause();
-                        }
                         _setPlayerPosition(toBack);
                     }
                 }
@@ -487,7 +524,12 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
 
     @PluginMethod
     public void delete(PluginCall call) {
-        playerView.getPlayer().release();
+        FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
+        playerView.getPlayer().pause();
+        playerView.getPlayer().load(null);
+        // remove playerView from mainPiPFrameLayout
+        mainPiPFrameLayout.removeView(playerView);
+        // wait 30 ms and add it again
         call.resolve();
     }
 

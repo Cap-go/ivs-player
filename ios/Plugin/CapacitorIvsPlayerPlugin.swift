@@ -285,21 +285,45 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve()
     }
 
+    public func loadUrl(url: String, autoPlay: Bool) {
+        guard let viewController = self.bridge?.viewController else {
+            return
+        }
+        DispatchQueue.main.async {
+            viewController.view.addSubview(self.playerView)
+            self.player.load(URL(string: url))
+            if autoPlay {
+                self.player.play()
+            }
+        }
+    }
+
+    public func cyclePlayer(prevUrl: String, nextUrl: String, autoPlay: Bool) {
+        guard let viewController = self.bridge?.viewController else {
+            return
+        }
+        if prevUrl != nextUrl {
+            // add again after 30 ms
+            self.player.load(nil)
+            self.playerView.removeFromSuperview()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
+                viewController.view.addSubview(self.playerView)
+                self.loadUrl(url: nextUrl, autoPlay: autoPlay)
+            }
+        } else {
+            viewController.view.addSubview(self.playerView)
+            self.loadUrl(url: nextUrl, autoPlay: autoPlay)
+        }
+    }
+
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
         let autoPlay = call.getBool("autoPlay", false)
         let toBack = call.getBool("toBack", false)
-        player.load(URL(string: url))
         DispatchQueue.main.async {
-            if autoPlay {
-                self.player.play()
-            }
+            self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url, autoPlay: autoPlay)
             self._setFrame(call)
-            guard let viewController = self.bridge?.viewController else {
-                call.reject("Unable to access the view controller")
-                return
-            }
-            viewController.view.addSubview(self.playerView)
+
             self._setPlayerPosition(toBack: toBack)
         }
         call.resolve()
@@ -380,12 +404,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("delete")
         DispatchQueue.main.async {
             self.player.pause()
-            self.playerView.removeFromSuperview()
-            guard let viewController = self.bridge?.viewController else {
-                call.reject("Unable to access the view controller")
-                return
-            }
-            viewController.view.addSubview(self.playerView)
+            self.player.load(nil)
         }
         call.resolve()
     }
