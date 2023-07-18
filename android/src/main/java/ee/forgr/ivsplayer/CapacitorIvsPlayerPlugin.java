@@ -45,6 +45,7 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import java.util.List;
 import org.json.JSONArray;
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
@@ -228,10 +229,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     public void create(PluginCall call) {
         // Calculate the corresponding height for a 16:9 ratio
         getDisplaySize();
-        var x = convertDpToPixel(call.getInt("x", 0));
-        var y = convertDpToPixel(call.getInt("y", 0));
-        var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
-        var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
+        var x = (int) convertDpToPixel(call.getFloat("x", 0.0f));
+        var y = (int) convertDpToPixel(call.getFloat("y", 0.0f));
+        var width = (int) convertDpToPixel(call.getFloat("width", convertPixelsToDp(size.x)));
+        var height = (int) convertDpToPixel(call.getFloat("height", convertPixelsToDp(calcHeight(size.x))));
         Log.i("CapacitorIvsPlayer", "create");
         String url = call.getString("url", "");
         if (url == null) {
@@ -755,8 +756,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public int convertDpToPixel(int dp) {
-        return (int) (dp * ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+    public float convertDpToPixel(float dp) {
+        return dp * ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     /**
@@ -765,8 +766,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
      * @param px A value in px (pixels) unit. Which we need to convert into db
      * @return A float value to represent dp equivalent to px value
      */
-    public int convertPixelsToDp(int px) {
-        return (int) (px / ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+    public float convertPixelsToDp(float px) {
+        return px / ((float) getContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     @PluginMethod
@@ -778,10 +779,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     @Override
                     public void run() {
                         getDisplaySize();
-                        var x = convertDpToPixel(call.getInt("x", 0));
-                        var y = convertDpToPixel(call.getInt("y", 0));
-                        var width = convertDpToPixel(call.getInt("width", convertPixelsToDp(size.x)));
-                        var height = convertDpToPixel(call.getInt("height", convertPixelsToDp(calcHeight(size.x))));
+                        var x = (int) convertDpToPixel(call.getFloat("x", 0.0f));
+                        var y = (int) convertDpToPixel(call.getFloat("y", 0.0f));
+                        var width = (int) convertDpToPixel(call.getFloat("width", convertPixelsToDp(size.x)));
+                        var height = (int) convertDpToPixel(call.getFloat("height", convertPixelsToDp(calcHeight(size.x))));
                         _setFrame(x, y, width, height);
                         call.resolve();
                     }
