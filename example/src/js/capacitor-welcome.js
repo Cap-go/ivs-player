@@ -1,15 +1,15 @@
 // import { Camera } from '@capacitor/camera';
-import { SplashScreen } from '@capacitor/splash-screen';
-import { CapacitorIvsPlayer } from '@capgo/ivs-player';
+import { SplashScreen } from "@capacitor/splash-screen";
+import { CapacitorIvsPlayer } from "@capgo/ivs-player";
 
 window.customElements.define(
-  'capacitor-welcome',
+  "capacitor-welcome",
   class extends HTMLElement {
     constructor() {
       super();
       SplashScreen.hide();
 
-      const root = this.attachShadow({ mode: 'open' });
+      const root = this.attachShadow({ mode: "open" });
 
       root.innerHTML = `
     <style>
@@ -122,81 +122,81 @@ window.customElements.define(
 
     connectedCallback() {
       const self = this;
-      CapacitorIvsPlayer.addListener('expandPip', res => {
-        console.log('expandPip', res);
+      CapacitorIvsPlayer.addListener("expandPip", (res) => {
+        console.log("expandPip", res);
       });
-      CapacitorIvsPlayer.addListener('closePip', res => {
-        console.log('closePip', res);
+      CapacitorIvsPlayer.addListener("closePip", (res) => {
+        console.log("closePip", res);
       });
 
       self.shadowRoot
-        .querySelector('#toggle-pip')
-        .addEventListener('click', async function (e) {
-          CapacitorIvsPlayer.getPip().then(res => {
-            console.log('getPip', res);
+        .querySelector("#toggle-pip")
+        .addEventListener("click", async function (e) {
+          CapacitorIvsPlayer.getPip().then((res) => {
+            console.log("getPip", res);
             CapacitorIvsPlayer.setPip({ pip: !res.pip });
           });
         });
       self.shadowRoot
-        .querySelector('#autostart-stream')
-        .addEventListener('click', async function (e) {
+        .querySelector("#autostart-stream")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
           const url =
-            'https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8';
+            "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8";
           CapacitorIvsPlayer.create({ url, autoPlay: true, toBack: true });
         });
       self.shadowRoot
-        .querySelector('#start-stream')
-        .addEventListener('click', async function (e) {
+        .querySelector("#start-stream")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.start();
         });
       self.shadowRoot
-        .querySelector('#pause-stream')
-        .addEventListener('click', async function (e) {
+        .querySelector("#pause-stream")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.pause();
         });
       self.shadowRoot
-        .querySelector('#create-stream')
-        .addEventListener('click', async function (e) {
+        .querySelector("#create-stream")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
           const url =
-            'https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8';
+            "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8";
           CapacitorIvsPlayer.create({ url, autoPlay: false, toBack: true });
         });
       self.shadowRoot
-        .querySelector('#delete-stream')
-        .addEventListener('click', async function (e) {
+        .querySelector("#delete-stream")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.delete();
         });
       self.shadowRoot
-        .querySelector('#get-frame')
-        .addEventListener('click', async function (e) {
+        .querySelector("#get-frame")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
-          CapacitorIvsPlayer.getFrame().then(frame => {
-            console.log('frame', frame);
+          CapacitorIvsPlayer.getFrame().then((frame) => {
+            console.log("frame", frame);
           });
         });
       self.shadowRoot
-        .querySelector('#get-qualities')
-        .addEventListener('click', async function (e) {
+        .querySelector("#get-qualities")
+        .addEventListener("click", async function (e) {
           // eslint-disable-next-line no-undef
-          CapacitorIvsPlayer.getQualities().then(qualities => {
-            console.log('qualities', qualities);
+          CapacitorIvsPlayer.getQualities().then((qualities) => {
+            console.log("qualities", qualities);
           });
         });
     }
-  },
+  }
 );
 
 window.customElements.define(
-  'capacitor-welcome-titlebar',
+  "capacitor-welcome-titlebar",
   class extends HTMLElement {
     constructor() {
       super();
-      const root = this.attachShadow({ mode: 'open' });
+      const root = this.attachShadow({ mode: "open" });
       root.innerHTML = `
     <style>
       :host {
@@ -217,5 +217,5 @@ window.customElements.define(
     <slot></slot>
     `;
     }
-  },
+  }
 );

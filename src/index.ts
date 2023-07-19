@@ -1,13 +1,13 @@
-import { registerPlugin } from '@capacitor/core';
+import { registerPlugin } from "@capacitor/core";
 
-import type { CapacitorIvsPlayerPlugin } from './definitions';
+import type { CapacitorIvsPlayerPlugin } from "./definitions";
 
 const CapacitorIvsPlayer = registerPlugin<CapacitorIvsPlayerPlugin>(
-  'CapacitorIvsPlayer',
+  "CapacitorIvsPlayer",
   {
-    web: () => import('./web').then(m => new m.CapacitorIvsPlayerWeb()),
-  },
+    web: () => import("./web").then((m) => new m.CapacitorIvsPlayerWeb()),
+  }
 );
 
-export * from './definitions';
+export * from "./definitions";
 export { CapacitorIvsPlayer };
