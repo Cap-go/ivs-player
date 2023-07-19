@@ -223,7 +223,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             call.reject("Not possible right now")
             return
         }
-        if call.getBool("pip", !pipController.isPictureInPictureActive) {
+        if call.getBool("pip", false) {
             pipController.startPictureInPicture()
         } else {
             pipController.stopPictureInPicture()

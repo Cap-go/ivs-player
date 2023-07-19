@@ -17,6 +17,7 @@ export type CapacitorIvsPlayerState =
 export interface CapacitorIvsPlayerPlugin {
   create(options: {
     url: string;
+    pip?: boolean;
     autoPlay?: boolean;
     toBack?: boolean;
     x?: number;
