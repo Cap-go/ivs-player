@@ -1,6 +1,6 @@
 {
   "name": "@capgo/ivs-player",
-  "version": "0.10.16",
+  "version": "0.10.18",
   "description": "Ivs player for capacitor app",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -25,7 +25,11 @@
   "keywords": [
     "capacitor",
     "plugin",
-    "native"
+    "native",
+    "video",
+    "ivs",
+    "player",
+    "aws"
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
