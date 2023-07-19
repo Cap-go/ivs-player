@@ -61,6 +61,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
     private FrameLayout.LayoutParams playerViewParams;
     private String lastUrl = "";
     private Boolean isPip = false;
+    private Boolean autoPlay = false;
     ImageView expandButton;
     ImageView closeButton;
     ImageView playPauseButton;
@@ -170,6 +171,14 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     public void onStateChanged(Player.State state) {
                         final JSObject ret = new JSObject();
                         ret.put("state", state);
+                        Log.i("CapacitorIvsPlayer", "onStateChanged: " + state);
+                        if(state == Player.State.READY && autoPlay) {
+                            playerView.getPlayer().play();
+                        }
+                        if(state == Player.State.PLAYING && playerView.getParent() == null) {
+                            FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
+                            mainPiPFrameLayout.addView(playerView);
+                        }
                         notifyListeners("onState", ret);
                     }
 
@@ -225,15 +234,12 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             );
     }
 
-    public void loadUrl(String url, Boolean autoPlay) {
+    public void loadUrl(String url) {
         Log.i("CapacitorIvsPlayer", "loadUrl: " + url);
         playerView.getPlayer().load(Uri.parse(url));
-        if (autoPlay) {
-            playerView.getPlayer().play();
-        }
     }
 
-    public void cyclePlayer(String prevUrl, String nextUrl, Boolean autoPlay) {
+    public void cyclePlayer(String prevUrl, String nextUrl) {
         FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
         //            && prevUrl != nextUrl
         if (mainPiPFrameLayout != null) {
@@ -242,29 +248,18 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
             if (playerView.getParent() != null) {
                 Log.i("CapacitorIvsPlayer", "playerView is already in mainPiPFrameLayout");
                 if (prevUrl.equals(nextUrl)) {
-                    loadUrl(nextUrl, autoPlay);
+                    loadUrl(nextUrl);
                     return;
                 }
                 // remove playerView from mainPiPFrameLayout
+                loadUrl(null, false);
                 mainPiPFrameLayout.removeView(playerView);
-                // wait 30 ms and add it again
-                final Handler handler = new Handler();
-                final FrameLayout finalMainPiPFrameLayout = mainPiPFrameLayout;
-                handler.postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            finalMainPiPFrameLayout.addView(playerView);
-                            loadUrl(nextUrl, autoPlay);
-                        }
-                    },
-                    30
-                );
+                loadUrl(nextUrl);
             } else {
                 Log.i("CapacitorIvsPlayer", "playerView is not in mainPiPFrameLayout");
                 // add playerView to mainPiPFrameLayout
                 mainPiPFrameLayout.addView(playerView);
-                loadUrl(nextUrl, autoPlay);
+                loadUrl(nextUrl);
             }
         } else {
             // Initialize a new FrameLayout as container for fragment
@@ -283,7 +278,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                         public void run() {
                             ((ViewGroup) getBridge().getWebView().getParent()).addView(finalMainPiPFrameLayout);
                             finalMainPiPFrameLayout.addView(playerView);
-                            loadUrl(nextUrl, autoPlay);
+                            loadUrl(nextUrl);
                         }
                     }
                 );
@@ -305,21 +300,21 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
         }
         var prevUrl = lastUrl;
         lastUrl = url;
-        Boolean autoPlay = call.getBoolean("autoPlay", false);
+        autoPlay = call.getBoolean("autoPlay", false);
         Boolean toBack = call.getBoolean("toBack", false);
         getActivity()
             .runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        cyclePlayer(prevUrl, url, autoPlay);
+                        cyclePlayer(prevUrl, url);
                         _setFrame(x, y, width, height);
                         playerView.setClipToOutline(false);
                         _setPlayerPosition(toBack);
+                        setPip(call);
                     }
                 }
             );
-        call.resolve();
     }
 
     private void getDisplaySize() {
