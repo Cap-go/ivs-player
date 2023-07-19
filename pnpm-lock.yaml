@@ -12,8 +12,8 @@ devDependencies:
     specifier: ^5.0.0
     version: 5.0.0
   '@capacitor/docgen':
-    specifier: ^0.0.18
-    version: 0.0.18
+    specifier: ^0.2.0
+    version: 0.2.0
   '@capacitor/ios':
     specifier: ^5.0.0
     version: 5.0.0(@capacitor/core@5.0.0)
@@ -22,7 +22,7 @@ devDependencies:
     version: 0.3.0(eslint@7.11.0)(typescript@4.1.5)
   '@ionic/prettier-config':
     specifier: ^1.0.1
-    version: 1.0.1(prettier@2.3.0)
+    version: 1.0.1(prettier@2.8.0)
   '@ionic/swiftlint-config':
     specifier: ^1.1.2
     version: 1.1.2
@@ -30,8 +30,8 @@ devDependencies:
     specifier: ^7.11.0
     version: 7.11.0
   prettier:
-    specifier: ~2.3.0
-    version: 2.3.0
+    specifier: ~2.8.0
+    version: 2.8.0
   prettier-plugin-java:
     specifier: ~1.0.2
     version: 1.0.2
@@ -90,13 +90,13 @@ packages:
       tslib: 2.6.0
     dev: true
 
-  /@capacitor/docgen@0.0.18:
-    resolution: {integrity: sha512-BVqzrbSi9u5IaKRLlG0H/ZW8M23FDJpH2018RTGVHRn2Yk3na9jOcItBc3r+rYiwgRgAHylNw9Lt7+lWmJBD3Q==}
+  /@capacitor/docgen@0.2.0:
+    resolution: {integrity: sha512-JoKuEx4Ep9LVnTY1I4zaoQPlxy+AWVMwwOSou/U9f/nXsL391aBRH7hC12lKNZGetiComnt369vQ+/r7n9iXfQ==}
     engines: {node: '>=14.5.0'}
     hasBin: true
     dependencies:
       '@types/node': 14.18.53
-      colorette: 1.4.0
+      colorette: 2.0.20
       github-slugger: 1.5.0
       minimist: 1.2.8
       typescript: 4.2.4
@@ -145,12 +145,12 @@ packages:
       - typescript
     dev: true
 
-  /@ionic/prettier-config@1.0.1(prettier@2.3.0):
+  /@ionic/prettier-config@1.0.1(prettier@2.8.0):
     resolution: {integrity: sha512-/v8UOW7rxkw/hvrRe/QfjlQsdjkm3sfAHoE3uqffO5BoNGijQMARrT32JT9Ei0g6KySXPyxxW+7LzPHrQmfzCw==}
     peerDependencies:
       prettier: ^2.0.0
     dependencies:
-      prettier: 2.3.0
+      prettier: 2.8.0
     dev: true
 
   /@ionic/swiftlint-config@1.1.2:
@@ -610,8 +610,8 @@ packages:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
 
-  /colorette@1.4.0:
-    resolution: {integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==}
+  /colorette@2.0.20:
+    resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
     dev: true
 
   /concat-map@0.0.1:
@@ -1619,8 +1619,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@2.3.0:
-    resolution: {integrity: sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==}
+  /prettier@2.8.0:
+    resolution: {integrity: sha512-9Lmg8hTFZKG0Asr/kW9Bp8tJjRVluO8EJQVfY2T7FMw9T5jy4I/Uvx0Rca/XWf50QQ1/SS48+6IJWnrb+2yemA==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
