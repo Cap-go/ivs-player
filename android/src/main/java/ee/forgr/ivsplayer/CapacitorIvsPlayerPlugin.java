@@ -172,10 +172,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                         final JSObject ret = new JSObject();
                         ret.put("state", state);
                         Log.i("CapacitorIvsPlayer", "onStateChanged: " + state);
-                        if(state == Player.State.READY && autoPlay) {
+                        if (state == Player.State.READY && autoPlay) {
                             playerView.getPlayer().play();
                         }
-                        if(state == Player.State.PLAYING && playerView.getParent() == null) {
+                        if (state == Player.State.PLAYING && playerView.getParent() == null) {
                             FrameLayout mainPiPFrameLayout = getBridge().getActivity().findViewById(mainPiPFrameLayoutId);
                             mainPiPFrameLayout.addView(playerView);
                         }
@@ -251,8 +251,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin implements Application.Acti
                     loadUrl(nextUrl);
                     return;
                 }
-                // remove playerView from mainPiPFrameLayout
-                loadUrl(null, false);
                 mainPiPFrameLayout.removeView(playerView);
                 loadUrl(nextUrl);
             } else {

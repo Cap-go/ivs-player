@@ -34,7 +34,7 @@ class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
         }
         // when playing add to view
         if state == .playing {
-           capacitorPlugin.bridge?.viewController?.view.addSubview(capacitorPlugin.playerView)
+            capacitorPlugin.bridge?.viewController?.view.addSubview(capacitorPlugin.playerView)
         }
         capacitorPlugin.notifyListeners("onState", data: ["state": stateName])
     }
