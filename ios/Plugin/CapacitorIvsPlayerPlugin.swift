@@ -226,6 +226,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         } else {
             pipController.stopPictureInPicture()
         }
+        print("MyIVSPlayerDelegate _setPip done")
         return true
     }
 
@@ -265,6 +266,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             width: width,
             height: height
         )
+        print("MyIVSPlayerDelegate _setFrame done")
         return true
     }
 
@@ -292,11 +294,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             }
             viewController.view.bringSubviewToFront(self.playerView)
         }
+        print("MyIVSPlayerDelegate _setPlayerPosition done")
         return true
     }
 
     @objc func setPlayerPosition(_ call: CAPPluginCall) {
-        print("setPlayerPosition")
+        print("MyIVSPlayerDelegate setPlayerPosition")
         let toBack = call.getBool("toBack", false)
         DispatchQueue.main.async {
             if(self._setPlayerPosition(toBack: toBack)) {
@@ -343,7 +346,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 call.reject("Unable to access the view controller")
             }
         }
-        call.resolve()
     }
 
     public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
