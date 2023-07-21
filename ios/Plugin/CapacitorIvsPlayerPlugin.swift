@@ -212,21 +212,28 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve()
     }
 
-    @objc func setPip(_ call: CAPPluginCall) {
+    @objc func _setPip(_ call: CAPPluginCall) -> Bool {
         print("MyIVSPlayerDelegate setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
             call.reject("Not possible right now")
-            return
+            return false
         }
         // check if isPictureInPicturePossible
         if !pipController.isPictureInPicturePossible {
             call.reject("Not possible right now")
-            return
+            return false
         }
         if call.getBool("pip", false) {
             pipController.startPictureInPicture()
         } else {
             pipController.stopPictureInPicture()
+        }
+        return true
+    }
+
+    @objc func setPip(_ call: CAPPluginCall) {
+        if (_setPip(call)) {
+            call.resolve()
         }
     }
 
@@ -322,7 +329,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         DispatchQueue.main.async {
             self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("MyIVSPlayerDelegate soon setPip")
-            self.setPip(call)
+            self._setPip(call)
             self._setFrame(call)
             self._setPlayerPosition(toBack: toBack)
         }
