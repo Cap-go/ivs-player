@@ -21,14 +21,14 @@ func stateToStateName (_ state: IVSPlayer.State) -> String {
     }
 }
 
-class MyIVSPlayerDelegate: NSObject, IVSPlayer.Delegate {
+class CapacitorIVSPlayer: NSObject, IVSPlayer.Delegate {
 
     var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
-        //        print("MyIVSPlayerDelegate state change \(state)")
+        //        print("CapacitorIVSPlayer state change \(state)")
         let stateName = stateToStateName(state)
-        print("MyIVSPlayerDelegate \(stateName)")
+        print("CapacitorIVSPlayer \(stateName)")
         if state == .ready && capacitorPlugin.autoPlay {
             capacitorPlugin.player.play()
         }
@@ -81,7 +81,7 @@ class TouchThroughView: IVSPlayerView {
 @objc(CapacitorIvsPlayerPlugin)
 public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDelegate {
     let player = IVSPlayer()
-    let playerDelegate = MyIVSPlayerDelegate()
+    let playerDelegate = CapacitorIVSPlayer()
     let playerView = TouchThroughView()
     private var _pipController: Any?
     private var isFScreen = false
@@ -96,17 +96,37 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print("MyIVSPlayerDelegate ‼️ Could not setup AVAudioSession: \(error)")
+            print("CapacitorIVSPlayer ‼️ Could not setup AVAudioSession: \(error)")
         }
         playerDelegate.capacitorPlugin = self
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_ :)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(deviceWillLock), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
+
         player.delegate = playerDelegate
         self.playerView.player = self.player
         self.preparePictureInPicture()
     }
 
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        print("CapacitorIVSPlayer applicationDidEnterBackground")
+        guard #available(iOS 15, *), let pipController = pipController else {
+            print("CapacitorIVSPlayer !pipController")
+            playerView.player?.pause()
+            return
+        }
+        print("CapacitorIVSPlayer isPictureInPicturePossible: \(pipController.isPictureInPicturePossible)")
+        print("CapacitorIVSPlayer isPictureInPictureSuspended: \(pipController.isPictureInPictureSuspended)")
+        print("CapacitorIVSPlayer isPictureInPictureActive: \(pipController.isPictureInPictureActive)")
+        if (!pipController.isPictureInPictureActive) {
+            playerView.player?.pause()
+        }
+    }
+    
     @objc func deviceWillLock() {
+        print("CapacitorIVSPlayer deviceWillLock")
         DispatchQueue.main.async {
             self.player.pause()
         }
@@ -116,7 +136,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         guard #available(iOS 15, *), let pipController = pipController else {
             return
         }
-        print("MyIVSPlayerDelegate applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
+        print("CapacitorIVSPlayer applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
         if pipController.isPictureInPictureActive {
             pipController.stopPictureInPicture()
         }
@@ -158,7 +178,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func setQuality(_ call: CAPPluginCall) {
         guard let targetQualityName = call.getString("quality") else {
-            print("MyIVSPlayerDelegate Error: Quality name is not set")
+            print("CapacitorIVSPlayer Error: Quality name is not set")
             call.reject("Quality name is not set")
             return
         }
@@ -175,7 +195,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
         // Check if we found quality
         guard let targetQuality = selectedQuality else {
-            print("MyIVSPlayerDelegate Error: Quality not found")
+            print("CapacitorIVSPlayer Error: Quality not found")
             call.reject("Quality not found")
             return
         }
@@ -200,12 +220,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func getMute(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate getMute")
+        print("CapacitorIVSPlayer getMute")
         call.resolve(["mute": self.player.muted])
     }
 
     @objc func setMute(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate setMute")
+        print("CapacitorIVSPlayer setMute")
         DispatchQueue.main.async {
             self.player.muted = call.getBool("muted", !self.player.muted)
         }
@@ -213,7 +233,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func _setPip(_ call: CAPPluginCall) -> Bool {
-        print("MyIVSPlayerDelegate setPip")
+        print("CapacitorIVSPlayer setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
             return false
         }
@@ -226,7 +246,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         } else {
             pipController.stopPictureInPicture()
         }
-        print("MyIVSPlayerDelegate _setPip done")
+        print("CapacitorIVSPlayer _setPip done")
         return true
     }
 
@@ -266,12 +286,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             width: width,
             height: height
         )
-        print("MyIVSPlayerDelegate _setFrame done")
+        print("CapacitorIVSPlayer _setFrame done")
         return true
     }
 
     @objc func setFrame(_ call: CAPPluginCall) {
-        print("setFrame x y")
+        print("CapacitorIVSPlayer setFrame x y")
         DispatchQueue.main.async {
             if(self._setFrame(call)) {
                 call.resolve()
@@ -294,12 +314,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             }
             viewController.view.bringSubviewToFront(self.playerView)
         }
-        print("MyIVSPlayerDelegate _setPlayerPosition done")
+        print("CapacitorIVSPlayer _setPlayerPosition done")
         return true
     }
 
     @objc func setPlayerPosition(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate setPlayerPosition")
+        print("CapacitorIVSPlayer setPlayerPosition")
         let toBack = call.getBool("toBack", false)
         DispatchQueue.main.async {
             if(self._setPlayerPosition(toBack: toBack)) {
@@ -312,7 +332,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     public func loadUrl(url: String) {
         self.player.load(URL(string: url))
-        print("MyIVSPlayerDelegate loadUrl")
+        print("CapacitorIVSPlayer loadUrl")
     }
 
     public func cyclePlayer(prevUrl: String, nextUrl: String) {
@@ -337,7 +357,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
             self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
-            print("MyIVSPlayerDelegate soon setPip")
+            print("CapacitorIVSPlayer soon setPip")
             if (self._setPip(call) && self._setFrame(call) && self._setPlayerPosition(toBack: toBack)) {
                 call.resolve()
             } else {
@@ -347,14 +367,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
-        print("MyIVSPlayerDelegate restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
+        print("CapacitorIVSPlayer restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
         // The user tapped the "restore" button in PiP mode, set the flag to true
         self.didRestorePiP = true
         completionHandler(true)
     }
 
     public func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        print("MyIVSPlayerDelegate didRestorePiP \(self.didRestorePiP)")
+        print("CapacitorIVSPlayer didRestorePiP \(self.didRestorePiP)")
         if self.didRestorePiP {
             // This was a restore from PiP
             self.notifyListeners("expandPip", data: [:])
@@ -385,7 +405,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.pipController = pipController
         pipController.delegate = self
         pipController.canStartPictureInPictureAutomaticallyFromInline = true
-        print("MyIVSPlayerDelegate preparePictureInPicture done")
+        print("CapacitorIVSPlayer preparePictureInPicture done")
     }
 
     @objc func getUrl(_ call: CAPPluginCall) {
@@ -402,7 +422,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func pause(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate pause")
+        print("CapacitorIVSPlayer pause")
         DispatchQueue.main.async {
             self.player.pause()
         }
@@ -410,7 +430,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func start(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate start")
+        print("CapacitorIVSPlayer start")
         DispatchQueue.main.async {
             self.player.play()
         }
@@ -418,7 +438,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func delete(_ call: CAPPluginCall) {
-        print("MyIVSPlayerDelegate delete")
+        print("CapacitorIVSPlayer delete")
         DispatchQueue.main.async {
             self.player.pause()
             self.player.load(nil)
