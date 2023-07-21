@@ -311,10 +311,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     public func loadUrl(url: String) {
-        DispatchQueue.main.async {
-            self.player.load(URL(string: url))
-            print("MyIVSPlayerDelegate loadUrl")
-        }
+        self.player.load(URL(string: url))
+        print("MyIVSPlayerDelegate loadUrl")
     }
 
     public func cyclePlayer(prevUrl: String, nextUrl: String) {
