@@ -215,12 +215,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func _setPip(_ call: CAPPluginCall) -> Bool {
         print("MyIVSPlayerDelegate setPip")
         guard #available(iOS 15, *), let pipController = pipController else {
-            call.reject("Not possible right now")
             return false
         }
         // check if isPictureInPicturePossible
         if !pipController.isPictureInPicturePossible {
-            call.reject("Not possible right now")
             return false
         }
         if call.getBool("pip", false) {
@@ -234,6 +232,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func setPip(_ call: CAPPluginCall) {
         if (_setPip(call)) {
             call.resolve()
+        } else {
+            call.reject("Not possible right now")
         }
     }
 
@@ -246,10 +246,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve(["pip": pipController.isPictureInPictureActive])
     }
 
-    @objc func _setFrame(_ call: CAPPluginCall) {
+    @objc func _setFrame(_ call: CAPPluginCall) -> Bool {
         guard let viewController = self.bridge?.viewController else {
-            call.reject("Unable to access the view controller")
-            return
+            return false
         }
 
         let screenSize: CGRect = UIScreen.main.bounds
@@ -266,37 +265,46 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             width: width,
             height: height
         )
+        return true
     }
 
     @objc func setFrame(_ call: CAPPluginCall) {
         print("setFrame x y")
         DispatchQueue.main.async {
-            self._setFrame(call)
+            if(self._setFrame(call)) {
+                call.resolve()
+            } else {
+                call.reject("Unable to access the view controller")
+            }
         }
         call.resolve()
     }
 
-    @objc func _setPlayerPosition(toBack: Bool) {
-        DispatchQueue.main.async {
-            if toBack {
-                self.webView?.backgroundColor = UIColor.clear
-                self.webView?.isOpaque = false
-                self.webView?.scrollView.backgroundColor = UIColor.clear
-                self.webView?.scrollView.isOpaque = false
-            } else {
-                guard let viewController = self.bridge?.viewController else {
-                    return
-                }
-                viewController.view.bringSubviewToFront(self.playerView)
+    @objc func _setPlayerPosition(toBack: Bool) -> Bool {
+        if toBack {
+            self.webView?.backgroundColor = UIColor.clear
+            self.webView?.isOpaque = false
+            self.webView?.scrollView.backgroundColor = UIColor.clear
+            self.webView?.scrollView.isOpaque = false
+        } else {
+            guard let viewController = self.bridge?.viewController else {
+                return false
             }
+            viewController.view.bringSubviewToFront(self.playerView)
         }
+        return true
     }
 
     @objc func setPlayerPosition(_ call: CAPPluginCall) {
         print("setPlayerPosition")
         let toBack = call.getBool("toBack", false)
-        _setPlayerPosition(toBack: toBack)
-        call.resolve()
+        DispatchQueue.main.async {
+            if(self._setPlayerPosition(toBack: toBack)) {
+                call.resolve()
+            } else {
+                call.reject("Unable to access the view controller")
+            }
+        }
     }
 
     public func loadUrl(url: String) {
@@ -329,9 +337,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         DispatchQueue.main.async {
             self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("MyIVSPlayerDelegate soon setPip")
-            self._setPip(call)
-            self._setFrame(call)
-            self._setPlayerPosition(toBack: toBack)
+            if (self._setPip(call) && self._setFrame(call) && self._setPlayerPosition(toBack: toBack)) {
+                call.resolve()
+            } else {
+                call.reject("Unable to access the view controller")
+            }
         }
         call.resolve()
     }
