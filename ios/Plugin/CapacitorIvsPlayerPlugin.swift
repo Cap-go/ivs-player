@@ -296,7 +296,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             if(self._setFrame(call)) {
                 call.resolve()
             } else {
-                call.reject("Unable to access the view controller")
+                call.reject("Unable to _setFrame")
             }
         }
         call.resolve()
@@ -325,7 +325,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             if(self._setPlayerPosition(toBack: toBack)) {
                 call.resolve()
             } else {
-                call.reject("Unable to access the view controller")
+                call.reject("Unable to _setPlayerPosition")
             }
         }
     }
@@ -335,9 +335,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer loadUrl")
     }
 
-    public func cyclePlayer(prevUrl: String, nextUrl: String) {
+    public func cyclePlayer(prevUrl: String, nextUrl: String) -> Bool {
         guard let viewController = self.bridge?.viewController else {
-            return
+            return false
         }
         if prevUrl != nextUrl {
             // add again after 30 ms
@@ -349,6 +349,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             viewController.view.addSubview(self.playerView)
             self.loadUrl(url: nextUrl)
         }
+        return true
     }
 
     @objc func create(_ call: CAPPluginCall) {
@@ -356,12 +357,15 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let toBack = call.getBool("toBack", false)
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
-            self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
+            let setupDone = self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("CapacitorIVSPlayer soon setPip")
-            if (self._setPip(call) && self._setFrame(call) && self._setPlayerPosition(toBack: toBack)) {
+            let PipDone = self._setPip(call)
+            let FrameDone = self._setFrame(call)
+            let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
+            if (setupDone && FrameDone && PlayerPositionDone) {
                 call.resolve()
             } else {
-                call.reject("Unable to access the view controller")
+                call.reject("Unable to cyclePlayer \(setupDone) or _setFrame \(FrameDone) or _setPlayerPosition \(PlayerPositionDone)")
             }
         }
     }
