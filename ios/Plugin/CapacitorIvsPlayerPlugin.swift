@@ -3,6 +3,7 @@ import Capacitor
 import AmazonIVSPlayer
 import UIKit
 import AVKit
+import MediaPlayer
 
 func stateToStateName (_ state: IVSPlayer.State) -> String {
     switch state {
@@ -110,6 +111,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.preparePictureInPicture()
     }
 
+
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         print("CapacitorIVSPlayer applicationDidEnterBackground")
         guard #available(iOS 15, *), let pipController = pipController else {
@@ -151,6 +153,29 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             _pipController = newValue
         }
     }
+
+    func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { [unowned self] event in
+            if self.player.state != .playing {
+                self.player.play()
+                return .success
+            }
+            return .commandFailed
+        }
+
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { [unowned self] event in
+            if self.player.state == .playing {
+                self.player.pause()
+                return .success
+            }
+            return .commandFailed
+        }
+    }
+
 
     @objc func getAutoQuality(_ call: CAPPluginCall) {
 
@@ -357,6 +382,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let toBack = call.getBool("toBack", false)
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
+            setupRemoteTransportControls()
             let setupDone = self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("CapacitorIVSPlayer soon setPip")
             let PipDone = self._setPip(call)
