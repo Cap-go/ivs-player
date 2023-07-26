@@ -382,10 +382,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let toBack = call.getBool("toBack", false)
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
-            setupRemoteTransportControls()
+            self.setupRemoteTransportControls()
             let setupDone = self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("CapacitorIVSPlayer soon setPip")
-            let PipDone = self._setPip(call)
+            self._setPip(call)
             let FrameDone = self._setFrame(call)
             let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
             if (setupDone && FrameDone && PlayerPositionDone) {
