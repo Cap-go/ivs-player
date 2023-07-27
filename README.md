@@ -21,6 +21,7 @@ npx cap sync
 
 * [`create(...)`](#create)
 * [`start()`](#start)
+* [`cast()`](#cast)
 * [`pause()`](#pause)
 * [`delete()`](#delete)
 * [`getUrl()`](#geturl)
@@ -73,6 +74,15 @@ create(options: { url: string; pip?: boolean; title?: string; cover?: string; au
 
 ```typescript
 start() => Promise<void>
+```
+
+--------------------
+
+
+### cast()
+
+```typescript
+cast() => Promise<void>
 ```
 
 --------------------

@@ -25,6 +25,10 @@ export class CapacitorIvsPlayerWeb
     console.log("pause");
     return;
   }
+  async cast(): Promise<void> {
+    console.log("cast");
+    return;
+  }
   async getUrl(): Promise<{ url: string }> {
     console.log("getUrl");
     return { url: "" };

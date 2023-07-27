@@ -377,6 +377,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         return true
     }
 
+    @objc func cast(_ call: CAPPluginCall) {
+        print("CapacitorIVSPlayer cast")
+        call.resolve()
+    }
+
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
         let toBack = call.getBool("toBack", false)

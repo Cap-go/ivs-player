@@ -319,6 +319,12 @@ public class CapacitorIvsPlayerPlugin
   }
 
   @PluginMethod
+  public void cast(PluginCall call) {
+    Log.i("CapacitorIvsPlayer", "cast");
+    call.resolve();
+  }
+
+  @PluginMethod
   public void create(PluginCall call) {
     // Calculate the corresponding height for a 16:9 ratio
     getDisplaySize();

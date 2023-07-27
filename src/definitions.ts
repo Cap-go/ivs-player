@@ -28,6 +28,7 @@ export interface CapacitorIvsPlayerPlugin {
     height?: number;
   }): Promise<void>;
   start(): Promise<void>;
+  cast(): Promise<void>;
   pause(): Promise<void>;
   delete(): Promise<void>;
   getUrl(): Promise<{ url: string }>;
