@@ -101,16 +101,37 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         playerDelegate.capacitorPlugin = self
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_ :)), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(deviceWillLock), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
+
+        let routeChangeNotification = AVAudioSession.routeChangeNotification
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAudioRouteChange(_:)), name: routeChangeNotification, object: nil)
 
         player.delegate = playerDelegate
         self.playerView.player = self.player
         self.preparePictureInPicture()
     }
 
+    @objc func handleAudioRouteChange(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let _ = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+            return
+        }
+        let session = AVAudioSession.sharedInstance()
+        for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.airPlay {
+            print("AirPlay is active")
+            self.playerView.player?.pause()
+            let player = AVPlayer(url: self.player.path!)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.bridge?.viewController?.present(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
+        }
+    }
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         print("CapacitorIVSPlayer applicationDidEnterBackground")
@@ -122,11 +143,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer isPictureInPicturePossible: \(pipController.isPictureInPicturePossible)")
         print("CapacitorIVSPlayer isPictureInPictureSuspended: \(pipController.isPictureInPictureSuspended)")
         print("CapacitorIVSPlayer isPictureInPictureActive: \(pipController.isPictureInPictureActive)")
-        if (!pipController.isPictureInPictureActive) {
+        if !pipController.isPictureInPictureActive {
             playerView.player?.pause()
         }
     }
-    
+
     @objc func deviceWillLock() {
         print("CapacitorIVSPlayer deviceWillLock")
         DispatchQueue.main.async {
@@ -154,11 +175,41 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
     }
 
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
+            guard let data = data, let image = UIImage(data: data), error == nil else {
+                completion(nil)
+                return
+            }
+            completion(image)
+        }
+        task.resume()
+    }
+
+    func setupNowPlayingInfo(title: String, subTitle: String, url: String) {
+        var nowPlayingInfo: [String: Any] = [
+            MPMediaItemPropertyTitle: title,
+            MPMediaItemPropertyArtist: subTitle,
+            MPMediaItemPropertyMediaType: MPMediaType.anyVideo.rawValue,
+            MPNowPlayingInfoPropertyIsLiveStream: true
+        ]
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        if let imageUrl = URL(string: url) {
+            fetchImage(from: imageUrl) { fetchedImage in
+                guard let image = fetchedImage else { return }
+
+                let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in return image }
+                nowPlayingInfo.updateValue(artwork, forKey: MPMediaItemPropertyArtwork)
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            }
+        }
+    }
+
     func setupRemoteTransportControls() {
         let commandCenter = MPRemoteCommandCenter.shared()
 
         commandCenter.playCommand.isEnabled = true
-        commandCenter.playCommand.addTarget { [unowned self] event in
+        commandCenter.playCommand.addTarget { [unowned self] _ in
             if self.player.state != .playing {
                 self.player.play()
                 return .success
@@ -167,7 +218,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
 
         commandCenter.pauseCommand.isEnabled = true
-        commandCenter.pauseCommand.addTarget { [unowned self] event in
+        commandCenter.pauseCommand.addTarget { [unowned self] _ in
             if self.player.state == .playing {
                 self.player.pause()
                 return .success
@@ -175,7 +226,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             return .commandFailed
         }
     }
-
 
     @objc func getAutoQuality(_ call: CAPPluginCall) {
 
@@ -276,7 +326,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func setPip(_ call: CAPPluginCall) {
-        if (_setPip(call)) {
+        if _setPip(call) {
             call.resolve()
         } else {
             call.reject("Not possible right now")
@@ -318,7 +368,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func setFrame(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer setFrame x y")
         DispatchQueue.main.async {
-            if(self._setFrame(call)) {
+            if self._setFrame(call) {
                 call.resolve()
             } else {
                 call.reject("Unable to _setFrame")
@@ -347,7 +397,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer setPlayerPosition")
         let toBack = call.getBool("toBack", false)
         DispatchQueue.main.async {
-            if(self._setPlayerPosition(toBack: toBack)) {
+            if self._setPlayerPosition(toBack: toBack) {
                 call.resolve()
             } else {
                 call.reject("Unable to _setPlayerPosition")
@@ -387,13 +437,17 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let toBack = call.getBool("toBack", false)
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
+            let title = call.getString("title", "")
+            let subTitle = call.getString("subtitle", "")
+            let cover = call.getString("cover", "")
+            self.setupNowPlayingInfo(title: title, subTitle: subTitle, url: cover)
             self.setupRemoteTransportControls()
             let setupDone = self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
             print("CapacitorIVSPlayer soon setPip")
             self._setPip(call)
             let FrameDone = self._setFrame(call)
             let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
-            if (setupDone && FrameDone && PlayerPositionDone) {
+            if setupDone && FrameDone && PlayerPositionDone {
                 call.resolve()
             } else {
                 call.reject("Unable to cyclePlayer \(setupDone) or _setFrame \(FrameDone) or _setPlayerPosition \(PlayerPositionDone)")

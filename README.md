@@ -60,12 +60,12 @@ npx cap sync
 ### create(...)
 
 ```typescript
-create(options: { url: string; pip?: boolean; title?: string; cover?: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
+create(options: { url: string; pip?: boolean; title?: string; subtitle?: string; cover?: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                                                                                                                        |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ url: string; pip?: boolean; title?: string; cover?: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
+| Param         | Type                                                                                                                                                                                           |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; pip?: boolean; title?: string; subtitle?: string; cover?: string; autoPlay?: boolean; toBack?: boolean; x?: number; y?: number; width?: number; height?: number; }</code> |
 
 --------------------
 

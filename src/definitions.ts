@@ -19,6 +19,7 @@ export interface CapacitorIvsPlayerPlugin {
     url: string;
     pip?: boolean;
     title?: string;
+    subtitle?: string;
     cover?: string;
     autoPlay?: boolean;
     toBack?: boolean;
