@@ -29,6 +29,10 @@ export class CapacitorIvsPlayerWeb
     console.log("cast");
     return;
   }
+  async getCastStatus(): Promise<{isActive: boolean}> {
+    console.log("getCastStatus");
+    return {isActive: false};
+  }
   async getUrl(): Promise<{ url: string }> {
     console.log("getUrl");
     return { url: "" };

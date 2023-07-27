@@ -23,4 +23,5 @@ CAP_PLUGIN(CapacitorIvsPlayerPlugin, "CapacitorIvsPlayer",
            CAP_PLUGIN_METHOD(getFrame, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(removeAllListeners, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(cast, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getCastStatus, CAPPluginReturnPromise);
 )

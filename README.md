@@ -22,6 +22,7 @@ npx cap sync
 * [`create(...)`](#create)
 * [`start()`](#start)
 * [`cast()`](#cast)
+* [`getCastStatus()`](#getcaststatus)
 * [`pause()`](#pause)
 * [`delete()`](#delete)
 * [`getUrl()`](#geturl)
@@ -48,6 +49,7 @@ npx cap sync
 * [`addListener('onSeekCompleted', ...)`](#addlisteneronseekcompleted)
 * [`addListener('onVideoSize', ...)`](#addlisteneronvideosize)
 * [`addListener('onQuality', ...)`](#addlisteneronquality)
+* [`addListener('onCastStatus', ...)`](#addlisteneroncaststatus)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
@@ -84,6 +86,17 @@ start() => Promise<void>
 ```typescript
 cast() => Promise<void>
 ```
+
+--------------------
+
+
+### getCastStatus()
+
+```typescript
+getCastStatus() => Promise<{ isActive: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ isActive: boolean; }&gt;</code>
 
 --------------------
 
@@ -468,6 +481,26 @@ Listen for quality changes
 | ------------------ | ---------------------------------------------------- |
 | **`eventName`**    | <code>'onQuality'</code>                             |
 | **`listenerFunc`** | <code>(data: { quality: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
+
+--------------------
+
+
+### addListener('onCastStatus', ...)
+
+```typescript
+addListener(eventName: "onCastStatus", listenerFunc: (data: { isActive: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Listen for cast status changes
+
+| Param              | Type                                                   |
+| ------------------ | ------------------------------------------------------ |
+| **`eventName`**    | <code>'onCastStatus'</code>                            |
+| **`listenerFunc`** | <code>(data: { isActive: boolean; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

@@ -432,6 +432,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         call.resolve()
     }
 
+    @objc func getCastStatus(_ call: CAPPluginCall) {
+        print("CapacitorIVSPlayer getCastStatus")
+        call.resolve(["isActive": false])
+    }
+
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
         let toBack = call.getBool("toBack", false)

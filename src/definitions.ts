@@ -30,6 +30,7 @@ export interface CapacitorIvsPlayerPlugin {
   }): Promise<void>;
   start(): Promise<void>;
   cast(): Promise<void>;
+  getCastStatus(): Promise<{ isActive: boolean }>;
   pause(): Promise<void>;
   delete(): Promise<void>;
   getUrl(): Promise<{ url: string }>;
@@ -146,6 +147,15 @@ export interface CapacitorIvsPlayerPlugin {
   addListener(
     eventName: "onQuality",
     listenerFunc: (data: { quality: string }) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  /**
+   * Listen for cast status changes
+   *
+   * @since 1.0.0
+   */
+  addListener(
+    eventName: "onCastStatus",
+    listenerFunc: (data: { isActive: boolean }) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   /**
    * Remove all listeners for this plugin.
