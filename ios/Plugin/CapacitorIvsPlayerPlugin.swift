@@ -114,6 +114,28 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.preparePictureInPicture()
     }
 
+    func handleNewAirPlaySource() {
+        print("AirPlay is active")
+        self.playerView.player?.pause()
+        let player = AVPlayer(url: self.player.path!)
+        let playerViewController = AVPlayerViewController()
+        playerViewController.player = player
+        self.bridge?.viewController?.present(playerViewController, animated: true) {
+            playerViewController.player!.play()
+        }
+        // send to listner
+        self.notifyListeners("onCastStatus", data: ["isActive": true])
+    }
+
+    func handleAirPlaySourceDeactivated() {
+        print("AirPlay is disabled")
+       // Handle what should happen when AirPlay is deactivated
+       // play the IVS again and remove the AVPLayer
+        self.bridge?.viewController?.dismiss(animated: true, completion: nil)
+        self.playerView.player?.play()
+        self.notifyListeners("onCastStatus", data: ["isActive": false])
+    }
+
     @objc func handleAudioRouteChange(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo,
               let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
@@ -122,14 +144,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         let session = AVAudioSession.sharedInstance()
         for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.airPlay {
-            print("AirPlay is active")
-            self.playerView.player?.pause()
-            let player = AVPlayer(url: self.player.path!)
-            let playerViewController = AVPlayerViewController()
-            playerViewController.player = player
-            self.bridge?.viewController?.present(playerViewController, animated: true) {
-                playerViewController.player!.play()
-            }
+            handleNewAirPlaySource()
         }
     }
 
