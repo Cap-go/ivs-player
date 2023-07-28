@@ -116,11 +116,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.preparePictureInPicture()
     }
 
-    func handleNewAirPlaySource() {
-        print("AirPlay is active")
-
-        self.playerView.player?.pause()
-        avPlayer = AVPlayer(url: self.player.path!)
+    func createAvPlayer(url: URL?) {
+        guard let url = url else {
+            return
+        }
+        self.avPlayer = AVPlayer(url: url)
         // Create AVPlayerLayer from AVPlayer
         let playerLayer = AVPlayerLayer(player: avPlayer)
         // Set frame and other properties if you wish here for your playerLayer
@@ -130,24 +130,53 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.playerView.player = nil
 
         self.playerView.layer.addSublayer(playerLayer)
-        player.play()
-        self.notifyListeners("onState", data: ["state": "PLAYING"])
+    }
+
+    func handleNewAirPlaySource() {
+        print("AirPlay is active")
+        self.airplayButton.removeFromSuperview() // try to hide the airplay selector
+        self.playerView.player?.pause()
+        createAvPlayer(url: self.player.path!)
+        avPlayer?.play()
+        // set PLAYING after 1 sec
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.notifyListeners("onState", data: ["state": "PLAYING"])
+        }
         // send to listner
         isCastActive = true
         self.notifyListeners("onCastStatus", data: ["isActive": true])
     }
 
-    func handleAirPlaySourceDeactivated() {
-        print("AirPlay is disabled")
-        // Remove the AVPlayerLayer
+    func removeAvPlayer() {
+        // Pause the AVPlayer
+        self.avPlayer?.rate = 0.0
+        
+        // Detach AVPlayer from AVPlayerLayer
         if let sublayers = self.playerView.layer.sublayers {
             for layer in sublayers {
                 if let playerLayer = layer as? AVPlayerLayer {
                     playerLayer.player = nil
-                    playerLayer.removeFromSuperlayer()
                 }
             }
         }
+        
+        // Remove the AVPlayerLayer
+        if let sublayers = self.playerView.layer.sublayers {
+            for layer in sublayers {
+                if layer is AVPlayerLayer {
+                    layer.removeFromSuperlayer()
+                }
+            }
+        }
+
+        // Clear the AVPlayer
+        self.avPlayer = nil
+    }
+
+    
+    func handleAirPlaySourceDeactivated() {
+        print("AirPlay is disabled")
+        removeAvPlayer()
         // Re-attach the original player to the playerView
         self.playerView.player = self.player
         self.player.play()
@@ -451,7 +480,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     public func loadUrl(url: String) {
-        self.player.load(URL(string: url))
+        let u = URL(string: url)
+        if (self.isCastActive) {
+            self.createAvPlayer(url: u)
+            self.avPlayer?.play()
+        }
+        self.player.load(u)
         print("CapacitorIVSPlayer loadUrl")
     }
 
@@ -461,6 +495,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
         if prevUrl != nextUrl {
             // add again after 30 ms
+            self.removeAvPlayer()
             self.player.pause()
             self.player.load(nil)
             self.playerView.removeFromSuperview()
@@ -482,16 +517,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             }
 
             // Add a AVRoutePickerView to show airplay dialog. You can create this button and add it to your desired place in UI
-            let routePickerView = AVRoutePickerView(frame: CGRect(x: 0, y: 0, width: 30.0, height: 30.0))
-            routePickerView.activeTintColor = UIColor.blue
-            routePickerView.tintColor = UIColor.white
-            self.bridge?.viewController?.view.addSubview(routePickerView) // Assumes bridge.viewController is the view you want to add to
+            self.airplayButton = AVRoutePickerView(frame: CGRect(x: 0, y: 0, width: 30.0, height: 30.0))
+            self.airplayButton.activeTintColor = UIColor.blue
+            self.airplayButton.tintColor = UIColor.white
+            self.bridge?.viewController?.view.addSubview(self.airplayButton) // Assumes bridge.viewController is the view you want to add to
 
             // Pressing the button programmatically to show airplay modal
-            for subview in routePickerView.subviews {
+            for subview in self.airplayButton.subviews {
                 if let button = subview as? UIButton {
                     button.sendActions(for: .touchUpInside)
-                    routePickerView.isHidden = true
+                    self.airplayButton.isHidden = true
                     break
                 }
             }
