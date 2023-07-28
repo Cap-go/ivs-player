@@ -91,7 +91,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     private var airplayButton = AVRoutePickerView()
     var didRestorePiP: Bool = false
     var autoPlay: Bool = false
-
+    var isCastActive: Bool = false
+    var avPlayer: AVPlayer? = nil
+    
     override public func load() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
@@ -116,23 +118,41 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     func handleNewAirPlaySource() {
         print("AirPlay is active")
+        
         self.playerView.player?.pause()
-        let player = AVPlayer(url: self.player.path!)
-        let playerViewController = AVPlayerViewController()
-        playerViewController.player = player
-        self.bridge?.viewController?.present(playerViewController, animated: true) {
-            playerViewController.player!.play()
-        }
+        avPlayer = AVPlayer(url: self.player.path!)
+        // Create AVPlayerLayer from AVPlayer
+        let playerLayer = AVPlayerLayer(player: avPlayer)
+        // Set frame and other properties if you wish here for your playerLayer
+        playerLayer.frame = self.playerView.frame
+
+        // Also remove any attached player first, if exist
+        self.playerView.player = nil
+
+        self.playerView.layer.addSublayer(playerLayer)
+        player.play()
+        self.notifyListeners("onState", data: ["state": "PLAYING"])
         // send to listner
+        isCastActive = true
         self.notifyListeners("onCastStatus", data: ["isActive": true])
     }
 
     func handleAirPlaySourceDeactivated() {
         print("AirPlay is disabled")
-       // Handle what should happen when AirPlay is deactivated
-       // play the IVS again and remove the AVPLayer
-        self.bridge?.viewController?.dismiss(animated: true, completion: nil)
-        self.playerView.player?.play()
+        // Remove the AVPlayerLayer
+        if let sublayers = self.playerView.layer.sublayers {
+            for layer in sublayers {
+                if let playerLayer = layer as? AVPlayerLayer {
+                    playerLayer.player = nil
+                    playerLayer.removeFromSuperlayer()
+                }
+            }
+        }
+        // Re-attach the original player to the playerView
+        self.playerView.player = self.player
+        self.player.play()
+        self.notifyListeners("onState", data: ["state": "PLAYING"])
+        isCastActive = false
         self.notifyListeners("onCastStatus", data: ["isActive": false])
     }
 
@@ -143,8 +163,15 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             return
         }
         let session = AVAudioSession.sharedInstance()
-        for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.airPlay {
-            handleNewAirPlaySource()
+        print("handleAudioRouteChange \(reasonValue) \(userInfo)")
+        for output in session.currentRoute.outputs {
+            print("output \(output.portType)")
+            if (output.portType == AVAudioSession.Port.airPlay && !isCastActive) {
+                handleNewAirPlaySource()
+            }
+            else if (output.portType == AVAudioSession.Port.builtInSpeaker && isCastActive) {
+                handleAirPlaySourceDeactivated()
+            }
         }
     }
 
@@ -317,7 +344,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func setMute(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer setMute")
         DispatchQueue.main.async {
-            self.player.muted = call.getBool("muted", !self.player.muted)
+            if (self.isCastActive && (self.avPlayer != nil)) {
+                self.avPlayer?.isMuted = call.getBool("mute", !self.avPlayer!.isMuted)
+            } else {
+                self.player.muted = call.getBool("mute", !self.player.muted)
+            }
         }
         call.resolve()
     }
@@ -328,7 +359,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             return false
         }
         // check if isPictureInPicturePossible
-        if !pipController.isPictureInPicturePossible {
+        if !pipController.isPictureInPicturePossible || isCastActive {
             return false
         }
         if call.getBool("pip", false) {
@@ -449,7 +480,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func getCastStatus(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer getCastStatus")
-        call.resolve(["isActive": false])
+        call.resolve(["isActive": isCastActive])
     }
 
     @objc func create(_ call: CAPPluginCall) {
@@ -533,7 +564,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func pause(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer pause")
         DispatchQueue.main.async {
-            self.player.pause()
+            if (self.isCastActive && (self.avPlayer != nil)) {
+                self.avPlayer?.pause()
+            } else {
+                self.player.pause()
+            }
         }
         call.resolve()
     }
@@ -541,7 +576,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func start(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer start")
         DispatchQueue.main.async {
-            self.player.play()
+            if (self.isCastActive && (self.avPlayer != nil)) {
+                self.avPlayer?.play()
+            } else {
+                self.player.play()
+            }
         }
         call.resolve()
     }
@@ -549,8 +588,12 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func delete(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer delete")
         DispatchQueue.main.async {
-            self.player.pause()
-            self.player.load(nil)
+            if (self.isCastActive && (self.avPlayer != nil)) {
+                self.avPlayer?.pause()
+            } else {
+                self.player.pause()
+                self.player.load(nil)
+            }
         }
         call.resolve()
     }
