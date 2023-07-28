@@ -90,6 +90,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     private var originalParent: UIView?
     private var airplayButton = AVRoutePickerView()
     var didRestorePiP: Bool = false
+    var isClosed: Bool = true
     var autoPlay: Bool = false
     var isCastActive: Bool = false
     var avPlayer: AVPlayer?
@@ -150,7 +151,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     func removeAvPlayer() {
         // Pause the AVPlayer
         self.avPlayer?.rate = 0.0
-        
+
         // Detach AVPlayer from AVPlayerLayer
         if let sublayers = self.playerView.layer.sublayers {
             for layer in sublayers {
@@ -159,7 +160,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 }
             }
         }
-        
+
         // Remove the AVPlayerLayer
         if let sublayers = self.playerView.layer.sublayers {
             for layer in sublayers {
@@ -173,16 +174,19 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         self.avPlayer = nil
     }
 
-    
     func handleAirPlaySourceDeactivated() {
         print("AirPlay is disabled")
         removeAvPlayer()
+        isCastActive = false
+        self.notifyListeners("onCastStatus", data: ["isActive": false])
         // Re-attach the original player to the playerView
+        if isClosed {
+            return
+        }
         self.playerView.player = self.player
         self.player.play()
         self.notifyListeners("onState", data: ["state": "PLAYING"])
-        isCastActive = false
-        self.notifyListeners("onCastStatus", data: ["isActive": false])
+
     }
 
     @objc func handleAudioRouteChange(_ notification: NSNotification) {
@@ -383,11 +387,16 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func _setPip(_ call: CAPPluginCall) -> Bool {
         print("CapacitorIVSPlayer setPip")
+        isClosed = true
         guard #available(iOS 15, *), let pipController = pipController else {
             return false
         }
         // check if isPictureInPicturePossible
-        if !pipController.isPictureInPicturePossible || isCastActive {
+        if !pipController.isPictureInPicturePossible {
+            return false
+        }
+        if isCastActive {
+
             return false
         }
         if call.getBool("pip", false) {
@@ -481,7 +490,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     public func loadUrl(url: String) {
         let u = URL(string: url)
-        if (self.isCastActive) {
+        if self.isCastActive {
             self.createAvPlayer(url: u)
             self.avPlayer?.play()
         }
@@ -555,6 +564,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             let FrameDone = self._setFrame(call)
             let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
             if setupDone && FrameDone && PlayerPositionDone {
+                self.isClosed = false
                 call.resolve()
             } else {
                 call.reject("Unable to cyclePlayer \(setupDone) or _setFrame \(FrameDone) or _setPlayerPosition \(PlayerPositionDone)")
