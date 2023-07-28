@@ -474,6 +474,28 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func cast(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer cast")
+
+        DispatchQueue.main.async {
+            // Create AVPlayer if needed and start playing
+            if self.avPlayer == nil {
+                self.avPlayer = AVPlayer(url: self.player.path!)
+            }
+
+            // Add a AVRoutePickerView to show airplay dialog. You can create this button and add it to your desired place in UI
+            let routePickerView = AVRoutePickerView(frame: CGRect(x: 0, y: 0, width: 30.0, height: 30.0))
+            routePickerView.activeTintColor = UIColor.blue
+            routePickerView.tintColor = UIColor.white
+            self.bridge?.viewController?.view.addSubview(routePickerView) // Assumes bridge.viewController is the view you want to add to
+
+            // Pressing the button programmatically to show airplay modal
+            for subview in routePickerView.subviews {
+                if let button = subview as? UIButton {
+                    button.sendActions(for: .touchUpInside)
+                    routePickerView.isHidden = true
+                    break
+                }
+            }
+        }
         call.resolve()
     }
 
