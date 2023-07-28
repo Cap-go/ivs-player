@@ -92,8 +92,8 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     var didRestorePiP: Bool = false
     var autoPlay: Bool = false
     var isCastActive: Bool = false
-    var avPlayer: AVPlayer? = nil
-    
+    var avPlayer: AVPlayer?
+
     override public func load() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
@@ -118,7 +118,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     func handleNewAirPlaySource() {
         print("AirPlay is active")
-        
+
         self.playerView.player?.pause()
         avPlayer = AVPlayer(url: self.player.path!)
         // Create AVPlayerLayer from AVPlayer
@@ -166,10 +166,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("handleAudioRouteChange \(reasonValue) \(userInfo)")
         for output in session.currentRoute.outputs {
             print("output \(output.portType)")
-            if (output.portType == AVAudioSession.Port.airPlay && !isCastActive) {
+            if output.portType == AVAudioSession.Port.airPlay && !isCastActive {
                 handleNewAirPlaySource()
-            }
-            else if (output.portType == AVAudioSession.Port.builtInSpeaker && isCastActive) {
+            } else if output.portType == AVAudioSession.Port.builtInSpeaker && isCastActive {
                 handleAirPlaySourceDeactivated()
             }
         }
@@ -344,7 +343,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func setMute(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer setMute")
         DispatchQueue.main.async {
-            if (self.isCastActive && (self.avPlayer != nil)) {
+            if self.isCastActive && (self.avPlayer != nil) {
                 self.avPlayer?.isMuted = call.getBool("mute", !self.avPlayer!.isMuted)
             } else {
                 self.player.muted = call.getBool("mute", !self.player.muted)
@@ -564,7 +563,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func pause(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer pause")
         DispatchQueue.main.async {
-            if (self.isCastActive && (self.avPlayer != nil)) {
+            if self.isCastActive && (self.avPlayer != nil) {
                 self.avPlayer?.pause()
             } else {
                 self.player.pause()
@@ -576,7 +575,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func start(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer start")
         DispatchQueue.main.async {
-            if (self.isCastActive && (self.avPlayer != nil)) {
+            if self.isCastActive && (self.avPlayer != nil) {
                 self.avPlayer?.play()
             } else {
                 self.player.play()
@@ -588,7 +587,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func delete(_ call: CAPPluginCall) {
         print("CapacitorIVSPlayer delete")
         DispatchQueue.main.async {
-            if (self.isCastActive && (self.avPlayer != nil)) {
+            if self.isCastActive && (self.avPlayer != nil) {
                 self.avPlayer?.pause()
             } else {
                 self.player.pause()
