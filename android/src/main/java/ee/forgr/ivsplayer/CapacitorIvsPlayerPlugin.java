@@ -40,11 +40,19 @@ import com.amazonaws.ivs.player.Player;
 import com.amazonaws.ivs.player.PlayerException;
 import com.amazonaws.ivs.player.PlayerView;
 import com.amazonaws.ivs.player.Quality;
+import com.getcapacitor.CapConfig;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastOptions;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.OptionsProvider;
+import com.google.android.gms.cast.framework.SessionProvider;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import java.util.List;
 import org.json.JSONArray;
 
@@ -68,6 +76,7 @@ public class CapacitorIvsPlayerPlugin
   ImageView closeButton;
   ImageView playPauseButton;
   View shadowView;
+  CastContext castContext;
 
   private Animation expandAnimation;
   private Animation collapseAnimation;
@@ -321,7 +330,39 @@ public class CapacitorIvsPlayerPlugin
   @PluginMethod
   public void cast(PluginCall call) {
     Log.i("CapacitorIvsPlayer", "cast");
-    call.resolve();
+    var lastUrl = this.lastUrl;
+    getActivity()
+      .runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Get the CastSession
+            CastSession castSession = castContext
+              .getSessionManager()
+              .getCurrentCastSession();
+
+            // Check if a session is active
+            if (castSession != null) {
+              // Get the RemoteMediaClient
+              RemoteMediaClient remoteMediaClient = castSession.getRemoteMediaClient();
+
+              // Check if the RemoteMediaClient is not null
+              if (remoteMediaClient != null) {
+                // Create a MediaInfo object
+                MediaInfo mediaInfo = new MediaInfo.Builder(lastUrl)
+                  .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                  .setContentType("videos/mp4")
+                  .build();
+
+                // Load the media
+                remoteMediaClient.load(mediaInfo, true, 0);
+              }
+            }
+
+            call.resolve();
+          }
+        }
+      );
   }
 
   @PluginMethod
@@ -468,6 +509,7 @@ public class CapacitorIvsPlayerPlugin
   public void load() {
     super.load();
     getDisplaySize();
+    castContext = CastContext.getSharedInstance(getContext());
     // Initialize the Player view
     playerView = new PlayerView(getContext());
     playerView.requestFocus();
