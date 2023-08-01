@@ -134,7 +134,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     func handleNewAirPlaySource() {
-        print("AirPlay is active")
+        print("CapacitorIVSPlayer AirPlay is active")
         self.airplayButton.removeFromSuperview() // try to hide the airplay selector
         self.playerView.player?.pause()
         createAvPlayer(url: self.player.path!)
@@ -151,7 +151,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     func removeAvPlayer() {
         // Pause the AVPlayer
         self.avPlayer?.rate = 0.0
-
+        print("CapacitorIVSPlayer removeAvPlayer")
         // Detach AVPlayer from AVPlayerLayer
         if let sublayers = self.playerView.layer.sublayers {
             for layer in sublayers {
@@ -175,7 +175,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     func handleAirPlaySourceDeactivated() {
-        print("AirPlay is disabled")
+        print("CapacitorIVSPlayer AirPlay is disabled")
         removeAvPlayer()
         isCastActive = false
         self.notifyListeners("onCastStatus", data: ["isActive": false])
@@ -196,9 +196,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             return
         }
         let session = AVAudioSession.sharedInstance()
-        print("handleAudioRouteChange \(reasonValue) \(userInfo)")
+        print("CapacitorIVSPlayer handleAudioRouteChange \(reasonValue) \(userInfo)")
         for output in session.currentRoute.outputs {
-            print("output \(output.portType)")
+            print("CapacitorIVSPlayer output \(output.portType)")
             if output.portType == AVAudioSession.Port.airPlay && !isCastActive {
                 handleNewAirPlaySource()
             } else if output.portType == AVAudioSession.Port.builtInSpeaker && isCastActive {
@@ -387,7 +387,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func _setPip(_ call: CAPPluginCall) -> Bool {
         print("CapacitorIVSPlayer setPip")
-        isClosed = true
         guard #available(iOS 15, *), let pipController = pipController else {
             return false
         }
@@ -395,16 +394,19 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         if !pipController.isPictureInPicturePossible {
             return false
         }
+        print("CapacitorIVSPlayer isCastActive \(isCastActive)")
         if isCastActive {
-
             return false
         }
-        if call.getBool("pip", false) {
+        let ispip = call.getBool("pip", false)
+        if ispip {
+            isClosed = true
             pipController.startPictureInPicture()
         } else {
+            isClosed = false
             pipController.stopPictureInPicture()
         }
-        print("CapacitorIVSPlayer _setPip done")
+        print("CapacitorIVSPlayer _setPip \(ispip) done")
         return true
     }
 
@@ -417,7 +419,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func getPip(_ call: CAPPluginCall) {
-        print("getPip")
+        print("CapacitorIVSPlayer getPip")
         guard #available(iOS 15, *), let pipController = pipController else {
             call.reject("Not possible right now")
             return
@@ -444,7 +446,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             width: width,
             height: height
         )
-        print("CapacitorIVSPlayer _setFrame done")
+        print("CapacitorIVSPlayer _setFrame x:\(x) y:\(y) width:\(width) height:\(height) done")
         return true
     }
 
@@ -502,17 +504,14 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         guard let viewController = self.bridge?.viewController else {
             return false
         }
+        self.removeAvPlayer()
         if prevUrl != nextUrl {
             // add again after 30 ms
-            self.removeAvPlayer()
             self.player.pause()
             self.player.load(nil)
             self.playerView.removeFromSuperview()
-            self.loadUrl(url: nextUrl)
-        } else {
-            viewController.view.addSubview(self.playerView)
-            self.loadUrl(url: nextUrl)
         }
+        self.loadUrl(url: nextUrl)
         return true
     }
 
@@ -559,12 +558,13 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             self.setupNowPlayingInfo(title: title, subTitle: subTitle, url: cover)
             self.setupRemoteTransportControls()
             let setupDone = self.cyclePlayer(prevUrl: self.player.path?.absoluteString ?? "", nextUrl: url)
-            print("CapacitorIVSPlayer soon setPip")
+            print("CapacitorIVSPlayer setupDone \(setupDone)")
             self._setPip(call)
             let FrameDone = self._setFrame(call)
             let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
             if setupDone && FrameDone && PlayerPositionDone {
                 self.isClosed = false
+                print("CapacitorIVSPlayer success create")
                 call.resolve()
             } else {
                 call.reject("Unable to cyclePlayer \(setupDone) or _setFrame \(FrameDone) or _setPlayerPosition \(PlayerPositionDone)")
@@ -576,6 +576,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
         // The user tapped the "restore" button in PiP mode, set the flag to true
         self.didRestorePiP = true
+        self.isClosed = false
         completionHandler(true)
     }
 
@@ -585,9 +586,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             // This was a restore from PiP
             self.notifyListeners("expandPip", data: [:])
             self.didRestorePiP = false
+            print("CapacitorIVSPlayer expandPip done")
         } else {
             // This was a close PiP
             self.notifyListeners("closePip", data: [:])
+            print("CapacitorIVSPlayer closePip done")
         }
     }
 

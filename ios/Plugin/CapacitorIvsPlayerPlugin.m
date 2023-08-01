@@ -16,6 +16,7 @@ CAP_PLUGIN(CapacitorIvsPlayerPlugin, "CapacitorIvsPlayer",
            CAP_PLUGIN_METHOD(getMute, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setAutoQuality, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getAutoQuality, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setPlayerPosition, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setQuality, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getQuality, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getQualities, CAPPluginReturnPromise);
