@@ -30,7 +30,8 @@ class CapacitorIVSPlayer: NSObject, IVSPlayer.Delegate {
         //        print("CapacitorIVSPlayer state change \(state)")
         let stateName = stateToStateName(state)
         print("CapacitorIVSPlayer \(stateName)")
-        if state == .ready && capacitorPlugin.autoPlay {
+        if state == .ready && capacitorPlugin.autoPlay &&
+            !capacitorPlugin.isCastActive {
             capacitorPlugin.player.play()
         }
         // when playing add to view
@@ -121,6 +122,9 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         guard let url = url else {
             return
         }
+        if self.avPlayer != nil {
+            self.avPlayer?.replaceCurrentItem(with: nil)
+        }
         self.avPlayer = AVPlayer(url: url)
         // Create AVPlayerLayer from AVPlayer
         let playerLayer = AVPlayerLayer(player: avPlayer)
@@ -150,6 +154,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     func removeAvPlayer() {
         // Pause the AVPlayer
+        self.avPlayer?.pause()
         self.avPlayer?.rate = 0.0
         print("CapacitorIVSPlayer removeAvPlayer")
         // Detach AVPlayer from AVPlayerLayer
@@ -171,7 +176,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         }
 
         // Clear the AVPlayer
-        self.avPlayer = nil
+        self.avPlayer?.replaceCurrentItem(with: nil)
     }
 
     func handleAirPlaySourceDeactivated() {
@@ -492,18 +497,15 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     public func loadUrl(url: String) {
         let u = URL(string: url)
+        self.player.load(u)
         if self.isCastActive {
             self.createAvPlayer(url: u)
             self.avPlayer?.play()
         }
-        self.player.load(u)
         print("CapacitorIVSPlayer loadUrl")
     }
 
     public func cyclePlayer(prevUrl: String, nextUrl: String) -> Bool {
-        guard let viewController = self.bridge?.viewController else {
-            return false
-        }
         self.removeAvPlayer()
         if prevUrl != nextUrl {
             // add again after 30 ms
@@ -520,9 +522,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
         DispatchQueue.main.async {
             // Create AVPlayer if needed and start playing
-            if self.avPlayer == nil {
-                self.avPlayer = AVPlayer(url: self.player.path!)
+            if self.avPlayer != nil {
+                self.avPlayer?.replaceCurrentItem(with: nil)
             }
+            self.avPlayer = AVPlayer(url: self.player.path!)
 
             // Add a AVRoutePickerView to show airplay dialog. You can create this button and add it to your desired place in UI
             self.airplayButton = AVRoutePickerView(frame: CGRect(x: 0, y: 0, width: 30.0, height: 30.0))
