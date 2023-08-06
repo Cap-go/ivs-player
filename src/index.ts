@@ -6,7 +6,7 @@ const CapacitorIvsPlayer = registerPlugin<CapacitorIvsPlayerPlugin>(
   "CapacitorIvsPlayer",
   {
     web: () => import("./web").then((m) => new m.CapacitorIvsPlayerWeb()),
-  }
+  },
 );
 
 export * from "./definitions";

@@ -337,7 +337,8 @@ public class CapacitorIvsPlayerPlugin
             // Check if a session is active
             if (castSession != null) {
               // Get the RemoteMediaClient
-              RemoteMediaClient remoteMediaClient = castSession.getRemoteMediaClient();
+              RemoteMediaClient remoteMediaClient =
+                castSession.getRemoteMediaClient();
 
               // Check if the RemoteMediaClient is not null
               if (remoteMediaClient != null) {
@@ -446,10 +447,11 @@ public class CapacitorIvsPlayerPlugin
     closeButtonParams.rightMargin = marginButton;
     closeButton.setLayoutParams(closeButtonParams);
 
-    FrameLayout.LayoutParams playPauseButtonParams = new FrameLayout.LayoutParams(
-      FrameLayout.LayoutParams.WRAP_CONTENT,
-      FrameLayout.LayoutParams.WRAP_CONTENT
-    );
+    FrameLayout.LayoutParams playPauseButtonParams =
+      new FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.WRAP_CONTENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+      );
     playPauseButtonParams.gravity = Gravity.CENTER;
     playPauseButton.setLayoutParams(playPauseButtonParams);
 
@@ -786,7 +788,8 @@ public class CapacitorIvsPlayerPlugin
             0,
             Math.min(playerView.getLeft(), maxMarginX)
           );
-          FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+          FrameLayout.LayoutParams layoutParams =
+            (FrameLayout.LayoutParams) playerView.getLayoutParams();
           layoutParams.leftMargin = newMarginX;
           playerView.setLayoutParams(layoutParams);
           playerView.requestLayout();
@@ -809,7 +812,8 @@ public class CapacitorIvsPlayerPlugin
             0,
             Math.min(playerView.getTop(), maxMarginY)
           );
-          FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+          FrameLayout.LayoutParams layoutParams =
+            (FrameLayout.LayoutParams) playerView.getLayoutParams();
           layoutParams.topMargin = newMarginY;
           playerView.setLayoutParams(layoutParams);
           playerView.requestLayout();
