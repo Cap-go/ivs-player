@@ -34,12 +34,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
       - name: Update Doc
         run: pnpm docgen
-      - name: Update Doc
-        run: pnpm docgen:api
       - name: Add doc to github
         run: |
           git add README.md
-          git add api.md
           git commit --m "docs: update doc" || true
       - name: Create bump and changelog main
         if: github.ref == 'refs/heads/main'
