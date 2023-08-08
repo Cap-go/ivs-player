@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.6](https://github.com/Cap-go/ivs-player/compare/0.13.5...0.13.6) (2023-08-08)
+
+
+### Features
+
+* add get player position ([ded6767](https://github.com/Cap-go/ivs-player/commit/ded6767ca5c90441c5a65a2c16f72c335af935d4))
+
 ### 0.13.5 (2023-08-06)
 
 
