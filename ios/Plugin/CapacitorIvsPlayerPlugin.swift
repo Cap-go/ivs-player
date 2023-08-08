@@ -92,11 +92,13 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     private var airplayButton = AVRoutePickerView()
     var didRestorePiP: Bool = false
     var isClosed: Bool = true
+    var toBack: Bool = false
     var autoPlay: Bool = false
     var isCastActive: Bool = false
     var avPlayer: AVPlayer?
 
     override public func load() {
+        self.webView?.backgroundColor = UIColor.black
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -468,6 +470,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func _setPlayerPosition(toBack: Bool) -> Bool {
+        self.toBack = toBack
         if toBack {
             self.webView?.backgroundColor = UIColor.clear
             self.webView?.isOpaque = false
@@ -493,6 +496,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
                 call.reject("Unable to _setPlayerPosition")
             }
         }
+    }
+
+    @objc func getPlayerPosition(_ call: CAPPluginCall) {
+        call.resolve(["toBack": self.toBack])
     }
 
     public func loadUrl(url: String) {
@@ -552,7 +559,6 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
-        let toBack = call.getBool("toBack", false)
         autoPlay = call.getBool("autoPlay", false)
         DispatchQueue.main.async {
             let title = call.getString("title", "")

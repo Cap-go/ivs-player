@@ -65,6 +65,7 @@ public class CapacitorIvsPlayerPlugin
   private String lastUrl = "";
   private Boolean isPip = false;
   private Boolean autoPlay = false;
+  private Boolean toBack = false;
   ImageView expandButton;
   ImageView closeButton;
   ImageView playPauseButton;
@@ -869,9 +870,16 @@ public class CapacitorIvsPlayerPlugin
 
   @PluginMethod
   public void setPlayerPosition(PluginCall call) {
-    Boolean toBack = call.getBoolean("toBack", false);
+    this.toBack = call.getBoolean("toBack", false);
     _setPlayerPosition(toBack);
     call.resolve();
+  }
+  
+  @PluginMethod
+  public void getPlayerPosition(PluginCall call) {
+    final JSObject ret = new JSObject();
+    ret.put("toBack", toBack);
+    call.resolve(ret);
   }
 
   public void _setPip(Boolean pip, Boolean foregroundApp) {
