@@ -28,6 +28,7 @@ npx cap sync
 * [`getUrl()`](#geturl)
 * [`getState()`](#getstate)
 * [`setPlayerPosition(...)`](#setplayerposition)
+* [`getPlayerPosition()`](#getplayerposition)
 * [`setAutoQuality(...)`](#setautoquality)
 * [`getAutoQuality()`](#getautoquality)
 * [`setPip(...)`](#setpip)
@@ -150,6 +151,17 @@ setPlayerPosition(options?: { toBack: boolean; } | undefined) => Promise<void>
 | Param         | Type                              |
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ toBack: boolean; }</code> |
+
+--------------------
+
+
+### getPlayerPosition()
+
+```typescript
+getPlayerPosition() => Promise<{ toBack: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ toBack: boolean; }&gt;</code>
 
 --------------------
 
