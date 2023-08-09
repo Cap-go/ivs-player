@@ -560,6 +560,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     @objc func create(_ call: CAPPluginCall) {
         let url = call.getString("url", "")
         autoPlay = call.getBool("autoPlay", false)
+        toBack = call.getBool("toBack", false)
         DispatchQueue.main.async {
             let title = call.getString("title", "")
             let subTitle = call.getString("subtitle", "")
@@ -570,7 +571,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             print("CapacitorIVSPlayer setupDone \(setupDone)")
             self._setPip(call)
             let FrameDone = self._setFrame(call)
-            let PlayerPositionDone = self._setPlayerPosition(toBack: toBack)
+            let PlayerPositionDone = self._setPlayerPosition(toBack: self.toBack)
             if setupDone && FrameDone && PlayerPositionDone {
                 self.isClosed = false
                 print("CapacitorIVSPlayer success create")
