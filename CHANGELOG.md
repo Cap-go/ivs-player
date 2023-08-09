@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.9](https://github.com/Cap-go/ivs-player/compare/0.13.6...0.13.9) (2023-08-09)
+
+
+### Bug Fixes
+
+* android issue ([fc609ee](https://github.com/Cap-go/ivs-player/commit/fc609ee33b77af6f1a736222a2c6e42a3e38289f))
+* no pip start if no playing ([2a298b4](https://github.com/Cap-go/ivs-player/commit/2a298b421d198b8043398039f912a3723ceeaa49))
+
 ### [0.13.6](https://github.com/Cap-go/ivs-player/compare/0.13.5...0.13.6) (2023-08-08)
 
 
