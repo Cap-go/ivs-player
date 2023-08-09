@@ -101,6 +101,10 @@ public class CapacitorIvsPlayerPlugin
   @Override
   public void onActivityPaused(@NonNull final Activity activity) {
     Log.i("CapacitorIvsPlayer", "onActivityPaused");
+        // check if player is playing if so do nothing
+    if (playerView == null || playerView.getPlayer().getState() != Player.State.PLAYING) {
+      return;
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       PictureInPictureParams params = new PictureInPictureParams.Builder()
         .setAspectRatio(aspectRatio)
