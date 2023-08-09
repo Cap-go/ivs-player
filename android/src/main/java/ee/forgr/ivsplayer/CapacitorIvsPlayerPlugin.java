@@ -87,6 +87,10 @@ public class CapacitorIvsPlayerPlugin
   @Override
   public void onActivityStopped(@NonNull final Activity activity) {
     Log.i("CapacitorIvsPlayer", "onActivityStopped");
+    // pause the player
+    if (playerView != null) {
+      playerView.getPlayer().pause();
+    }
   }
 
   @Override
@@ -101,9 +105,13 @@ public class CapacitorIvsPlayerPlugin
       PictureInPictureParams params = new PictureInPictureParams.Builder()
         .setAspectRatio(aspectRatio)
         .build();
-      getBridge().getActivity().enterPictureInPictureMode(params);
+      Boolean didWorked = getBridge()
+        .getActivity()
+        .enterPictureInPictureMode(params);
+      if (didWorked) {
+        _setPip(true, false);
+      }
     }
-    _setPip(true, false);
   }
 
   @Override
@@ -874,7 +882,7 @@ public class CapacitorIvsPlayerPlugin
     _setPlayerPosition(toBack);
     call.resolve();
   }
-  
+
   @PluginMethod
   public void getPlayerPosition(PluginCall call) {
     final JSObject ret = new JSObject();
