@@ -219,6 +219,8 @@ public class CapacitorIvsPlayerPlugin
               FrameLayout mainPiPFrameLayout = getBridge()
                 .getActivity()
                 .findViewById(mainPiPFrameLayoutId);
+              mainPiPFrameLayout.setBackgroundColor(0xff000000);
+              playerView.setBackgroundColor(0xff000000);
               mainPiPFrameLayout.addView(playerView);
             }
             notifyListeners("onState", ret);
@@ -867,10 +869,14 @@ public class CapacitorIvsPlayerPlugin
   private void _setPlayerPosition(Boolean toBack) {
     if (toBack) {
       getBridge()
+        .getActivity()
+        .findViewById(mainPiPFrameLayoutId)
+        .setBackgroundColor(Color.parseColor("#000000"));
+      getBridge()
         .getWebView()
         .getParent()
         .bringChildToFront(getBridge().getWebView());
-      getBridge().getWebView().setBackgroundColor(0x00000000);
+      getBridge().getWebView().setBackgroundColor(Color.parseColor("#00000000"));
     } else {
       FrameLayout mainPiPFrameLayout = getBridge()
         .getActivity()
@@ -879,7 +885,7 @@ public class CapacitorIvsPlayerPlugin
         .getWebView()
         .getParent()
         .bringChildToFront(mainPiPFrameLayout);
-      getBridge().getWebView().setBackgroundColor(0x000000ff);
+      getBridge().getWebView().setBackgroundColor(Color.parseColor("#000000"));
     }
   }
 
