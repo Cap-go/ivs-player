@@ -627,7 +627,7 @@ public class CapacitorIvsPlayerPlugin
       .getActivity()
       .findViewById(mainPiPFrameLayoutId);
     playerView.getPlayer().pause();
-    if(mainPiPFrameLayout) {
+    if(mainPiPFrameLayout != null) {
       // remove playerView from mainPiPFrameLayout
       mainPiPFrameLayout.removeView(playerView);
     }
