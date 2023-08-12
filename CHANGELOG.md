@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.17](https://github.com/Cap-go/ivs-player/compare/0.13.16...0.13.17) (2023-08-12)
+
+
+### Bug Fixes
+
+* gray color in the background on Android ([532f9f8](https://github.com/Cap-go/ivs-player/commit/532f9f84f40ae1c2f32793c222839224cc08d55d))
+
 ### [0.13.16](https://github.com/Cap-go/ivs-player/compare/0.13.15...0.13.16) (2023-08-12)
 
 
