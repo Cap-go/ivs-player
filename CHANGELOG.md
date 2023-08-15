@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.24](https://github.com/Cap-go/ivs-player/compare/0.13.22...0.13.24) (2023-08-15)
+
+
+### Bug Fixes
+
+* issue backscreen android ([c183759](https://github.com/Cap-go/ivs-player/commit/c18375934c5854ebace27cc9ad89f6b370f6fc09))
+
 ### [0.13.22](https://github.com/Cap-go/ivs-player/compare/0.13.21...0.13.22) (2023-08-12)
 
 
