@@ -65,7 +65,7 @@ export interface CapacitorIvsPlayerPlugin {
    * @since 1.0.0
    */
   addListener(
-    eventName: 'startPiP',
+    eventName: 'startPip',
     listenerFunc: () => void,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   /**
