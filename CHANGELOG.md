@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.25](https://github.com/Cap-go/ivs-player/compare/0.13.24...0.13.25) (2023-08-18)
+
+
+### Features
+
+* add startPip / closePip events ([fd5047f](https://github.com/Cap-go/ivs-player/commit/fd5047f49826ba5c27bf615e46a9379bf72db8eb))
+
 ### [0.13.24](https://github.com/Cap-go/ivs-player/compare/0.13.22...0.13.24) (2023-08-15)
 
 
