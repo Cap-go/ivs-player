@@ -243,6 +243,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer applicationDidBecomeActive \(pipController.isPictureInPictureActive)")
         if pipController.isPictureInPictureActive {
             pipController.stopPictureInPicture()
+            self.notifyListeners("stopPip", data: [:])
         }
     }
 
@@ -409,9 +410,11 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         if ispip {
             isClosed = true
             pipController.startPictureInPicture()
+            self.notifyListeners("startPip", data: [:])
         } else {
             isClosed = false
             pipController.stopPictureInPicture()
+            self.notifyListeners("stopPip", data: [:])
         }
         print("CapacitorIVSPlayer _setPip \(ispip) done")
         return true

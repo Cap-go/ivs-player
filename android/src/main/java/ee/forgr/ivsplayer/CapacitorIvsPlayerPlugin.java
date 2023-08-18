@@ -150,10 +150,12 @@ public class CapacitorIvsPlayerPlugin
       Log.i("CapacitorIvsPlayer", "togglePip false");
       final JSObject ret = new JSObject();
       notifyListeners("expandPip", ret);
+      notifyListeners("stopPip", ret);
     } else {
       getBridge().getWebView().setVisibility(View.INVISIBLE);
       isPip = true;
       Log.i("CapacitorIvsPlayer", "togglePip true");
+      notifyListeners("startPip", ret);
     }
   }
 
@@ -161,6 +163,7 @@ public class CapacitorIvsPlayerPlugin
     final JSObject ret = new JSObject();
     getBridge().getWebView().setVisibility(View.VISIBLE);
     notifyListeners("closePip", ret);
+    notifyListeners("stopPip", ret);
     Log.i("CapacitorIvsPlayer", "closePip");
     isPip = false;
   }
