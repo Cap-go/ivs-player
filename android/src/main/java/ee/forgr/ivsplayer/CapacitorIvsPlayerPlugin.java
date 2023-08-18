@@ -155,6 +155,7 @@ public class CapacitorIvsPlayerPlugin
       getBridge().getWebView().setVisibility(View.INVISIBLE);
       isPip = true;
       Log.i("CapacitorIvsPlayer", "togglePip true");
+      final JSObject ret = new JSObject();
       notifyListeners("startPip", ret);
     }
   }
