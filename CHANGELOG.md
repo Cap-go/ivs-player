@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.29](https://github.com/Cap-go/ivs-player/compare/0.13.28...0.13.29) (2023-08-21)
+
+
+### Bug Fixes
+
+* call mainPiPFrameLayout.removeView on UI Thread ([474f45b](https://github.com/Cap-go/ivs-player/commit/474f45b367c3819aae705012cbe75d0da1dd2ab9))
+
 ### [0.13.28](https://github.com/Cap-go/ivs-player/compare/0.13.27...0.13.28) (2023-08-18)
 
 
