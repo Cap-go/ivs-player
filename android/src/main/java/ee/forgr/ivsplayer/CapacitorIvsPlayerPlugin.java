@@ -634,7 +634,15 @@ public class CapacitorIvsPlayerPlugin
     playerView.getPlayer().pause();
     if (mainPiPFrameLayout != null) {
       // remove playerView from mainPiPFrameLayout
-      mainPiPFrameLayout.removeView(playerView);
+      getActivity()
+        .runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              mainPiPFrameLayout.removeView(playerView);
+            }
+          }
+        );
     }
     call.resolve();
   }
@@ -863,37 +871,33 @@ public class CapacitorIvsPlayerPlugin
     _setFrame(x, y, halfScreenSizeX, height);
   }
 
-    // function to send webview to front
-    private void _setPlayerPosition(Boolean toBack) {
-        if (toBack) {
-            getBridge()
-                    .getActivity()
-                    .findViewById(mainPiPFrameLayoutId)
-                    .setBackgroundColor(Color.parseColor("#000000"));
-            getBridge()
-                    .getWebView()
-                    .getParent()
-                    .bringChildToFront(getBridge().getWebView());
-            getBridge()
-                    .getWebView()
-                    .setBackgroundColor(0x00000000);
-        } else {
-            getBridge()
-                    .getActivity()
-                    .findViewById(mainPiPFrameLayoutId)
-                    .setBackgroundColor(Color.parseColor("#00000000"));
-            FrameLayout mainPiPFrameLayout = getBridge()
-                    .getActivity()
-                    .findViewById(mainPiPFrameLayoutId);
-            getBridge()
-                    .getWebView()
-                    .getParent()
-                    .bringChildToFront(mainPiPFrameLayout);
-            getBridge()
-                    .getWebView()
-                    .setBackgroundColor(0x000000);
-        }
+  // function to send webview to front
+  private void _setPlayerPosition(Boolean toBack) {
+    if (toBack) {
+      getBridge()
+        .getActivity()
+        .findViewById(mainPiPFrameLayoutId)
+        .setBackgroundColor(Color.parseColor("#000000"));
+      getBridge()
+        .getWebView()
+        .getParent()
+        .bringChildToFront(getBridge().getWebView());
+      getBridge().getWebView().setBackgroundColor(0x00000000);
+    } else {
+      getBridge()
+        .getActivity()
+        .findViewById(mainPiPFrameLayoutId)
+        .setBackgroundColor(Color.parseColor("#00000000"));
+      FrameLayout mainPiPFrameLayout = getBridge()
+        .getActivity()
+        .findViewById(mainPiPFrameLayoutId);
+      getBridge()
+        .getWebView()
+        .getParent()
+        .bringChildToFront(mainPiPFrameLayout);
+      getBridge().getWebView().setBackgroundColor(0x000000);
     }
+  }
 
   @PluginMethod
   public void setPlayerPosition(PluginCall call) {
