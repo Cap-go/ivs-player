@@ -933,11 +933,8 @@ public class CapacitorIvsPlayerPlugin
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
               if (pip) {
                 setDisplayPipButton(false);
-                getDisplaySize();
-                // get PIP frame layout width and height
-                int halfScreenSizeX = size.x / 2;
-                int height = calcHeight(halfScreenSizeX);
-                _setFrame(0, 0, halfScreenSizeX, height);
+                // Set player width to 100% of parent (Native PiP window)
+                _setFrameMatchParent();
               }
             }
           }
@@ -960,6 +957,24 @@ public class CapacitorIvsPlayerPlugin
           public void run() {
             playerViewParams = new FrameLayout.LayoutParams(width, height);
             playerViewParams.setMargins(x, y, 0, 0);
+            playerView.setLayoutParams(playerViewParams);
+          }
+        }
+      );
+  }
+
+  private void _setFrameMatchParent() {
+    getActivity()
+      .runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            playerViewParams =
+              new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+              );
+            playerViewParams.setMargins(0, 0, 0, 0);
             playerView.setLayoutParams(playerViewParams);
           }
         }
