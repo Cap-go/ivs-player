@@ -616,12 +616,14 @@ public class CapacitorIvsPlayerPlugin
 
   @PluginMethod
   public void start(PluginCall call) {
+    playPauseButton.setImageResource(R.drawable.baseline_pause_24);
     playerView.getPlayer().play();
     call.resolve();
   }
 
   @PluginMethod
   public void pause(PluginCall call) {
+    playPauseButton.setImageResource(R.drawable.baseline_play_arrow_24);
     playerView.getPlayer().pause();
     call.resolve();
   }
