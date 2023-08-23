@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.30](https://github.com/Cap-go/ivs-player/compare/0.13.29...0.13.30) (2023-08-22)
+
+
+### Bug Fixes
+
+* size of video in native PiP ([72eced6](https://github.com/Cap-go/ivs-player/commit/72eced6428f380b15c051775fcd7bf3020c784b8))
+
 ### [0.13.29](https://github.com/Cap-go/ivs-player/compare/0.13.28...0.13.29) (2023-08-21)
 
 
