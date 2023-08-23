@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.31](https://github.com/Cap-go/ivs-player/compare/0.13.30...0.13.31) (2023-08-23)
+
+
+### Bug Fixes
+
+* change icon of PiP when we call play() or pause() ([f7bada1](https://github.com/Cap-go/ivs-player/commit/f7bada17fd3fc830b6cf1b4dc90b2e769d466284))
+
 ### [0.13.30](https://github.com/Cap-go/ivs-player/compare/0.13.29...0.13.30) (2023-08-22)
 
 
