@@ -445,10 +445,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         let screenSize: CGRect = UIScreen.main.bounds
         let topPadding = viewController.view.safeAreaInsets.top
 
-        let x = call.getInt("x", 0)
-        let y = call.getInt("y", Int(topPadding))
-        let width = call.getInt("width", Int(screenSize.width))
-        let height = call.getInt("height", Int(screenSize.width * (9.0 / 16.0)))
+        let x = Int(round(call.getFloat("x", Float(0))))
+        let y = Int(round(call.getFloat("y", Float(topPadding))))
+        let width = Int(round(call.getFloat("width", Float(screenSize.width))))
+        let height = Int(round(call.getFloat("height", Float(screenSize.width * (9.0 / 16.0)))))
         self.playerView.playerLayer.zPosition = -1
         self.playerView.frame = CGRect(
             x: x,
