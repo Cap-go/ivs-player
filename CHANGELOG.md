@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.33](https://github.com/Cap-go/ivs-player/compare/0.13.32...0.13.33) (2023-08-29)
+
+
+### Bug Fixes
+
+* allow decimal values for x, y, width and height in setFrame function ([5c10ca3](https://github.com/Cap-go/ivs-player/commit/5c10ca39b7862c392b3822e4d85ce70700ecbb68))
+
 ### [0.13.32](https://github.com/Cap-go/ivs-player/compare/0.13.31...0.13.32) (2023-08-24)
 
 
