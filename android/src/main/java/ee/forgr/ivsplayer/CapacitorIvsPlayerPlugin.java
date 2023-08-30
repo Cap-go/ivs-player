@@ -1,5 +1,7 @@
 package ee.forgr.ivsplayer;
 
+import static androidx.core.app.ActivityCompat.invalidateOptionsMenu;
+
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -8,6 +10,7 @@ import android.app.PictureInPictureParams;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Point;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +36,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
+import androidx.mediarouter.app.MediaRouteButton;
+import androidx.mediarouter.media.MediaRouteSelector;
+
 import com.amazonaws.ivs.player.Cue;
 import com.amazonaws.ivs.player.Player;
 import com.amazonaws.ivs.player.PlayerException;
@@ -43,11 +49,28 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.SessionManager;
+import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.images.WebImage;
+
 import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+enum PlaybackLocation {
+  LOCAL, REMOTE
+}
 
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 public class CapacitorIvsPlayerPlugin
@@ -66,6 +89,10 @@ public class CapacitorIvsPlayerPlugin
   private Boolean isPip = false;
   private Boolean autoPlay = false;
   private Boolean toBack = false;
+  private String title = "";
+  private String description = "";
+  private String cover = "";
+
   ImageView expandButton;
   ImageView closeButton;
   ImageView playPauseButton;
@@ -340,38 +367,79 @@ public class CapacitorIvsPlayerPlugin
     }
   }
 
+  public void CreateCast(String url) {
+    // Create a new MediaRouteButton.
+    Log.i("CapacitorIvsPlayer", "CreateCast");
+    MediaRouteButton mediaRouteButton = new MediaRouteButton(bridge.getActivity());
+    CastButtonFactory.setUpMediaRouteButton(bridge.getActivity().getApplicationContext(), mediaRouteButton);
+
+    // Add the MediaRouteButton to the activity's layout.
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.TOP | Gravity.END;
+    bridge.getActivity().addContentView(mediaRouteButton, params);
+
+    // Programmatically click the MediaRouteButton to show the device selection dialog.
+    mediaRouteButton.performClick();
+    Log.i("CapacitorIvsPlayer", "CreateCast performClick");
+
+    // Get the SessionManager.
+    SessionManager sessionManager = CastContext.getSharedInstance(getActivity()).getSessionManager();
+
+    // Add a SessionManagerListener.
+    sessionManager.addSessionManagerListener(new SessionManagerListener<CastSession>() {
+      @Override
+      public void onSessionStarted(CastSession session, String sessionId) {
+        // Create a new MediaMetadata object.
+        MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+        metadata.putString(MediaMetadata.KEY_TITLE, title);
+        metadata.putString(MediaMetadata.KEY_SUBTITLE, description);
+        metadata.addImage(new WebImage(Uri.parse(cover)));
+
+        // Create a new MediaInfo object.
+        MediaInfo mediaInfo = new MediaInfo.Builder(url)
+                .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                .setContentType("videos/mp4")
+                .setMetadata(metadata)
+                .build();
+
+        // Load the media.
+        session.getRemoteMediaClient().load(mediaInfo, true, 0);
+      }
+
+      // Implement other methods as needed.
+      @Override
+      public void onSessionResumed(CastSession session, boolean wasSuspended) {}
+      @Override
+      public void onSessionResumeFailed(CastSession session, int error) {}
+      @Override
+      public void onSessionSuspended(CastSession session, int reason) {}
+      @Override
+      public void onSessionEnded(CastSession session, int error) {}
+      @Override
+      public void onSessionStarting(CastSession session) {}
+      @Override
+      public void onSessionStartFailed(CastSession session, int error) {}
+      @Override
+      public void onSessionEnding(CastSession session) {}
+      @Override
+      public void onSessionResuming(CastSession session, String sessionId) {}
+    }, CastSession.class);
+  }
+
   @PluginMethod
   public void cast(PluginCall call) {
     Log.i("CapacitorIvsPlayer", "cast");
+//    app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
+//    open MediaRouteActionProvider
+
     var lastUrl = this.lastUrl;
     getActivity()
       .runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            // Get the CastSession
-            CastSession castSession = castContext
-              .getSessionManager()
-              .getCurrentCastSession();
 
-            // Check if a session is active
-            if (castSession != null) {
-              // Get the RemoteMediaClient
-              RemoteMediaClient remoteMediaClient = castSession.getRemoteMediaClient();
-
-              // Check if the RemoteMediaClient is not null
-              if (remoteMediaClient != null) {
-                // Create a MediaInfo object
-                MediaInfo mediaInfo = new MediaInfo.Builder(lastUrl)
-                  .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                  .setContentType("videos/mp4")
-                  .build();
-
-                // Load the media
-                remoteMediaClient.load(mediaInfo, true, 0);
-              }
-            }
-
+            CreateCast(lastUrl, "title", "cover", "description");
             call.resolve();
           }
         }
@@ -407,6 +475,9 @@ public class CapacitorIvsPlayerPlugin
     lastUrl = url;
     autoPlay = call.getBoolean("autoPlay", false);
     Boolean toBack = call.getBoolean("toBack", false);
+    title = call.getString("title", "");
+    description = call.getString("description", "");
+    cover = call.getString("cover", "");
     getActivity()
       .runOnUiThread(
         new Runnable() {
@@ -522,7 +593,11 @@ public class CapacitorIvsPlayerPlugin
   public void load() {
     super.load();
     getDisplaySize();
+    setupCastListener();
     castContext = CastContext.getSharedInstance(getContext());
+    CastSession castSession = castContext
+            .getSessionManager()
+            .getCurrentCastSession();
     // Initialize the Player view
     playerView = new PlayerView(getContext());
     playerView.requestFocus();
