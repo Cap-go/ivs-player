@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.34](https://github.com/Cap-go/ivs-player/compare/0.13.33...0.13.34) (2023-08-31)
+
+
+### Bug Fixes
+
+* can init cast ([7a5ef89](https://github.com/Cap-go/ivs-player/commit/7a5ef896d4374fd148bc53f9741be2eb280e95f5))
+* chromecast ([785dae9](https://github.com/Cap-go/ivs-player/commit/785dae9b2197e1c388cace94b1f906d00199f5ba))
+* create the cast session ([f1f5c16](https://github.com/Cap-go/ivs-player/commit/f1f5c1602ec6365dee85d014948820e1983aafca))
+
 ### [0.13.33](https://github.com/Cap-go/ivs-player/compare/0.13.32...0.13.33) (2023-08-29)
 
 
