@@ -40,6 +40,9 @@ npx cap sync
 * [`setQuality(...)`](#setquality)
 * [`getQuality()`](#getquality)
 * [`getQualities()`](#getqualities)
+* [`getPluginVersion()`](#getpluginversion)
+* [`addListener('startPip', ...)`](#addlistenerstartpip)
+* [`addListener('stopPip', ...)`](#addlistenerstoppip)
 * [`addListener('expandPip', ...)`](#addlistenerexpandpip)
 * [`addListener('closePip', ...)`](#addlistenerclosepip)
 * [`addListener('onState', ...)`](#addlisteneronstate)
@@ -297,6 +300,59 @@ getQualities() => Promise<{ qualities: string[]; }>
 ```
 
 **Returns:** <code>Promise&lt;{ qualities: string[]; }&gt;</code>
+
+--------------------
+
+
+### getPluginVersion()
+
+```typescript
+getPluginVersion() => Promise<{ version: string; }>
+```
+
+Get the native Capacitor plugin version
+
+**Returns:** <code>Promise&lt;{ version: string; }&gt;</code>
+
+--------------------
+
+
+### addListener('startPip', ...)
+
+```typescript
+addListener(eventName: "startPip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Listen for start pip
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'startPip'</code>    |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
+
+--------------------
+
+
+### addListener('stopPip', ...)
+
+```typescript
+addListener(eventName: "stopPip", listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Listen for stop pip
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'stopPip'</code>     |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 1.0.0
 
 --------------------
 

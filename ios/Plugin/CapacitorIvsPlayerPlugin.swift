@@ -26,8 +26,6 @@ class CapacitorIVSPlayer: NSObject, IVSPlayer.Delegate {
 
     var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
-    private let PLUGIN_VERSION = "0.13.34"
-
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
         //        print("CapacitorIVSPlayer state change \(state)")
         let stateName = stateToStateName(state)
@@ -84,6 +82,9 @@ class TouchThroughView: IVSPlayerView {
  */
 @objc(CapacitorIvsPlayerPlugin)
 public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDelegate {
+
+    private let PLUGIN_VERSION = "0.13.34"
+
     let player = IVSPlayer()
     let playerDelegate = CapacitorIVSPlayer()
     let playerView = TouchThroughView()

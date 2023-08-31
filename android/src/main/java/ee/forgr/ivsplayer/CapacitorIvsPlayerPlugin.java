@@ -423,7 +423,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
       ret.put("version", this.PLUGIN_VERSION);
       call.resolve(ret);
     } catch (final Exception e) {
-      Log.e(CapacitorUpdater.TAG, "Could not get plugin version", e);
       call.reject("Could not get plugin version", e);
     }
   }
