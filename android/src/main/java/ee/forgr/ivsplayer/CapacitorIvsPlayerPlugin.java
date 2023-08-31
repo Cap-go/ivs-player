@@ -57,6 +57,8 @@ import org.json.JSONArray;
 @CapacitorPlugin(name = "CapacitorIvsPlayer")
 public class CapacitorIvsPlayerPlugin extends Plugin {
 
+  public final String PLUGIN_VERSION = "0.13.34";
+
   private final int mainPiPFrameLayoutId = 257;
   private PlayerView playerView;
   private int marginButton = 40;
@@ -412,6 +414,18 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           Log.i("CapacitorIvsPlayer", "onSessionResumeFailed");
         }
       };
+  }
+
+  @PluginMethod
+  public void getPluginVersion(final PluginCall call) {
+    try {
+      final JSObject ret = new JSObject();
+      ret.put("version", this.PLUGIN_VERSION);
+      call.resolve(ret);
+    } catch (final Exception e) {
+      Log.e(CapacitorUpdater.TAG, "Could not get plugin version", e);
+      call.reject("Could not get plugin version", e);
+    }
   }
 
   @PluginMethod

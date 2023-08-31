@@ -60,6 +60,14 @@ export interface CapacitorIvsPlayerPlugin {
   setQuality(options?: { quality: string }): Promise<void>;
   getQuality(): Promise<{ quality: string }>;
   getQualities(): Promise<{ qualities: string[] }>;
+
+  /**
+   * Get the native Capacitor plugin version 
+   *
+   * @returns {Promise<{ id: string }>} an Promise with version for this device
+   * @throws An error if the something went wrong
+   */
+    getPluginVersion(): Promise<{ version: string }>;
   /**
    * Listen for start pip
    *

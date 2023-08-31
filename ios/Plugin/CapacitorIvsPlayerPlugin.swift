@@ -26,6 +26,8 @@ class CapacitorIVSPlayer: NSObject, IVSPlayer.Delegate {
 
     var capacitorPlugin: CapacitorIvsPlayerPlugin!
 
+    private let PLUGIN_VERSION = "0.13.34"
+
     func player(_ player: IVSPlayer, didChangeState state: IVSPlayer.State) {
         //        print("CapacitorIVSPlayer state change \(state)")
         let stateName = stateToStateName(state)
@@ -307,6 +309,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
             }
             return .commandFailed
         }
+    }
+
+    @objc func getPluginVersion(_ call: CAPPluginCall) {
+        call.resolve(["version": self.PLUGIN_VERSION])
     }
 
     @objc func getAutoQuality(_ call: CAPPluginCall) {

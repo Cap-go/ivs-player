@@ -114,4 +114,8 @@ export class CapacitorIvsPlayerWeb
     console.log("getAutoQuality");
     return { autoQuality: false };
   }
+  async getPluginVersion(): Promise<{ version: string }> {
+    console.warn("Cannot get plugin version in web");
+    return { version: "default" };
+  }
 }
