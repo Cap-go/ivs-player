@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.37](https://github.com/Cap-go/ivs-player/compare/0.13.36...0.13.37) (2023-09-01)
+
+
+### Bug Fixes
+
+* getCastStatus and cast event Android ([9f78bd9](https://github.com/Cap-go/ivs-player/commit/9f78bd9881c370f60748e562ffdb19167b1e3017))
+
 ### [0.13.36](https://github.com/Cap-go/ivs-player/compare/0.13.35...0.13.36) (2023-08-31)
 
 
