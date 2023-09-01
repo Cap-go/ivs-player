@@ -70,6 +70,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   private FrameLayout.LayoutParams playerViewParams;
   public String lastUrl = "";
   private Boolean isPip = false;
+  private Boolean isCast = false;
   private Boolean autoPlay = false;
   private Boolean toBack = false;
   ImageView expandButton;
@@ -355,6 +356,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           // Load the media.
           session.getRemoteMediaClient().load(mediaInfo, true, 0);
           playerView.getPlayer().pause();
+          isCast = true;
+          final JSObject ret = new JSObject();
+          ret.put("isActive", isCast);
+          notifyListeners("onCastStatus", isCast);
         }
 
         @Override
@@ -398,7 +403,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         @Override
         public void onSessionEnded(CastSession session, int error) {
           Log.i("CapacitorIvsPlayer", "onSessionEnded");
-
+          isCast = false;
+          final JSObject ret = new JSObject();
+          ret.put("isActive", isCast);
+          notifyListeners("onCastStatus", isCast);
         }
 
         @Override
@@ -440,9 +448,6 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           @Override
           public void run() {
             Log.i("CapacitorIvsPlayer", "CreateCast");
-
-            Log.i("CapacitorIvsPlayer", "CreateCast");
-            Log.i("CapacitorIvsPlayer", "CreateCast");
             // Check if the CastContext is null
             if (castContext == null) {
               Log.i("CapacitorIvsPlayer", "CastContext is null");
@@ -470,7 +475,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   public void getCastStatus(PluginCall call) {
     Log.i("CapacitorIvsPlayer", "getCastStatus");
     final JSObject ret = new JSObject();
-    ret.put("isActive", false);
+    ret.put("isActive", isCast);
     call.resolve(ret);
   }
 
