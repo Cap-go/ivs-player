@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.39](https://github.com/Cap-go/ivs-player/compare/0.13.38...0.13.39) (2023-09-01)
+
+
+### Bug Fixes
+
+* hide cast button ([303500d](https://github.com/Cap-go/ivs-player/commit/303500de647f1a3a0aafd3998a4e2b790f350839))
+
 ### [0.13.38](https://github.com/Cap-go/ivs-player/compare/0.13.37...0.13.38) (2023-09-01)
 
 
