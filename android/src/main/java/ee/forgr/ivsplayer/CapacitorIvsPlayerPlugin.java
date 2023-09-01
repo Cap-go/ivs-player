@@ -625,6 +625,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
       bridge.getActivity().getApplicationContext(),
       mediaRouteButton
     );
+    mediaRouteButton.setVisibility(View.GONE);
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
       FrameLayout.LayoutParams.WRAP_CONTENT,
       FrameLayout.LayoutParams.WRAP_CONTENT
