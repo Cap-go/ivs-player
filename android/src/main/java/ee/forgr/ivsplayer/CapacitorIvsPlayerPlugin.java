@@ -50,6 +50,7 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.images.WebImage;
 import org.json.JSONArray;
@@ -87,6 +88,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   private ScaleGestureDetector scaleGestureDetector;
   private boolean isFullScreen = false;
   private SessionManagerListener<CastSession> mSessionManagerListener;
+  private CastSession mCastSession;
+  private SessionManager mSessionManager;
   public String title = "";
   public String description = "";
   public String cover = "";
@@ -322,6 +325,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   }
 
   private void setupCastListener() {
+    mSessionManager =
+      CastContext.getSharedInstance(getContext()).getSessionManager();
     mSessionManagerListener =
       new SessionManagerListener<CastSession>() {
         @Override
@@ -404,6 +409,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         public void onSessionEnded(CastSession session, int error) {
           Log.i("CapacitorIvsPlayer", "onSessionEnded");
           isCast = false;
+          mSessionManager.removeSessionManagerListener(
+            mSessionManagerListener,
+            CastSession.class
+          );
           final JSObject ret = new JSObject();
           ret.put("isActive", isCast);
           notifyListeners("onCastStatus", ret);
@@ -460,6 +469,13 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
               } else {
                 Log.i("CapacitorIvsPlayer", "Devices available for casting");
               }
+            }
+            mSessionManager.addSessionManagerListener(
+              mSessionManagerListener,
+              CastSession.class
+            );
+            if (mSessionManager.getCurrentCastSession() != null) {
+              mCastSession = mSessionManager.getCurrentCastSession();
             }
             // Programmatically click the MediaRouteButton to show the device selection dialog.
             mediaRouteButton.performClick();
