@@ -359,7 +359,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           isCast = true;
           final JSObject ret = new JSObject();
           ret.put("isActive", isCast);
-          notifyListeners("onCastStatus", isCast);
+          notifyListeners("onCastStatus", ret);
         }
 
         @Override
@@ -406,7 +406,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           isCast = false;
           final JSObject ret = new JSObject();
           ret.put("isActive", isCast);
-          notifyListeners("onCastStatus", isCast);
+          notifyListeners("onCastStatus", ret);
         }
 
         @Override
