@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.36](https://github.com/Cap-go/ivs-player/compare/0.13.35...0.13.36) (2023-08-31)
+
+
+### Bug Fixes
+
+* verify ([e862eb2](https://github.com/Cap-go/ivs-player/commit/e862eb261a65e59a3400af4bfc5b3761cf479dda))
+
 ### [0.13.35](https://github.com/Cap-go/ivs-player/compare/0.13.34...0.13.35) (2023-08-31)
 
 
