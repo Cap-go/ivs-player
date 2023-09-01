@@ -1,7 +1,6 @@
 package ee.forgr.ivsplayer;
 
 import android.content.Context;
-
 import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
@@ -13,8 +12,9 @@ public class CastOptionsProvider implements OptionsProvider {
   @Override
   public CastOptions getCastOptions(Context context) {
     CastOptions castOptions = new CastOptions.Builder()
-    .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-      //                .setReceiverApplicationId(context.getPackageName().replace(".", "_"))
+      .setReceiverApplicationId(
+        CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
+      )
       .build();
     return castOptions;
   }
