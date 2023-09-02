@@ -352,17 +352,22 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
             new WebImage(Uri.parse(CapacitorIvsPlayerPlugin.this.cover))
           );
 
+          MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder()
+            .setAutoplay(true)
+            .setPlayPosition(playerView.getPlayer().getPosition())
+            .build();
+
           // Create a new MediaInfo object.
           MediaInfo mediaInfo = new MediaInfo.Builder(
             CapacitorIvsPlayerPlugin.this.lastUrl
           )
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .setContentType("videos/mp4")
+            .setStreamType(MediaInfo.STREAM_TYPE_LIVE)
+            .setContentType("application/x-mpegURL")
             .setMetadata(metadata)
             .build();
 
           // Load the media.
-          session.getRemoteMediaClient().load(mediaInfo, true, 0);
+          session.getRemoteMediaClient().load(mediaInfo, mediaLoadOptions);
           playerView.getPlayer().pause();
           isCast = true;
           final JSObject ret = new JSObject();
