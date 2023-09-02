@@ -195,6 +195,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         new Player.Listener() {
           @Override
           public void onStateChanged(Player.State state) {
+            if (isCast) {
+              return;
+            }
             final JSObject ret = new JSObject();
             ret.put("state", state);
             Log.i("CapacitorIvsPlayer", "onStateChanged: " + state);
@@ -416,6 +419,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
           final JSObject ret = new JSObject();
           ret.put("isActive", isCast);
           notifyListeners("onCastStatus", ret);
+          playerView.getPlayer().pause();
         }
 
         @Override
