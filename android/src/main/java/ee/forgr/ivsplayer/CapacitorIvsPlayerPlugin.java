@@ -2,15 +2,12 @@ package ee.forgr.ivsplayer;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.app.Application;
 import android.app.PictureInPictureParams;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,7 +26,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle;
@@ -53,6 +49,8 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.images.WebImage;
 import org.json.JSONArray;
 
@@ -368,7 +366,27 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
             .build();
 
           // Load the media.
-          session.getRemoteMediaClient().load(mediaInfo, mediaLoadOptions);
+          session
+            .getRemoteMediaClient()
+            .load(mediaInfo, mediaLoadOptions)
+            .setResultCallback(
+              new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
+                @Override
+                public void onResult(
+                  RemoteMediaClient.MediaChannelResult result
+                ) {
+                  if (result.getStatus().isSuccess()) {
+                    Log.d("CapacitorIvsPlayer", "Media loaded successfully");
+                  } else {
+                    Log.e(
+                      "CapacitorIvsPlayer",
+                      "Error loading media: " +
+                      result.getStatus().getStatusCode()
+                    );
+                  }
+                }
+              }
+            );
           playerView.getPlayer().pause();
           isCast = true;
           final JSObject ret = new JSObject();
