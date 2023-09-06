@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.47](https://github.com/Cap-go/ivs-player/compare/0.13.46...0.13.47) (2023-09-06)
+
+
+### Bug Fixes
+
+* Android native PiP had white border when it was started from in-app PiP ([9236c50](https://github.com/Cap-go/ivs-player/commit/9236c504248637dd426ae223e2624746d0940cc9))
+
 ### [0.13.46](https://github.com/Cap-go/ivs-player/compare/0.13.45...0.13.46) (2023-09-05)
 
 
