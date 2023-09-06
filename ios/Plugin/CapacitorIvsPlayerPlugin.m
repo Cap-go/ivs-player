@@ -23,6 +23,8 @@ CAP_PLUGIN(CapacitorIvsPlayerPlugin, "CapacitorIvsPlayer",
            CAP_PLUGIN_METHOD(getQualities, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setFrame, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getFrame, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setBackgroundState, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getBackgroundState, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(removeAllListeners, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(cast, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getCastStatus, CAPPluginReturnPromise);

@@ -14,6 +14,7 @@ export type CapacitorIvsPlayerState =
   | "PLAYING"
   | "ENDED"
   | "UNKNOWN";
+export type CapacitorIvsPlayerBackgroundState = "PAUSED" | "PLAYING";
 export interface CapacitorIvsPlayerPlugin {
   create(options: {
     url: string;
@@ -55,6 +56,10 @@ export interface CapacitorIvsPlayerPlugin {
     height?: number;
   }): Promise<void>;
   getFrame(): Promise<CapacitorFrame>;
+  setBackgroundState(backgroundState: CapacitorIvsPlayerBackgroundState): Promise<void>;
+  getBackgroundState(): Promise<{
+    backgroundState: CapacitorIvsPlayerBackgroundState;
+  }>;
   setMute(options?: { muted?: boolean }): Promise<void>;
   getMute(): Promise<{ mute: boolean }>;
   setQuality(options?: { quality: string }): Promise<void>;

@@ -3,6 +3,7 @@ import { WebPlugin } from "@capacitor/core";
 import type {
   CapacitorIvsPlayerState,
   CapacitorIvsPlayerPlugin,
+  CapacitorIvsPlayerBackgroundState,
 } from "./definitions";
 
 export class CapacitorIvsPlayerWeb
@@ -70,6 +71,14 @@ export class CapacitorIvsPlayerWeb
   }> {
     console.log("getPosition");
     return { x: 0, y: 0, width: 0, height: 0 };
+  }
+  async setBackgroundState(backgroundState: CapacitorIvsPlayerBackgroundState): Promise<void> {
+    console.log("setBackgroundState", backgroundState);
+    return;
+  }
+  async getBackgroundState(): Promise<{ backgroundState: CapacitorIvsPlayerBackgroundState }> {
+    console.log("getBackgroundState");
+    return { backgroundState: "PAUSED" };
   }
   async setPip(): Promise<void> {
     console.log("setPip");

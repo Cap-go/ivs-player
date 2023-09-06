@@ -99,6 +99,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     var autoPlay: Bool = false
     var isCastActive: Bool = false
     var avPlayer: AVPlayer?
+    var backgroundState: String = "PAUSED"
 
     override public func load() {
         self.webView?.backgroundColor = UIColor.black
@@ -234,8 +235,10 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func deviceWillLock() {
         print("CapacitorIVSPlayer deviceWillLock")
-        DispatchQueue.main.async {
-            self.player.pause()
+        if self.backgroundState != "PLAYING" {
+            DispatchQueue.main.async {
+                self.player.pause()
+            }
         }
     }
 
@@ -510,6 +513,32 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
 
     @objc func getPlayerPosition(_ call: CAPPluginCall) {
         call.resolve(["toBack": self.toBack])
+    }
+
+    @objc func _setBackgroundState(backgroundState: String) -> Bool {
+        if ["PAUSED", "PLAYING"].contains(backgroundState)  {
+            self.backgroundState = backgroundState
+        } else {
+            return false
+        }
+        print("CapacitorIVSPlayer _setBackgroundState done")
+        return true
+    }
+
+    @objc func setBackgroundState(_ call: CAPPluginCall) {
+        print("CapacitorIVSPlayer setBackgroundState")
+        let backgroundState = call.getString("backgroundState", "PAUSED")
+        DispatchQueue.main.async {
+            if self._setBackgroundState(backgroundState: backgroundState)  {
+                call.resolve()
+            } else {
+                call.reject("Invalid backgroundState: \(backgroundState)")
+            }
+        }
+    }
+
+    @objc func getBackgroundState(_ call: CAPPluginCall) {
+        call.resolve(["backgroundState": self.backgroundState])
     }
 
     public func loadUrl(url: String) {
