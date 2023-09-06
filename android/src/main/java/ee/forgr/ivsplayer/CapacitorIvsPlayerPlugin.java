@@ -275,7 +275,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     FrameLayout mainPiPFrameLayout = getBridge()
       .getActivity()
       .findViewById(mainPiPFrameLayoutId);
-    //            && prevUrl != nextUrl
+    // && prevUrl != nextUrl
     if (mainPiPFrameLayout != null) {
       Log.i("CapacitorIvsPlayer", "FrameLayout for VideoPicker already exists");
       // check if playerView is already in mainPiPFrameLayout
@@ -475,8 +475,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   @PluginMethod
   public void cast(PluginCall call) {
     Log.i("CapacitorIvsPlayer", "cast");
-    //    app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
-    //    open MediaRouteActionProvider
+    // app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
+    // open MediaRouteActionProvider
 
     var lastUrl = this.lastUrl;
     getActivity()
@@ -505,7 +505,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
             if (mSessionManager.getCurrentCastSession() != null) {
               mCastSession = mSessionManager.getCurrentCastSession();
             }
-            // Programmatically click the MediaRouteButton to show the device selection dialog.
+            // Programmatically click the MediaRouteButton to show the device selection
+            // dialog.
             mediaRouteButton.performClick();
             Log.i("CapacitorIvsPlayer", "CreateCast performClick");
             // Check if a session is activ
@@ -929,30 +930,32 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   ) {
     // ValueAnimator XAnimator = ValueAnimator.ofFloat(startX, endX);
     // XAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    //     @Override
-    //     public void onAnimationUpdate(ValueAnimator animation) {
-    //         float animatedValue = (float) animation.getAnimatedValue();
-    //         int maxMarginX = size.x - (int) animatedValue;
-    //         int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
-    //         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-    //         layoutParams.leftMargin = newMarginX;
-    //         playerView.setLayoutParams(layoutParams);
-    //         playerView.requestLayout();
-    //     }
+    // @Override
+    // public void onAnimationUpdate(ValueAnimator animation) {
+    // float animatedValue = (float) animation.getAnimatedValue();
+    // int maxMarginX = size.x - (int) animatedValue;
+    // int newMarginX = Math.max(0, Math.min(playerView.getLeft(), maxMarginX));
+    // FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+    // playerView.getLayoutParams();
+    // layoutParams.leftMargin = newMarginX;
+    // playerView.setLayoutParams(layoutParams);
+    // playerView.requestLayout();
+    // }
     // });
 
     // ValueAnimator YAnimator = ValueAnimator.ofFloat(startY, endY);
     // YAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    //     @Override
-    //     public void onAnimationUpdate(ValueAnimator animation) {
-    //         float animatedValue = (float) animation.getAnimatedValue();
-    //         int maxMarginY = size.y - (int) animatedValue;
-    //         int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
-    //         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-    //         layoutParams.topMargin = newMarginY;
-    //         playerView.setLayoutParams(layoutParams);
-    //         playerView.requestLayout();
-    //     }
+    // @Override
+    // public void onAnimationUpdate(ValueAnimator animation) {
+    // float animatedValue = (float) animation.getAnimatedValue();
+    // int maxMarginY = size.y - (int) animatedValue;
+    // int newMarginY = Math.max(0, Math.min(playerView.getTop(), maxMarginY));
+    // FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+    // playerView.getLayoutParams();
+    // layoutParams.topMargin = newMarginY;
+    // playerView.setLayoutParams(layoutParams);
+    // playerView.requestLayout();
+    // }
     // });
 
     ValueAnimator widthAnimator = ValueAnimator.ofFloat(startWidth, endWidth);
@@ -1004,7 +1007,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     animatorSet.setDuration(300);
 
     animatorSet.playTogether(widthAnimator, heightAnimator);
-    // animatorSet.playTogether(widthAnimator, heightAnimator, XAnimator, YAnimator);
+    // animatorSet.playTogether(widthAnimator, heightAnimator, XAnimator,
+    // YAnimator);
     animatorSet.start();
   }
 
@@ -1019,7 +1023,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     getDisplaySize();
     int halfScreenSizeX = size.x / 2;
     int height = calcHeight(halfScreenSizeX);
-    // position the player view at the bottom right corner with a margin of 1/4 of screen
+    // position the player view at the bottom right corner with a margin of 1/4 of
+    // screen
     int x = size.x - halfScreenSizeX - 30;
     int y = size.y - height - 30;
     // get half of width and calculate height
@@ -1087,6 +1092,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
               }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
               if (pip) {
+                playerView.setClipToOutline(false);
                 setDisplayPipButton(false);
                 // Set player width to 100% of parent (Native PiP window)
                 _setFrameMatchParent();
@@ -1139,10 +1145,13 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   // function to get default height and width of the screen
 
   /**
-   * This method converts dp unit to equivalent pixels, depending on device density.
+   * This method converts dp unit to equivalent pixels, depending on device
+   * density.
    *
-   * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
-   * @return A float value to represent px equivalent to dp depending on device density
+   * @param dp A value in dp (density independent pixels) unit. Which we need to
+   *           convert into pixels
+   * @return A float value to represent px equivalent to dp depending on device
+   *         density
    */
   public float convertDpToPixel(float dp) {
     return (
@@ -1223,7 +1232,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   @PluginMethod
   public void setQuality(PluginCall call) {
     String qualityName = call.getString("quality");
-    //        loop through qualities and find the one with the name
+    // loop through qualities and find the one with the name
     Quality quality = null;
     for (var q : playerView.getPlayer().getQualities()) {
       if (q.getName().equals(qualityName)) {
