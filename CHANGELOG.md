@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.49](https://github.com/Cap-go/ivs-player/compare/0.13.48...0.13.49) (2023-09-06)
+
+
+### Features
+
+* iOS background play state control ([f510212](https://github.com/Cap-go/ivs-player/commit/f51021280dc2db89a4d098c1220620ef66b977ec))
+
 ### [0.13.48](https://github.com/Cap-go/ivs-player/compare/0.13.47...0.13.48) (2023-09-06)
 
 
