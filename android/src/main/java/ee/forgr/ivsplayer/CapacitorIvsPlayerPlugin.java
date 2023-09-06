@@ -1111,6 +1111,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   }
 
   private void _setFrame(int x, int y, int width, int height) {
+    if (isPip) {
+      return;
+    }
     getActivity()
       .runOnUiThread(
         new Runnable() {
