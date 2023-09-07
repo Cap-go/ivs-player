@@ -72,10 +72,10 @@ export class CapacitorIvsPlayerWeb
     console.log("getPosition");
     return { x: 0, y: 0, width: 0, height: 0 };
   }
-  async setBackgroundState(
-    backgroundState: CapacitorIvsPlayerBackgroundState,
-  ): Promise<void> {
-    console.log("setBackgroundState", backgroundState);
+  async setBackgroundState(options: {
+    backgroundState: CapacitorIvsPlayerBackgroundState;
+  }): Promise<void> {
+    console.log("setBackgroundState", options);
     return;
   }
   async getBackgroundState(): Promise<{

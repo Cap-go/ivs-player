@@ -35,6 +35,8 @@ npx cap sync
 * [`getPip()`](#getpip)
 * [`setFrame(...)`](#setframe)
 * [`getFrame()`](#getframe)
+* [`setBackgroundState(...)`](#setbackgroundstate)
+* [`getBackgroundState()`](#getbackgroundstate)
 * [`setMute(...)`](#setmute)
 * [`getMute()`](#getmute)
 * [`setQuality(...)`](#setquality)
@@ -241,6 +243,30 @@ getFrame() => Promise<CapacitorFrame>
 ```
 
 **Returns:** <code>Promise&lt;<a href="#capacitorframe">CapacitorFrame</a>&gt;</code>
+
+--------------------
+
+
+### setBackgroundState(...)
+
+```typescript
+setBackgroundState(options: { backgroundState: CapacitorIvsPlayerBackgroundState; }) => Promise<void>
+```
+
+| Param         | Type                                                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ backgroundState: <a href="#capacitorivsplayerbackgroundstate">CapacitorIvsPlayerBackgroundState</a>; }</code> |
+
+--------------------
+
+
+### getBackgroundState()
+
+```typescript
+getBackgroundState() => Promise<{ backgroundState: CapacitorIvsPlayerBackgroundState; }>
+```
+
+**Returns:** <code>Promise&lt;{ backgroundState: <a href="#capacitorivsplayerbackgroundstate">CapacitorIvsPlayerBackgroundState</a>; }&gt;</code>
 
 --------------------
 
@@ -616,6 +642,11 @@ Remove all listeners for this plugin.
 #### CapacitorIvsPlayerState
 
 <code>"IDLE" | "BUFFERING" | "READY" | "PLAYING" | "ENDED" | "UNKNOWN"</code>
+
+
+#### CapacitorIvsPlayerBackgroundState
+
+<code>"PAUSED" | "PLAYING"</code>
 
 </docgen-api>
 
