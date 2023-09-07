@@ -1028,7 +1028,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
     int x = size.x - halfScreenSizeX - 30;
     int y = size.y - height - 30;
     // get half of width and calculate height
-    _setFrame(x, y, halfScreenSizeX, height);
+    _setFrame(x, y, halfScreenSizeX, height, true);
   }
 
   // function to send webview to front
@@ -1111,7 +1111,17 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   }
 
   private void _setFrame(int x, int y, int width, int height) {
-    if (isPip) {
+    this._setFrame(x, y, width, height, false);
+  }
+
+  private void _setFrame(
+    int x,
+    int y,
+    int width,
+    int height,
+    boolean forceSetFrame
+  ) {
+    if (isPip && !forceSetFrame) {
       return;
     }
     getActivity()
