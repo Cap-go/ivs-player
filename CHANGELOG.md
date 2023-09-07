@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.51](https://github.com/Cap-go/ivs-player/compare/0.13.50...0.13.51) (2023-09-07)
+
+
+### Bug Fixes
+
+* android in-app pip not having correct size and position ([0136a4d](https://github.com/Cap-go/ivs-player/commit/0136a4dae758aefb0f22180dea2a53b9a665d85e))
+
 ### [0.13.50](https://github.com/Cap-go/ivs-player/compare/0.13.49...0.13.50) (2023-09-07)
 
 
