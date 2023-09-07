@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.50](https://github.com/Cap-go/ivs-player/compare/0.13.49...0.13.50) (2023-09-07)
+
+
+### Bug Fixes
+
+* Prettier cleanup ([e04ce1b](https://github.com/Cap-go/ivs-player/commit/e04ce1b826f430354a0cf0ce257fa72a32c90314))
+* SetBackgrounsState wrong args definition ([8bad271](https://github.com/Cap-go/ivs-player/commit/8bad2714541ddd0abae41f70652284e6b45bae93))
+
 ### [0.13.49](https://github.com/Cap-go/ivs-player/compare/0.13.48...0.13.49) (2023-09-06)
 
 
