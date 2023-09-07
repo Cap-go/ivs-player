@@ -57,7 +57,7 @@ export interface CapacitorIvsPlayerPlugin {
   }): Promise<void>;
   getFrame(): Promise<CapacitorFrame>;
   setBackgroundState(
-    backgroundState: CapacitorIvsPlayerBackgroundState,
+    options: { backgroundState: CapacitorIvsPlayerBackgroundState }
   ): Promise<void>;
   getBackgroundState(): Promise<{
     backgroundState: CapacitorIvsPlayerBackgroundState;
