@@ -516,7 +516,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
     }
 
     @objc func _setBackgroundState(backgroundState: String) -> Bool {
-        if ["PAUSED", "PLAYING"].contains(backgroundState)  {
+        if ["PAUSED", "PLAYING"].contains(backgroundState) {
             self.backgroundState = backgroundState
         } else {
             return false
@@ -529,7 +529,7 @@ public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDe
         print("CapacitorIVSPlayer setBackgroundState")
         let backgroundState = call.getString("backgroundState", "PAUSED")
         DispatchQueue.main.async {
-            if self._setBackgroundState(backgroundState: backgroundState)  {
+            if self._setBackgroundState(backgroundState: backgroundState) {
                 call.resolve()
             } else {
                 call.reject("Invalid backgroundState: \(backgroundState)")

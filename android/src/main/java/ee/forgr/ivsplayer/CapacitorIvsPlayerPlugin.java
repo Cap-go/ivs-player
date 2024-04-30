@@ -154,7 +154,7 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
 
   // function to calc 16:9 ratio height
   private int calcHeight(int width) {
-    return (int) (width * 9.0 / 16.0);
+    return (int) ((width * 9.0) / 16.0);
   }
 
   private void addPipListener() {
@@ -298,8 +298,9 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
       }
     } else {
       // Initialize a new FrameLayout as container for fragment
-      mainPiPFrameLayout =
-        new FrameLayout(getActivity().getApplicationContext());
+      mainPiPFrameLayout = new FrameLayout(
+        getActivity().getApplicationContext()
+      );
       mainPiPFrameLayout.setId(mainPiPFrameLayoutId);
       // Apply the Layout Parameters to frameLayout
       mainPiPFrameLayout.setLayoutParams(
@@ -327,138 +328,131 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   }
 
   private void setupCastListener() {
-    mSessionManager =
-      CastContext.getSharedInstance(getContext()).getSessionManager();
-    mSessionManagerListener =
-      new SessionManagerListener<CastSession>() {
-        @Override
-        public void onSessionStarted(CastSession session, String sessionId) {
-          castSession = session;
-          Log.i("CapacitorIvsPlayer", "onSessionStarted");
-          // Create a new MediaMetadata object.
-          MediaMetadata metadata = new MediaMetadata(
-            MediaMetadata.MEDIA_TYPE_MOVIE
-          );
-          metadata.putString(
-            MediaMetadata.KEY_TITLE,
-            CapacitorIvsPlayerPlugin.this.title
-          );
-          metadata.putString(
-            MediaMetadata.KEY_SUBTITLE,
-            CapacitorIvsPlayerPlugin.this.description
-          );
-          metadata.addImage(
-            new WebImage(Uri.parse(CapacitorIvsPlayerPlugin.this.cover))
-          );
+    mSessionManager = CastContext.getSharedInstance(
+      getContext()
+    ).getSessionManager();
+    mSessionManagerListener = new SessionManagerListener<CastSession>() {
+      @Override
+      public void onSessionStarted(CastSession session, String sessionId) {
+        castSession = session;
+        Log.i("CapacitorIvsPlayer", "onSessionStarted");
+        // Create a new MediaMetadata object.
+        MediaMetadata metadata = new MediaMetadata(
+          MediaMetadata.MEDIA_TYPE_MOVIE
+        );
+        metadata.putString(
+          MediaMetadata.KEY_TITLE,
+          CapacitorIvsPlayerPlugin.this.title
+        );
+        metadata.putString(
+          MediaMetadata.KEY_SUBTITLE,
+          CapacitorIvsPlayerPlugin.this.description
+        );
+        metadata.addImage(
+          new WebImage(Uri.parse(CapacitorIvsPlayerPlugin.this.cover))
+        );
 
-          MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder()
-            .setAutoplay(true)
-            .setPlayPosition(playerView.getPlayer().getPosition())
-            .build();
+        MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder()
+          .setAutoplay(true)
+          .setPlayPosition(playerView.getPlayer().getPosition())
+          .build();
 
-          // Create a new MediaInfo object.
-          MediaInfo mediaInfo = new MediaInfo.Builder(
-            CapacitorIvsPlayerPlugin.this.lastUrl
-          )
-            .setStreamType(MediaInfo.STREAM_TYPE_LIVE)
-            .setContentType("application/x-mpegURL")
-            .setMetadata(metadata)
-            .build();
+        // Create a new MediaInfo object.
+        MediaInfo mediaInfo = new MediaInfo.Builder(
+          CapacitorIvsPlayerPlugin.this.lastUrl
+        )
+          .setStreamType(MediaInfo.STREAM_TYPE_LIVE)
+          .setContentType("application/x-mpegURL")
+          .setMetadata(metadata)
+          .build();
 
-          // Load the media.
-          session
-            .getRemoteMediaClient()
-            .load(mediaInfo, mediaLoadOptions)
-            .setResultCallback(
-              new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
-                @Override
-                public void onResult(
-                  RemoteMediaClient.MediaChannelResult result
-                ) {
-                  if (result.getStatus().isSuccess()) {
-                    Log.d("CapacitorIvsPlayer", "Media loaded successfully");
-                  } else {
-                    Log.e(
-                      "CapacitorIvsPlayer",
-                      "Error loading media: " +
-                      result.getStatus().getStatusCode()
-                    );
-                  }
+        // Load the media.
+        session
+          .getRemoteMediaClient()
+          .load(mediaInfo, mediaLoadOptions)
+          .setResultCallback(
+            new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
+              @Override
+              public void onResult(
+                RemoteMediaClient.MediaChannelResult result
+              ) {
+                if (result.getStatus().isSuccess()) {
+                  Log.d("CapacitorIvsPlayer", "Media loaded successfully");
+                } else {
+                  Log.e(
+                    "CapacitorIvsPlayer",
+                    "Error loading media: " + result.getStatus().getStatusCode()
+                  );
                 }
               }
-            );
-          playerView.getPlayer().pause();
-          isCast = true;
-          final JSObject ret = new JSObject();
-          ret.put("isActive", isCast);
-          notifyListeners("onCastStatus", ret);
-        }
-
-        @Override
-        public void onSessionStarting(@NonNull CastSession castSession) {
-          Log.i("CapacitorIvsPlayer", "onSessionStarting");
-        }
-
-        @Override
-        public void onSessionSuspended(
-          @NonNull CastSession castSession,
-          int i
-        ) {
-          Log.i("CapacitorIvsPlayer", "onSessionSuspended");
-        }
-
-        @Override
-        public void onSessionResumed(
-          CastSession session,
-          boolean wasSuspended
-        ) {
-          castSession = session;
-          Log.i("CapacitorIvsPlayer", "onSessionResumed");
-        }
-
-        @Override
-        public void onSessionResuming(
-          @NonNull CastSession castSession,
-          @NonNull String s
-        ) {
-          Log.i("CapacitorIvsPlayer", "onSessionResuming");
-        }
-
-        @Override
-        public void onSessionStartFailed(
-          @NonNull CastSession castSession,
-          int i
-        ) {
-          Log.i("CapacitorIvsPlayer", "onSessionStartFailed");
-        }
-
-        @Override
-        public void onSessionEnded(CastSession session, int error) {
-          Log.i("CapacitorIvsPlayer", "onSessionEnded");
-          isCast = false;
-          mSessionManager.removeSessionManagerListener(
-            mSessionManagerListener,
-            CastSession.class
+            }
           );
-          final JSObject ret = new JSObject();
-          ret.put("isActive", isCast);
-          notifyListeners("onCastStatus", ret);
-          playerView.getPlayer().pause();
-        }
+        playerView.getPlayer().pause();
+        isCast = true;
+        final JSObject ret = new JSObject();
+        ret.put("isActive", isCast);
+        notifyListeners("onCastStatus", ret);
+      }
 
-        @Override
-        public void onSessionEnding(@NonNull CastSession castSession) {
-          Log.i("CapacitorIvsPlayer", "onSessionEnding");
-        }
+      @Override
+      public void onSessionStarting(@NonNull CastSession castSession) {
+        Log.i("CapacitorIvsPlayer", "onSessionStarting");
+      }
 
-        @Override
-        public void onSessionResumeFailed(
-          @NonNull CastSession castSession,
-          int i
-        ) {
-          Log.i("CapacitorIvsPlayer", "onSessionResumeFailed");
-        }
-      };
+      @Override
+      public void onSessionSuspended(@NonNull CastSession castSession, int i) {
+        Log.i("CapacitorIvsPlayer", "onSessionSuspended");
+      }
+
+      @Override
+      public void onSessionResumed(CastSession session, boolean wasSuspended) {
+        castSession = session;
+        Log.i("CapacitorIvsPlayer", "onSessionResumed");
+      }
+
+      @Override
+      public void onSessionResuming(
+        @NonNull CastSession castSession,
+        @NonNull String s
+      ) {
+        Log.i("CapacitorIvsPlayer", "onSessionResuming");
+      }
+
+      @Override
+      public void onSessionStartFailed(
+        @NonNull CastSession castSession,
+        int i
+      ) {
+        Log.i("CapacitorIvsPlayer", "onSessionStartFailed");
+      }
+
+      @Override
+      public void onSessionEnded(CastSession session, int error) {
+        Log.i("CapacitorIvsPlayer", "onSessionEnded");
+        isCast = false;
+        mSessionManager.removeSessionManagerListener(
+          mSessionManagerListener,
+          CastSession.class
+        );
+        final JSObject ret = new JSObject();
+        ret.put("isActive", isCast);
+        notifyListeners("onCastStatus", ret);
+        playerView.getPlayer().pause();
+      }
+
+      @Override
+      public void onSessionEnding(@NonNull CastSession castSession) {
+        Log.i("CapacitorIvsPlayer", "onSessionEnding");
+      }
+
+      @Override
+      public void onSessionResumeFailed(
+        @NonNull CastSession castSession,
+        int i
+      ) {
+        Log.i("CapacitorIvsPlayer", "onSessionResumeFailed");
+      }
+    };
   }
 
   @PluginMethod
@@ -570,10 +564,14 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   }
 
   private void prepareButtonInternalPip() {
-    expandAnimation =
-      AnimationUtils.loadAnimation(getContext(), R.anim.expand_animation);
-    collapseAnimation =
-      AnimationUtils.loadAnimation(getContext(), R.anim.collapse_animation);
+    expandAnimation = AnimationUtils.loadAnimation(
+      getContext(),
+      R.anim.expand_animation
+    );
+    collapseAnimation = AnimationUtils.loadAnimation(
+      getContext(),
+      R.anim.collapse_animation
+    );
 
     // Create the expand button
     expandButton = new ImageView(getContext());
@@ -697,30 +695,28 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
       }
     );
 
-    gestureDetector =
-      new GestureDetector(
-        getContext(),
-        new GestureDetector.SimpleOnGestureListener() {
-          @Override
-          public boolean onDoubleTap(MotionEvent e) {
-            toggleFullScreen();
-            return true;
-          }
+    gestureDetector = new GestureDetector(
+      getContext(),
+      new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+          toggleFullScreen();
+          return true;
         }
-      );
+      }
+    );
 
     // Initialize the scale gesture detector
-    scaleGestureDetector =
-      new ScaleGestureDetector(
-        getContext(),
-        new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-          @Override
-          public boolean onScale(ScaleGestureDetector detector) {
-            // TODO: Handle scale gestures if needed
-            return true;
-          }
+    scaleGestureDetector = new ScaleGestureDetector(
+      getContext(),
+      new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+          // TODO: Handle scale gestures if needed
+          return true;
         }
-      );
+      }
+    );
 
     playerView.setOnTouchListener(
       new View.OnTouchListener() {
@@ -1143,11 +1139,10 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
         new Runnable() {
           @Override
           public void run() {
-            playerViewParams =
-              new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-              );
+            playerViewParams = new FrameLayout.LayoutParams(
+              FrameLayout.LayoutParams.MATCH_PARENT,
+              FrameLayout.LayoutParams.MATCH_PARENT
+            );
             playerViewParams.setMargins(0, 0, 0, 0);
             playerView.setLayoutParams(playerViewParams);
           }
@@ -1169,10 +1164,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   public float convertDpToPixel(float dp) {
     return (
       dp *
-      (
-        (float) getContext().getResources().getDisplayMetrics().densityDpi /
-        DisplayMetrics.DENSITY_DEFAULT
-      )
+      ((float) getContext().getResources().getDisplayMetrics().densityDpi /
+        DisplayMetrics.DENSITY_DEFAULT)
     );
   }
 
@@ -1185,10 +1178,8 @@ public class CapacitorIvsPlayerPlugin extends Plugin {
   public float convertPixelsToDp(float px) {
     return (
       px /
-      (
-        (float) getContext().getResources().getDisplayMetrics().densityDpi /
-        DisplayMetrics.DENSITY_DEFAULT
-      )
+      ((float) getContext().getResources().getDisplayMetrics().densityDpi /
+        DisplayMetrics.DENSITY_DEFAULT)
     );
   }
 

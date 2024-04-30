@@ -140,7 +140,6 @@ window.customElements.define(
       self.shadowRoot
         .querySelector("#autostart-stream")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           const url =
             "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8";
           CapacitorIvsPlayer.create({ url, autoPlay: true, toBack: true });
@@ -148,19 +147,16 @@ window.customElements.define(
       self.shadowRoot
         .querySelector("#start-stream")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.start();
         });
       self.shadowRoot
         .querySelector("#pause-stream")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.pause();
         });
       self.shadowRoot
         .querySelector("#create-stream")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           const url =
             "https://d6hwdeiig07o4.cloudfront.net/ivs/956482054022/cTo5UpKS07do/2020-07-13T22-54-42.188Z/OgRXMLtq8M11/media/hls/master.m3u8";
           CapacitorIvsPlayer.create({ url, autoPlay: false, toBack: true });
@@ -168,13 +164,11 @@ window.customElements.define(
       self.shadowRoot
         .querySelector("#delete-stream")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.delete();
         });
       self.shadowRoot
         .querySelector("#get-frame")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.getFrame().then((frame) => {
             console.log("frame", frame);
           });
@@ -182,7 +176,6 @@ window.customElements.define(
       self.shadowRoot
         .querySelector("#get-qualities")
         .addEventListener("click", async function (e) {
-          // eslint-disable-next-line no-undef
           CapacitorIvsPlayer.getQualities().then((qualities) => {
             console.log("qualities", qualities);
           });
