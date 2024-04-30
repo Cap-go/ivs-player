@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/Cap-go/ivs-player/compare/0.13.51...6.0.0) (2024-04-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* capacitor 6
+
+### Features
+
+* capacitor 6 ([665ed19](https://github.com/Cap-go/ivs-player/commit/665ed199b7f566d36efd32f98d59d05377f5e0b5))
+
 ### [0.13.51](https://github.com/Cap-go/ivs-player/compare/0.13.50...0.13.51) (2023-09-07)
 
 
