@@ -7,16 +7,16 @@ settings:
 devDependencies:
   '@capacitor/android':
     specifier: ^6.0.0
-    version: 6.0.0(@capacitor/core@6.0.0)
+    version: 6.1.0(@capacitor/core@6.1.0)
   '@capacitor/core':
     specifier: ^6.0.0
-    version: 6.0.0
+    version: 6.1.0
   '@capacitor/docgen':
     specifier: ^0.2.2
     version: 0.2.2
   '@capacitor/ios':
     specifier: ^6.0.0
-    version: 6.0.0(@capacitor/core@6.0.0)
+    version: 6.1.0(@capacitor/core@6.1.0)
   '@ionic/eslint-config':
     specifier: ^0.3.0
     version: 0.3.0(eslint@9.1.1)(typescript@5.4.5)
@@ -88,18 +88,18 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@capacitor/android@6.0.0(@capacitor/core@6.0.0):
-    resolution: {integrity: sha512-NwL87VO9F1WY/EgvJZN9pIhjejq688k2fRW6XWNLVe3cgGE6nUb9J34KI68fhx3139cf2LVGPUYs+mwZC8esiQ==}
+  /@capacitor/android@6.1.0(@capacitor/core@6.1.0):
+    resolution: {integrity: sha512-S4PW4N5xtKHTrICjG7bkBhI70jdXbb+8nbm1pJpuXChCD0gkCcofJhPaw4bCoO0egcugBN1U7DkegNw5jWpHcw==}
     peerDependencies:
-      '@capacitor/core': ^6.0.0
+      '@capacitor/core': ^6.1.0
     dependencies:
-      '@capacitor/core': 6.0.0
+      '@capacitor/core': 6.1.0
     dev: true
 
-  /@capacitor/core@6.0.0:
-    resolution: {integrity: sha512-NvxIQsJcMiIV+Le1DilR2GGyQQbDInfXK1UywGROQ5mycdFlW5XoAPZ+MKnFGB123RoEgE3uhDGgwTXUmSlX9A==}
+  /@capacitor/core@6.1.0:
+    resolution: {integrity: sha512-Kt4ONm0X9xxJXn9Q73oBaKdzep5B/VJw3VjXa2eGul4cD2k37mJwgjpXSMRnLH0Aju5bCiRL8J/hMAfTlokO6A==}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.3
     dev: true
 
   /@capacitor/docgen@0.2.2:
@@ -114,12 +114,12 @@ packages:
       typescript: 4.2.4
     dev: true
 
-  /@capacitor/ios@6.0.0(@capacitor/core@6.0.0):
-    resolution: {integrity: sha512-7mAs3gjWiE5DPM4AGPduqFSDGXCPwwqQRMzbohVway7/cTWnHomHV8mIojMZE4GILeWO2fILbyu3C8q9pHg2vg==}
+  /@capacitor/ios@6.1.0(@capacitor/core@6.1.0):
+    resolution: {integrity: sha512-ex2q0LAyDDgfJj4fKDQuSNUYSpic3939/8A/sIIIxslwuRBF5i5fuhAngu6BhCt/pQSfEETcHtg2j2vD+YEZ2w==}
     peerDependencies:
-      '@capacitor/core': ^6.0.0
+      '@capacitor/core': ^6.1.0
     dependencies:
-      '@capacitor/core': 6.0.0
+      '@capacitor/core': 6.1.0
     dev: true
 
   /@chevrotain/cst-dts-gen@11.0.3:
@@ -245,7 +245,7 @@ packages:
     engines: {node: '>=10.3.0'}
     dependencies:
       debug: 4.3.4
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -257,7 +257,7 @@ packages:
       '@types/fs-extra': 8.1.2
       debug: 4.3.4
       fs-extra: 9.1.0
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -267,7 +267,7 @@ packages:
     engines: {node: '>=10.3.0'}
     dependencies:
       debug: 4.3.4
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -281,7 +281,7 @@ packages:
       debug: 4.3.4
       signal-exit: 3.0.7
       tree-kill: 1.2.2
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -291,7 +291,7 @@ packages:
     engines: {node: '>=10.3.0'}
     dependencies:
       debug: 4.3.4
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -307,7 +307,7 @@ packages:
       '@ionic/utils-terminal': 2.3.3
       cross-spawn: 7.0.3
       debug: 4.3.4
-      tslib: 2.6.0
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -322,7 +322,7 @@ packages:
       slice-ansi: 4.0.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
-      tslib: 2.6.0
+      tslib: 2.6.3
       untildify: 4.0.0
       wrap-ansi: 7.0.0
     transitivePeerDependencies:
@@ -1719,8 +1719,8 @@ packages:
       universalify: 2.0.0
     dev: true
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -2542,7 +2542,7 @@ packages:
       '@rollup/rollup-win32-arm64-msvc': 4.17.1
       '@rollup/rollup-win32-ia32-msvc': 4.17.1
       '@rollup/rollup-win32-x64-msvc': 4.17.1
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /run-parallel@1.2.0:
@@ -2829,8 +2829,8 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
-  /tslib@2.6.0:
-    resolution: {integrity: sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==}
+  /tslib@2.6.3:
+    resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
     dev: true
 
   /tsutils@3.21.0(typescript@5.4.5):
