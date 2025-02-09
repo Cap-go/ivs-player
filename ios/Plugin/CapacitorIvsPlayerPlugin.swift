@@ -81,8 +81,36 @@ class TouchThroughView: IVSPlayerView {
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(CapacitorIvsPlayerPlugin)
-public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDelegate {
-
+public class CapacitorIvsPlayerPlugin: CAPPlugin, AVPictureInPictureControllerDelegate, MPRemoteCommandCenterDelegate, CAPBridgedPlugin {
+    public let identifier = "CapacitorIvsPlayerPlugin"
+    public let jsName = "CapacitorIvsPlayer"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "create", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "pause", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getState", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getUrl", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "delete", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setPip", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPip", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setMute", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getMute", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setAutoQuality", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getAutoQuality", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setPlayerPosition", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPlayerPosition", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setQuality", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getQuality", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getQualities", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setFrame", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getFrame", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setBackgroundState", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getBackgroundState", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "removeAllListeners", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cast", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getCastStatus", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPluginVersion", returnType: CAPPluginReturnPromise)
+    ]
     private let PLUGIN_VERSION = "0.13.34"
 
     let player = IVSPlayer()
