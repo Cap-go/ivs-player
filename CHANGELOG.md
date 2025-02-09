@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.0.1](https://github.com/Cap-go/ivs-player/compare/6.0.1...7.0.1) (2025-02-09)
+
+
+### Bug Fixes
+
+* CICD ([e0f8224](https://github.com/Cap-go/ivs-player/commit/e0f8224a1eb880e8cf27e32c933a159cd7fccf98))
+
 ### [6.0.1](https://github.com/Cap-go/ivs-player/compare/6.0.0...6.0.1) (2024-09-05)
 
 ## [6.0.0](https://github.com/Cap-go/ivs-player/compare/0.13.51...6.0.0) (2024-04-30)
