@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation 'com.amazonaws:ivs-player:1.20.0'
+    implementation 'com.amazonaws:ivs-player:1.37.0'
 }
 
 apply from: 'capacitor.build.gradle'
